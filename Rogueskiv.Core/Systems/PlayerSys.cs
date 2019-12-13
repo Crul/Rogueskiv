@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Controls;
 using Rogueskiv.Core.Entities;
+using Rogueskiv.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,11 @@ namespace Rogueskiv.Core.Systems
         private const float MAX_NEG_SPEED = -MAX_POS_SPEED;
         private const float STOP_SPEED = 1;
 
-        public void Update(
-            IList<IEntity> entities,
-            IEnumerable<Control> controls
-        )
+        public PlayerSys(IGameContext gameContext)
+        {
+        }
+
+        public void Update(IList<IEntity> entities, IEnumerable<Control> controls)
         {
             // TODO proper inertia (using angle)
 

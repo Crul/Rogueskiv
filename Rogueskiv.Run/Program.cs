@@ -8,11 +8,12 @@ namespace Rogueskiv.Run
     {
         static void Main(string[] args)
         {
-            var game = new RogueskivGame();
+            var gameContext = new GameContext();
+            var game = new RogueskivGame(gameContext);
             var userInput = new InputHandler<RogueskivGame>(game);
             var renderer = new RogueskivRenderer(game);
 
-            var engine = new GameEngine(userInput, game, renderer);
+            var engine = new GameEngine(gameContext, userInput, game, renderer);
 
             engine.StartLoop();
         }

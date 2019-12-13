@@ -5,22 +5,19 @@ namespace Rogueskiv.Engine
 {
     public class GameEngine
     {
-        private readonly int GameTicks;
-        private readonly int UxTicks;
+        private readonly IGameContext GameContext;
         private readonly IInputHandler InputHandler;
         private readonly IGame Game;
         private readonly IRenderer Renderer;
 
         public GameEngine(
+            IGameContext gameContext,
             IInputHandler inputHandler,
             IGame game,
-            IRenderer renderer,
-            int gameFPS = 25,
-            int uxFPS = 60
+            IRenderer renderer
         )
         {
-            GameTicks = 10000000 / gameFPS;
-            UxTicks = 10000000 / uxFPS;
+            GameContext = gameContext;
             InputHandler = inputHandler;
             Game = game;
             Renderer = renderer;
@@ -44,7 +41,7 @@ namespace Rogueskiv.Engine
                     if (Game.Quit)
                         return;
 
-                    nextGameTick += GameTicks;
+                    nextGameTick += GameContext.GameTicks;
                 }
 
                 var nextActionTick = Math.Min(nextGameTick, nextUxTick);
@@ -56,7 +53,7 @@ namespace Rogueskiv.Engine
                 {
                     // TODO interpolate animations
                     Renderer.Render();
-                    nextUxTick += UxTicks;
+                    nextUxTick += GameContext.UxTicks;
                 }
             }
         }

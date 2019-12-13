@@ -1,13 +1,14 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Entities;
 using Rogueskiv.Core.Systems;
+using Rogueskiv.Engine;
 using System.Collections.Generic;
 
 namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
-        public RogueskivGame()
+        public RogueskivGame(IGameContext gameContext)
             : base(
                 entities: new List<IEntity>()
                 {
@@ -17,7 +18,7 @@ namespace Rogueskiv.Core
                         .AddComponent(new MovementComp())
                 },
                 systems: new List<ISystem>() { new MovementSys() },
-                playerSystem: new PlayerSys()
+                playerSystem: new PlayerSys(gameContext)
             )
         { }
     }
