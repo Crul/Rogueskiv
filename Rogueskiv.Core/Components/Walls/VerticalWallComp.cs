@@ -1,0 +1,19 @@
+﻿namespace Rogueskiv.Core.Components.Walls
+{
+    abstract class VerticalWallComp : WallComp
+    {
+        public VerticalWallComp(int x, int y, int height)
+            : base(x, y, height) { }
+
+        protected override int FixedPosition => X;
+        protected override int VariablePosition => Y;
+
+        protected override float GetFixedPosition(PositionComp position) => position.X;
+        protected override float GetVariablePosition(PositionComp position) => position.Y;
+
+        protected override void ReverseSpeed(MovementComp movement, float amortiguationFactor) =>
+            movement.SpeedX *= amortiguationFactor;
+
+        protected override void SetPosition(PositionComp position, float value) => position.X = value;
+    }
+}

@@ -9,7 +9,7 @@
         public int UxFPS { get; }
         public long UxTicks { get; }
 
-        public GameContext(int gameFPS = 25, int uxFPS = 60)
+        public GameContext(int gameFPS = 30, int uxFPS = 60)
         {
             GameFPS = gameFPS;
             UxFPS = uxFPS;
