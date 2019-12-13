@@ -10,13 +10,27 @@ namespace Rogueskiv.Core.Systems
 {
     public class PlayerSys
     {
-        private const float ACCELERATION = 6;
-        private const float MAX_POS_SPEED = 28;
-        private const float MAX_NEG_SPEED = -MAX_POS_SPEED;
-        private const float STOP_SPEED = 1;
+        private static float ACCELERATION;
+        private static float MAX_POS_SPEED;
+        private static float MAX_NEG_SPEED;
+        private static float STOP_ABS_SPEED;
+        private const float FRICTION_FACTOR = 1f / 3f;
 
         public PlayerSys(IGameContext gameContext)
         {
+            // for 25 FPS:
+            //    ACCELERATION = 6 pixels per tick (per tick)
+            //    MAX_POS_SPEED / MAX_NEG_SPEED = +/-28 pixels per tick
+            //    STOP_ABS_SPEED = 1 pixel per tick
+
+            // the parametrization is not perfect because with high FPS
+            // there are more steps with movement for the same acceleration
+
+            var fps = gameContext.GameFPS;
+            ACCELERATION = (float)Math.Pow(6d, 25d / fps);
+            MAX_POS_SPEED = 700f / fps;
+            MAX_NEG_SPEED = -MAX_POS_SPEED;
+            STOP_ABS_SPEED = 25f / fps;
         }
 
         public void Update(IList<IEntity> entities, IEnumerable<Control> controls)
@@ -32,10 +46,10 @@ namespace Rogueskiv.Core.Systems
             var player = entities.Single(e => e.HasComponent<PlayerComp>());
             var movementComp = player.GetComponent<MovementComp>();
             if (speedX == 0)
-                speedX = -movementComp.SpeedX / 3;
+                speedX = -FRICTION_FACTOR * movementComp.SpeedX;
 
             if (speedY == 0)
-                speedY = -movementComp.SpeedY / 3;
+                speedY = -FRICTION_FACTOR * movementComp.SpeedY;
 
             movementComp.SpeedX = BoundSpeed(movementComp.SpeedX + speedX);
             movementComp.SpeedY = BoundSpeed(movementComp.SpeedY + speedY);
@@ -45,7 +59,7 @@ namespace Rogueskiv.Core.Systems
         {
             var boundedSpeed = Math.Max(MAX_NEG_SPEED, Math.Min(MAX_POS_SPEED, speed));
 
-            return (Math.Abs(boundedSpeed) < STOP_SPEED ? 0 : boundedSpeed);
+            return (Math.Abs(boundedSpeed) < STOP_ABS_SPEED ? 0 : boundedSpeed);
         }
     }
 }
