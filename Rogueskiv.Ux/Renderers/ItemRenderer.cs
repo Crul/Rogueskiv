@@ -32,8 +32,8 @@ namespace Rogueskiv.Ux.Renderers
 
         protected void Render(double posX, double posY)
         {
-            var x = GetPositionComponent(posX, TextureRect.w, UxContext.CenterX);
-            var y = GetPositionComponent(posY, TextureRect.h, UxContext.CenterY);
+            var x = GetPositionComponent(posX, UxContext.CenterX);
+            var y = GetPositionComponent(posY, UxContext.CenterY);
 
             var tRect = new SDL.SDL_Rect()
             {
@@ -46,10 +46,8 @@ namespace Rogueskiv.Ux.Renderers
             SDL.SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref tRect);
         }
 
-        private static int GetPositionComponent(double positionComponent, int textureSize, int windowCenter) =>
-            (int)(positionComponent * UxContext.Zoom)
-                - (textureSize / 2)
-                + windowCenter;
+        private static int GetPositionComponent(double positionComponent, int windowCenter) =>
+            (int)(positionComponent * UxContext.Zoom) + windowCenter;
 
         public void Dispose()
         {
