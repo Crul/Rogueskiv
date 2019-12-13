@@ -10,7 +10,7 @@ namespace Rogueskiv.Ux
     public class Renderer : IRenderer
     {
         private const int WIDTH = 800;
-        private const int HEIGHT = 400;
+        private const int HEIGHT = 520;
 
         protected readonly IntPtr Window;
         protected readonly IntPtr WRenderer;

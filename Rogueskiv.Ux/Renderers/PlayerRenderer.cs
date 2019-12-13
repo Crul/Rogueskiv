@@ -30,6 +30,7 @@ namespace Rogueskiv.Ux.Renderers
 
         private (float, float) Interpolate(IEntity entity, PositionComp positionComp, float interpolation)
         {
+            // TODO wall bounces ?
             if (interpolation <= 0 || !entity.HasComponent<MovementComp>())
                 return (positionComp.X, positionComp.Y);
 

@@ -5,6 +5,6 @@ namespace Rogueskiv.Core.Systems
 {
     public interface ISystem
     {
-        void Update(IList<IEntity> entities);
+        void Update(List<IEntity> entities);
     }
 }
