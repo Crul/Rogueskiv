@@ -17,10 +17,10 @@ namespace Rogueskiv.Ux
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
         }
 
-        protected override void RenderGame() =>
+        protected override void RenderGame(float interpolation) =>
             Renderers.ToList()
                 .ForEach(r =>
-                    r.Value.Render(Game.Entities.GetWithComponent(r.Key))
+                    r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
                 );
 
     }

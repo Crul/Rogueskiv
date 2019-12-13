@@ -25,10 +25,10 @@ namespace Rogueskiv.Ux.Renderers
             OutputSize = outputSize ?? new Tuple<int, int>(textureRect.w, textureRect.h);
         }
 
-        public void Render(List<IEntity> entities) =>
-            entities.ForEach(Render);
+        public void Render(List<IEntity> entities, float interpolation) =>
+            entities.ForEach(e => Render(e, interpolation));
 
-        protected abstract void Render(IEntity entity);
+        protected abstract void Render(IEntity entity, float interpolation);
 
         protected void Render(double posX, double posY)
         {

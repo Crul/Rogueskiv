@@ -15,13 +15,27 @@ namespace Rogueskiv.Ux.Renderers
             )
         { }
 
-        protected override void Render(IEntity entity)
+        protected override void Render(IEntity entity, float interpolation)
         {
             if (!entity.HasComponent<PositionComp>())
                 return;
 
             var positionComp = entity.GetComponent<PositionComp>();
-            Render(positionComp.X, positionComp.Y);
+            var (x, y) = Interpolate(entity, positionComp, interpolation);
+
+            Render(x, y);
+        }
+
+        private (float, float) Interpolate(IEntity entity, PositionComp positionComp, float interpolation)
+        {
+            if (interpolation <= 0 || !entity.HasComponent<MovementComp>())
+                return (positionComp.X, positionComp.Y);
+
+            var movementComp = entity.GetComponent<MovementComp>();
+            return (
+                positionComp.X + (movementComp.SpeedX * interpolation),
+                positionComp.Y + (movementComp.SpeedY * interpolation)
+            );
         }
     }
 }

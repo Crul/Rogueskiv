@@ -33,6 +33,7 @@ namespace Rogueskiv.Engine
 
         private void RunLoop(long nextGameTick, long nextUxTick)
         {
+            long currentTime;
             var stepsWithoutRender = 0;
             while (true)
             {
@@ -48,14 +49,16 @@ namespace Rogueskiv.Engine
                 }
 
                 var nextActionTick = Math.Min(nextGameTick, nextUxTick);
-                var currentTime = CurrentTime();
+                currentTime = CurrentTime();
                 if (currentTime < nextActionTick)
                     Thread.Sleep((int)((nextActionTick - currentTime) / 10000));
 
-                if (CurrentTime() > nextUxTick)
+                currentTime = CurrentTime();
+                if (currentTime > nextUxTick)
                 {
                     // TODO interpolate animations
-                    Renderer.Render();
+                    var interpolation = 1f - (((float)(nextGameTick - currentTime)) / GameContext.GameTicks);
+                    Renderer.Render(interpolation);
                     nextUxTick += GameContext.UxTicks;
                     stepsWithoutRender = 0;
                 }

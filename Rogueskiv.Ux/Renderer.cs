@@ -35,14 +35,14 @@ namespace Rogueskiv.Ux
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
 
-        public void Render()
+        public void Render(float interpolation)
         {
             SDL.SDL_RenderClear(WRenderer);
-            RenderGame();
+            RenderGame(interpolation);
             SDL.SDL_RenderPresent(WRenderer);
         }
 
-        protected virtual void RenderGame() { }
+        protected virtual void RenderGame(float interpolation) { }
 
         public void Dispose()
         {

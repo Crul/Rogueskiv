@@ -6,6 +6,6 @@ namespace Rogueskiv.Ux.Renderers
 {
     public interface IItemRenderer : IDisposable
     {
-        void Render(List<IEntity> entities);
+        void Render(List<IEntity> entities, float interpolation);
     }
 }

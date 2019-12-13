@@ -4,6 +4,6 @@ namespace Rogueskiv.Engine
 {
     public interface IRenderer : IDisposable
     {
-        void Render();
+        void Render(float interpolation);
     }
 }
