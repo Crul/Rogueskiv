@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- https://stackoverflow.com/a/56989245 -->
+    <ContentWithTargetPath Include="dlls\SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2.lib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2.lib</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2_image.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2_image.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2main.lib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2main.lib</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2test.lib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2test.lib</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libjpeg-9.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libjpeg-9.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libpng16-16.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libpng16-16.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libtiff-5.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libtiff-5.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libwebp-7.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libwebp-7.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\zlib1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>zlib1.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rogueskiv.Core\Rogueskiv.Core.csproj" />
+    <ProjectReference Include="..\Rogueskiv.Engine\Rogueskiv.Engine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="imgs\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="imgs\player.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

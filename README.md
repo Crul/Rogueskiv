@@ -4,6 +4,22 @@
 
 Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia=web) (by jf) and the countless [Roguelike games](https://www.reddit.com/r/roguelikedev/), inspired by the [Roguelike Celebration 2018](https://roguelike.club/event2018.html) talk: [Pippin Barr + Jonathan Lessard: Chess + Rogue = Chogue](https://www.youtube.com/watch?v=l1YEJBKehAY).
 
+## Environment Setup
+
+Download and extract into `Seedwork.Ux/dlls/`:
+
+- [(win32-x64) SDL2 2.0.10 Runtime Binaries](https://www.libsdl.org/release/SDL2-2.0.10-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/download-2.0.php). File: SDL2.dll
+- [(win32-x64) SDL_Image 2.0.5 Runtime Binaries](https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/projects/SDL_image/). Files: SDL2_image.dll, libjpeg-9.dll, libpng16-16.dll, libtiff-5.dll, libwebp-7.dll, zlib1.dll.
+
+Tested only in Windows 10.
+
+## Acknowledgements
+
+Rogueskiv makes use of the following projects:
+
+- [SDL 2.0](https://www.libsdl.org/index.php), see [credits](https://www.libsdl.org/credits.php) ([zlib license](https://www.libsdl.org/license.php))
+- [SDL2-CS](https://github.com/flibitijibibo/SDL2-CS) by [Ethan Lee](http://www.flibitijibibo.com/) ([zlib license](https://github.com/flibitijibibo/SDL2-CS/blob/master/LICENSE))
+
 ## License (AGPL-3.0)
 
 Rogueskiv, a roguelike version of Eskiv  
