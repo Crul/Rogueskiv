@@ -14,7 +14,7 @@ namespace Rogueskiv.Core.Systems
         private static float MAX_POS_SPEED;
         private static float MAX_NEG_SPEED;
         private static float STOP_ABS_SPEED;
-        private const float FRICTION_FACTOR = 1f / 3f;
+        private const float FRICTION_FACTOR = 1f / 5f;
 
         public PlayerSys(IGameContext gameContext)
         {
@@ -27,10 +27,10 @@ namespace Rogueskiv.Core.Systems
             // there are more steps with movement for the same acceleration
 
             var fps = gameContext.GameFPS;
-            ACCELERATION = (float)Math.Pow(6d, 25d / fps);
-            MAX_POS_SPEED = 700f / fps;
+            ACCELERATION = (float)Math.Pow(2d, 25d / fps);
+            MAX_POS_SPEED = 200f / fps;
             MAX_NEG_SPEED = -MAX_POS_SPEED;
-            STOP_ABS_SPEED = 25f / fps;
+            STOP_ABS_SPEED = 1f / fps;
         }
 
         public void Update(IList<IEntity> entities, IEnumerable<Control> controls)
