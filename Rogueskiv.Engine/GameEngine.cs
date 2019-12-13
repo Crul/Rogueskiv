@@ -9,6 +9,7 @@ namespace Rogueskiv.Engine
         private readonly IInputHandler InputHandler;
         private readonly IGame Game;
         private readonly IRenderer Renderer;
+        private const int MAX_STEPS_WITHOUT_RENDER = 5;
 
         public GameEngine(
             IGameContext gameContext,
@@ -32,16 +33,18 @@ namespace Rogueskiv.Engine
 
         private void RunLoop(long nextGameTick, long nextUxTick)
         {
+            var stepsWithoutRender = 0;
             while (true)
             {
                 InputHandler.ProcessEvents();
-                while (CurrentTime() > nextGameTick)
+                while (ShouldUpdate(nextGameTick, stepsWithoutRender))
                 {
                     Game.Update();
                     if (Game.Quit)
                         return;
 
                     nextGameTick += GameContext.GameTicks;
+                    stepsWithoutRender++;
                 }
 
                 var nextActionTick = Math.Min(nextGameTick, nextUxTick);
@@ -54,9 +57,13 @@ namespace Rogueskiv.Engine
                     // TODO interpolate animations
                     Renderer.Render();
                     nextUxTick += GameContext.UxTicks;
+                    stepsWithoutRender = 0;
                 }
             }
         }
+
+        private static bool ShouldUpdate(long nextGameTick, int stepsWithoutRender) =>
+            CurrentTime() > nextGameTick && stepsWithoutRender < MAX_STEPS_WITHOUT_RENDER;
 
         private static long CurrentTime() => DateTime.Now.Ticks;
     }
