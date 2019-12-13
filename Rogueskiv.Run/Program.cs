@@ -11,11 +11,10 @@ namespace Rogueskiv.Run
             var gameContext = new GameContext();
             var game = new RogueskivGame(gameContext);
             var userInput = new InputHandler<RogueskivGame>(game);
-            var renderer = new RogueskivRenderer(game);
-
+            using var renderer = new RogueskivRenderer(game);
             var engine = new GameEngine(gameContext, userInput, game, renderer);
 
-            engine.StartLoop();
+            engine.RunLoop();
         }
     }
 }

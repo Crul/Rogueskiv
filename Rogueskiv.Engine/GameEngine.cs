@@ -24,13 +24,7 @@ namespace Rogueskiv.Engine
             Renderer = renderer;
         }
 
-        public void StartLoop()
-        {
-            RunLoop();
-            Renderer.Dispose();
-        }
-
-        private void RunLoop()
+        public void RunLoop()
         {
             var currentTime = CurrentTime();
             long nextGameTick = currentTime;
