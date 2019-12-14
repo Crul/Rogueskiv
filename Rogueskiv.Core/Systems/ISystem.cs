@@ -5,7 +5,7 @@ namespace Rogueskiv.Core.Systems
 {
     public interface ISystem
     {
-        bool Init(List<IEntity> entities);
+        bool Init(Game game);
         void Update(List<IEntity> entities);
     }
 }

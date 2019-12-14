@@ -1,4 +1,5 @@
-﻿using Rogueskiv.Core.Controls;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Controls;
 using Rogueskiv.Core.Entities;
 using Rogueskiv.Core.Systems;
 using Rogueskiv.Engine;
@@ -15,26 +16,38 @@ namespace Rogueskiv.Core
 
         private List<ISystem> Systems;
         private readonly PlayerSys PlayerSystem;
+        private int EntityIdCounter;
 
         public Game(
-            List<IEntity> entities,
+            List<List<IComponent>> entitiesComponents,
             List<ISystem> systems,
             PlayerSys playerSystem
         )
         {
-            Entities = entities;
+            Entities = new List<IEntity>();
+            entitiesComponents.ForEach(AddEntity);
             Systems = systems;
             PlayerSystem = playerSystem;
         }
 
         public void Init() =>
-            Systems = Systems.Where(sys => sys.Init(Entities)).ToList();
+            Systems = Systems.Where(sys => sys.Init(this)).ToList();
 
         public void Update()
         {
             Quit = Controls.Any(c => c == Control.QUIT);
             PlayerSystem.Update(Entities, Controls);
             Systems.ForEach(s => s.Update(Entities));
+        }
+
+        public void AddEntity(IComponent entityComponent) =>
+            AddEntity(new List<IComponent> { entityComponent });
+
+        public void AddEntity(List<IComponent> entityComponents)
+        {
+            var entity = new Entity(new EntityId(EntityIdCounter++));
+            entity.Components.AddRange(entityComponents);
+            Entities.Add(entity);
         }
     }
 }
