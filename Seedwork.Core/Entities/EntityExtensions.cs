@@ -8,12 +8,12 @@ namespace Seedwork.Core.Entities
     public static class EntityExtensions
     {
         public static List<IEntity> GetWithComponent<T>
-            (this List<IEntity> entities)
+            (this EntityList entities)
             where T : IComponent =>
-            entities.Where(e => e.HasComponent<T>()).ToList();
+            entities.Where(e => e.Value.HasComponent<T>()).Select(e => e.Value).ToList();
 
         public static List<IEntity> GetWithComponent
-            (this List<IEntity> entities, Type componentType) =>
-            entities.Where(e => e.HasComponent(componentType)).ToList();
+            (this EntityList entities, Type componentType) =>
+            entities.Where(e => e.Value.HasComponent(componentType)).Select(e => e.Value).ToList();
     }
 }

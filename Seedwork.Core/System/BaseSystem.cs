@@ -7,6 +7,6 @@ namespace Seedwork.Core.Systems
     {
         public virtual bool Init(Game game) => true;
 
-        public abstract void Update(List<IEntity> entities, IEnumerable<int> controls);
+        public abstract void Update(EntityList entities, IEnumerable<int> controls);
     }
 }

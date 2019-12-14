@@ -10,7 +10,7 @@ namespace Seedwork.Core
 {
     public class Game : IGame, IControlable, IRenderizable
     {
-        public List<IEntity> Entities { get; }
+        public EntityList Entities { get; }
 
         private List<ISystem> Systems;
         public IEnumerable<int> Controls { get; set; }
@@ -26,8 +26,8 @@ namespace Seedwork.Core
             int quitControl
         )
         {
-            Entities = new List<IEntity>();
-            entitiesComponents.ForEach(AddEntity);
+            Entities = new EntityList();
+            entitiesComponents.ForEach(e => AddEntity(e));
             Systems = systems;
             QuitControl = quitControl;
         }
@@ -41,14 +41,15 @@ namespace Seedwork.Core
             Systems.ForEach(s => s.Update(Entities, Controls));
         }
 
-        public void AddEntity(IComponent entityComponent) =>
+        public IEntity AddEntity(IComponent entityComponent) =>
             AddEntity(new List<IComponent> { entityComponent });
 
-        public void AddEntity(List<IComponent> entityComponents)
+        public IEntity AddEntity(List<IComponent> entityComponents)
         {
             var entity = new Entity(new EntityId(EntityIdCounter++));
             entity.Components.AddRange(entityComponents);
-            Entities.Add(entity);
+            Entities.Add(entity.Id, entity);
+            return entity;
         }
     }
 }

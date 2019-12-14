@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core.Entities;
@@ -10,24 +11,30 @@ namespace Rogueskiv.Core.Systems
 {
     public class WallSys : BaseSystem
     {
-        public override void Update(List<IEntity> entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, IEnumerable<int> controls)
         {
 
-            var wallComponents = entities
-                .GetWithComponent<IWallComp>()
-                .Select(wall => wall.GetComponent<IWallComp>());
+            var boardComp = entities
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
 
             entities
-                .Where(e => e.HasComponent<LastPositionComp>())
-                .ToList()
-                .ForEach(entity => Update(entity, wallComponents));
+                .GetWithComponent<LastPositionComp>()
+                .ForEach(entity => Update(entity, boardComp, entities));
         }
 
-        private void Update(IEntity entity, IEnumerable<IWallComp> wallComponents)
+        private void Update(IEntity entity, BoardComp boardComp, EntityList entities)
         {
             var lastPosition = entity.GetComponent<LastPositionComp>();
             var position = entity.GetComponent<CurrentPositionComp>();
             var movement = entity.GetComponent<MovementComp>();
+
+            var wallEntityIds = boardComp.GetWallsIdsNear(position);
+
+            var wallComponents = wallEntityIds
+                .Select(wei => entities[wei])
+                .Select(wall => wall.GetComponent<WallComp>());
 
             int tmpCheck = 0; // TODO 
             bool checkBounces;

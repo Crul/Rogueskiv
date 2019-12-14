@@ -33,7 +33,7 @@ namespace Rogueskiv.Core.Systems
             STOP_ABS_SPEED = 1f / fps;
         }
 
-        public override void Update(List<IEntity> entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, IEnumerable<int> controls)
         {
             // TODO proper inertia (using angle)
 
@@ -43,7 +43,7 @@ namespace Rogueskiv.Core.Systems
             if (controls.Any(c => c == (int)Controls.LEFT)) speedX = -ACCELERATION;
             if (controls.Any(c => c == (int)Controls.RIGHT)) speedX = ACCELERATION;
 
-            var player = entities.Single(e => e.HasComponent<PlayerComp>());
+            var player = entities.Single(e => e.Value.HasComponent<PlayerComp>()).Value;
             var movementComp = player.GetComponent<MovementComp>();
             if (speedX == 0)
                 speedX = -FRICTION_FACTOR * movementComp.SpeedX;
