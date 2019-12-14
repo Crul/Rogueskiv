@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core;
-using Rogueskiv.Engine;
 using Rogueskiv.Ux;
+using Seedwork.Engine;
+using System.IO;
 
 namespace Rogueskiv.Run
 {
@@ -8,14 +9,15 @@ namespace Rogueskiv.Run
     {
         static void Main(string[] args)
         {
-            var gameContext = new GameContext();
-            var game = new RogueskivGame(gameContext);
-            var userInput = new InputHandler<RogueskivGame>(game);
-            var renderer = new RogueskivRenderer(game);
+            var boardData = File.ReadAllText(Path.Combine("data", "board.txt"));
 
+            var gameContext = new GameContext();
+            var game = new RogueskivGame(gameContext, boardData);
+            var userInput = new RogueskivInputHandler(game);
+            using var renderer = new RogueskivRenderer(game);
             var engine = new GameEngine(gameContext, userInput, game, renderer);
 
-            engine.StartLoop();
+            engine.RunLoop();
         }
     }
 }

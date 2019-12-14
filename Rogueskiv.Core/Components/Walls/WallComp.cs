@@ -1,20 +1,22 @@
-﻿namespace Rogueskiv.Core.Components.Walls
+﻿using Rogueskiv.Core.Components.Position;
+
+namespace Rogueskiv.Core.Components.Walls
 {
-    abstract class WallComp : IWallComp
+    abstract class WallComp : PositionComp, IWallComp
     {
         // TODO ¿move to system?
-
         protected const int ENTITY_SIZE = 16; // TODO proper entity size
         private const int TILE_SIZE = 30;     // TODO proper tile size
         private const float AMORTIGUATION_FACTOR = 2f / 3f;
 
-        protected readonly int X;
-        protected readonly int Y;
-        protected readonly int Size; // height for VerticalWalls, width for HorizontalWalls
-        protected float BounceLimit; // set by children
+        public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
+        public PositionComp Position => this;
 
-        protected abstract int FixedPosition { get; }
-        protected abstract int VariablePosition { get; }
+        protected abstract float FixedPosition { get; }
+        protected abstract float VariablePosition { get; }
+
+
+        protected float BounceLimit; // set by children
 
         public WallComp(int x, int y, int size)
         {

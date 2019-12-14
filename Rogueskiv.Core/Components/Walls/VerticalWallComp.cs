@@ -1,12 +1,14 @@
-﻿namespace Rogueskiv.Core.Components.Walls
+﻿using Rogueskiv.Core.Components.Position;
+
+namespace Rogueskiv.Core.Components.Walls
 {
     abstract class VerticalWallComp : WallComp
     {
         public VerticalWallComp(int x, int y, int height)
             : base(x, y, height) { }
 
-        protected override int FixedPosition => X;
-        protected override int VariablePosition => Y;
+        protected override float FixedPosition => X;
+        protected override float VariablePosition => Y;
 
         protected override float GetFixedPosition(PositionComp position) => position.X;
         protected override float GetVariablePosition(PositionComp position) => position.Y;

@@ -1,7 +1,13 @@
-﻿namespace Rogueskiv.Core.Components.Walls
+﻿using Rogueskiv.Core.Components.Position;
+using Seedwork.Core.Components;
+
+namespace Rogueskiv.Core.Components.Walls
 {
-    interface IWallComp : IComponent
+    public interface IWallComp : IComponent
     {
+        PositionComp Position { get; }
+        int Size { get; }
+
         bool CheckBounce(
             MovementComp movement,
             PositionComp position,
