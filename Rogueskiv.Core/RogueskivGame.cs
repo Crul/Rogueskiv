@@ -65,6 +65,26 @@ namespace Rogueskiv.Core
                 systems: new List<ISystem>() { new MovementSys() },
                 playerSystem: new PlayerSys(gameContext)
             )
-        { }
+        {
+            var rooms = new List<(int x, int y, int width, int height)>()
+            {
+                (2, 2, 7, 5),
+                (4, 7, 3, 5),
+                (2, 12, 7, 4),
+                (10, 12, 3, 3),
+                (9, 13, 1, 1),
+                (11, 11, 1, 1),
+                (10, 5, 9, 6),
+                (9, 3, 10, 1),
+                (18, 4, 1, 1),
+            };
+
+            rooms.ForEach(room =>
+            {
+                for (var x = room.x; x < room.x + room.width; x++)
+                    for (var y = room.y; y < room.y + room.height; y++)
+                        Entities.Add(new Entity(new EntityId(EntityIdCounter++)).AddComponent(new TileComp(x, y)));
+            });
+        }
     }
 }

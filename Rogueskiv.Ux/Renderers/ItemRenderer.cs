@@ -1,11 +1,13 @@
-﻿using Rogueskiv.Core.Entities;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Entities;
 using SDL2;
 using System;
 using System.Collections.Generic;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    abstract class ItemRenderer : IItemRenderer
+    abstract class ItemRenderer<T> : IItemRenderer
+        where T : IComponent
     {
         protected readonly UxContext UxContext;
         protected readonly Tuple<int, int> OutputSize;
@@ -26,7 +28,13 @@ namespace Rogueskiv.Ux.Renderers
         }
 
         public void Render(List<IEntity> entities, float interpolation) =>
-            entities.ForEach(e => Render(e, interpolation));
+            entities.ForEach(e => RenderIfComponent(e, interpolation));
+
+        private void RenderIfComponent(IEntity entity, float interpolation)
+        {
+            if (entity.HasComponent<T>())
+                Render(entity, interpolation);
+        }
 
         protected abstract void Render(IEntity entity, float interpolation);
 

@@ -63,7 +63,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="imgs\player.png">
+    <None Update="imgs\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
