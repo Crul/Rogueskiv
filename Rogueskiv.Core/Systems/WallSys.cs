@@ -13,7 +13,6 @@ namespace Rogueskiv.Core.Systems
     {
         public override void Update(EntityList entities, IEnumerable<int> controls)
         {
-
             var boardComp = entities
                 .GetWithComponent<BoardComp>()
                 .Single()
