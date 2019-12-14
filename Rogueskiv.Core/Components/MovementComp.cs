@@ -6,5 +6,8 @@ namespace Rogueskiv.Core.Components
     {
         public float SpeedX { get; set; }
         public float SpeedY { get; set; }
+
+        public float FrictionFactor { get; set; }
+        public float BounceAmortiguationFactor { get; set; }
     }
 }

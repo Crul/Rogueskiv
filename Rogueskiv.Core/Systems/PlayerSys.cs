@@ -14,7 +14,6 @@ namespace Rogueskiv.Core.Systems
         private static float MAX_POS_SPEED;
         private static float MAX_NEG_SPEED;
         private static float STOP_ABS_SPEED;
-        private const float FRICTION_FACTOR = 1f / 5f;
 
         public PlayerSys(IGameContext gameContext)
         {
@@ -46,10 +45,10 @@ namespace Rogueskiv.Core.Systems
             var player = entities.Single(e => e.Value.HasComponent<PlayerComp>()).Value;
             var movementComp = player.GetComponent<MovementComp>();
             if (speedX == 0)
-                speedX = -FRICTION_FACTOR * movementComp.SpeedX;
+                speedX = -movementComp.FrictionFactor * movementComp.SpeedX;
 
             if (speedY == 0)
-                speedY = -FRICTION_FACTOR * movementComp.SpeedY;
+                speedY = -movementComp.FrictionFactor * movementComp.SpeedY;
 
             movementComp.SpeedX = BoundSpeed(movementComp.SpeedX + speedX);
             movementComp.SpeedY = BoundSpeed(movementComp.SpeedY + speedY);

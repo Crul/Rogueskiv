@@ -7,7 +7,6 @@ namespace Rogueskiv.Core.Components.Walls
         // TODO ¿move to system?
         protected const int ENTITY_SIZE = 16; // TODO proper entity size
         private const int TILE_SIZE = 30;     // TODO proper tile size
-        private const float AMORTIGUATION_FACTOR = 2f / 3f;
 
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
         public PositionComp Position => this;
@@ -45,7 +44,7 @@ namespace Rogueskiv.Core.Components.Walls
             var bounce = isInFrontOrBehind && HasTraversed(position, oldPosition);
             if (bounce)
             {
-                ReverseSpeed(movement, -AMORTIGUATION_FACTOR);
+                ReverseSpeed(movement, -movement.BounceAmortiguationFactor);
                 SetPosition(position, (2 * BounceLimit) - GetFixedPosition(position));
             }
 
