@@ -13,7 +13,7 @@
         public override int GetHashCode() => _Value;
 
         public static bool operator ==(EntityId left, EntityId right) =>
-            (int)left == (int)right;
+            ((int)left) == right;
 
         public static bool operator !=(EntityId left, EntityId right) =>
             !(left == right);
