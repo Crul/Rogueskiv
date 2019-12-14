@@ -1,14 +1,14 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Controls;
-using Rogueskiv.Core.Entities;
-using Rogueskiv.Engine;
+using Seedwork.Core.Entities;
+using Seedwork.Core.Systems;
+using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rogueskiv.Core.Systems
 {
-    public class PlayerSys
+    public class PlayerSys : BaseSystem
     {
         private static float ACCELERATION;
         private static float MAX_POS_SPEED;
@@ -33,15 +33,15 @@ namespace Rogueskiv.Core.Systems
             STOP_ABS_SPEED = 1f / fps;
         }
 
-        public void Update(IList<IEntity> entities, IEnumerable<Control> controls)
+        public override void Update(List<IEntity> entities, IEnumerable<int> controls)
         {
             // TODO proper inertia (using angle)
 
             float speedX = 0, speedY = 0;
-            if (controls.Any(c => c == Control.UP)) speedY = -ACCELERATION;
-            if (controls.Any(c => c == Control.DOWN)) speedY = ACCELERATION;
-            if (controls.Any(c => c == Control.LEFT)) speedX = -ACCELERATION;
-            if (controls.Any(c => c == Control.RIGHT)) speedX = ACCELERATION;
+            if (controls.Any(c => c == (int)Controls.UP)) speedY = -ACCELERATION;
+            if (controls.Any(c => c == (int)Controls.DOWN)) speedY = ACCELERATION;
+            if (controls.Any(c => c == (int)Controls.LEFT)) speedX = -ACCELERATION;
+            if (controls.Any(c => c == (int)Controls.RIGHT)) speedX = ACCELERATION;
 
             var player = entities.Single(e => e.HasComponent<PlayerComp>());
             var movementComp = player.GetComponent<MovementComp>();

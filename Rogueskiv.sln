@@ -5,11 +5,17 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rogueskiv.Run", "Rogueskiv.Run\Rogueskiv.Run.csproj", "{830FADFC-3F62-4286-8175-F17BEFED18D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.Ux", "Rogueskiv.Ux\Rogueskiv.Ux.csproj", "{941810A8-6AAD-4124-B0D2-64645F5A2510}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rogueskiv.Ux", "Rogueskiv.Ux\Rogueskiv.Ux.csproj", "{941810A8-6AAD-4124-B0D2-64645F5A2510}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.Engine", "Rogueskiv.Engine\Rogueskiv.Engine.csproj", "{3EF0965E-B3E8-43DF-8DB3-779C86EE8E83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rogueskiv.Core", "Rogueskiv.Core\Rogueskiv.Core.csproj", "{B4FD949C-936C-4290-AB76-A62B4C47BC04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.Core", "Rogueskiv.Core\Rogueskiv.Core.csproj", "{B4FD949C-936C-4290-AB76-A62B4C47BC04}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Seedwork", "Seedwork", "{593A115C-FB5E-4AB0-9FCA-E87618F7563B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedwork.Engine", "Seedwork.Engine\Seedwork.Engine.csproj", "{589AF7E5-6150-4616-A86C-0CCAE255516D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedwork.Ux", "Seedwork.Ux\Seedwork.Ux.csproj", "{690A2916-6C30-484B-B713-E927C0192CCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedwork.Core", "Seedwork.Core\Seedwork.Core.csproj", "{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,17 +31,30 @@ Global
 		{941810A8-6AAD-4124-B0D2-64645F5A2510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{941810A8-6AAD-4124-B0D2-64645F5A2510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{941810A8-6AAD-4124-B0D2-64645F5A2510}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EF0965E-B3E8-43DF-8DB3-779C86EE8E83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EF0965E-B3E8-43DF-8DB3-779C86EE8E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EF0965E-B3E8-43DF-8DB3-779C86EE8E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EF0965E-B3E8-43DF-8DB3-779C86EE8E83}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B4FD949C-936C-4290-AB76-A62B4C47BC04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4FD949C-936C-4290-AB76-A62B4C47BC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4FD949C-936C-4290-AB76-A62B4C47BC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4FD949C-936C-4290-AB76-A62B4C47BC04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589AF7E5-6150-4616-A86C-0CCAE255516D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589AF7E5-6150-4616-A86C-0CCAE255516D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589AF7E5-6150-4616-A86C-0CCAE255516D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589AF7E5-6150-4616-A86C-0CCAE255516D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{690A2916-6C30-484B-B713-E927C0192CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{690A2916-6C30-484B-B713-E927C0192CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{690A2916-6C30-484B-B713-E927C0192CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{690A2916-6C30-484B-B713-E927C0192CCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{589AF7E5-6150-4616-A86C-0CCAE255516D} = {593A115C-FB5E-4AB0-9FCA-E87618F7563B}
+		{690A2916-6C30-484B-B713-E927C0192CCE} = {593A115C-FB5E-4AB0-9FCA-E87618F7563B}
+		{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757} = {593A115C-FB5E-4AB0-9FCA-E87618F7563B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15C09ACC-C080-4B19-A0B0-43DC7EE57FBD}

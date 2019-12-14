@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Seedwork.Core\Seedwork.Core.csproj" />
+    <ProjectReference Include="..\Seedwork.Engine\Seedwork.Engine.csproj" />
   </ItemGroup>
 
 </Project>

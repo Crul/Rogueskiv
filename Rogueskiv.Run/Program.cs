@@ -1,6 +1,6 @@
 ﻿using Rogueskiv.Core;
-using Rogueskiv.Engine;
 using Rogueskiv.Ux;
+using Seedwork.Engine;
 using System.IO;
 
 namespace Rogueskiv.Run
@@ -13,7 +13,7 @@ namespace Rogueskiv.Run
 
             var gameContext = new GameContext();
             var game = new RogueskivGame(gameContext, boardData);
-            var userInput = new InputHandler<RogueskivGame>(game);
+            var userInput = new RogueskivInputHandler(game);
             using var renderer = new RogueskivRenderer(game);
             var engine = new GameEngine(gameContext, userInput, game, renderer);
 

@@ -1,5 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Entities;
+using Rogueskiv.Core.Components.Position;
+using Seedwork.Core.Entities;
+using Seedwork.Core.Systems;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +13,7 @@ namespace Rogueskiv.Core.Systems
 
         public MovementSys() => WallSystem = new WallSys();
 
-        public override void Update(List<IEntity> entities) =>
+        public override void Update(List<IEntity> entities, IEnumerable<int> controls) =>
             entities
                 .Where(e => e.HasComponent<MovementComp>())
                 .ToList()

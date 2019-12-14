@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Components.Walls;
-using Rogueskiv.Core.Entities;
+using Seedwork.Core.Entities;
 using System.Collections.Generic;
 using System.Linq;
 

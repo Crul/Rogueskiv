@@ -1,4 +1,6 @@
-﻿namespace Rogueskiv.Core.Components.Walls
+﻿using Rogueskiv.Core.Components.Position;
+
+namespace Rogueskiv.Core.Components.Walls
 {
     abstract class VerticalWallComp : WallComp
     {

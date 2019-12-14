@@ -1,6 +1,8 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Entities;
+using Rogueskiv.Core.Components.Position;
 using SDL2;
+using Seedwork.Core.Entities;
+using Seedwork.Ux;
 using System;
 
 namespace Rogueskiv.Ux.Renderers

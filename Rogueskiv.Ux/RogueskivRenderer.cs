@@ -1,12 +1,14 @@
-﻿using Rogueskiv.Core;
-using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Entities;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Ux.Renderers;
+using Seedwork.Core;
+using Seedwork.Core.Entities;
+using Seedwork.Ux;
 using System.Linq;
 
 namespace Rogueskiv.Ux
 {
-    public class RogueskivRenderer : Renderer
+    public class RogueskivRenderer : GameRenderer
     {
         private readonly IRenderizable Game;
 

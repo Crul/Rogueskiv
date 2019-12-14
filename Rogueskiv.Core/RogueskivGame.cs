@@ -1,6 +1,11 @@
 ﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Systems;
-using Rogueskiv.Engine;
+using Seedwork.Core;
+using Seedwork.Core.Components;
+using Seedwork.Core.Systems;
+using Seedwork.Engine;
 using System.Collections.Generic;
 
 namespace Rogueskiv.Core
@@ -19,10 +24,11 @@ namespace Rogueskiv.Core
                     new List<IComponent> { new BoardComp(boardData) },
                 },
                 systems: new List<ISystem> {
+                    new PlayerSys(gameContext),
                     new MovementSys(),
                     new BoardSys(),
                 },
-                playerSystem: new PlayerSys(gameContext)
+                quitControl: (int)Core.Controls.QUIT
             )
         { }
     }

@@ -1,6 +1,9 @@
-﻿using Rogueskiv.Core.Components;
+﻿using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Walls;
-using Rogueskiv.Core.Entities;
+using Seedwork.Core;
+using Seedwork.Core.Components;
+using Seedwork.Core.Entities;
+using Seedwork.Core.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,6 +128,6 @@ namespace Rogueskiv.Core.Systems
         private static (int x, int y, int size)? ExtendWall((int x, int y, int size) wall) =>
             (wall.x, wall.y, wall.size + 1);
 
-        public override void Update(List<IEntity> entities) { }
+        public override void Update(List<IEntity> entities, IEnumerable<int> controls) { }
     }
 }
