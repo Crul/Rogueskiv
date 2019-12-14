@@ -12,19 +12,40 @@ namespace Rogueskiv.Core.Components.Board
     {
         private const int TILE_SIZE = 30; // TODO proper tile size
 
+        private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
+        {
+            (-1, -1), (0, -1), (1, -1),
+            (-1,  0),          (1,  0),
+            (-1,  1), (0,  1), (1,  1),
+        };
+
         public List<string> Board { get; set; }
 
+        private readonly Dictionary<EntityId, (int x, int y)> CoordsByTileId;
+        private readonly Dictionary<(int x, int y), EntityId> TileIdByCoords;
+        private readonly Dictionary<(int x, int y), List<EntityId>> TilesNeighbours;
         private readonly Dictionary<(int x, int y), List<EntityId>> WallsByTiles;
-        // TODO ??? private readonly Dictionary<(int x, int y), List<EntityId>> TilesNeighbours;
 
         public BoardComp(string boardData)
         {
             Board = boardData.Split(Environment.NewLine).ToList();
+            CoordsByTileId = new Dictionary<EntityId, (int x, int y)>();
+            TileIdByCoords = new Dictionary<(int x, int y), EntityId>();
+            TilesNeighbours = new Dictionary<(int x, int y), List<EntityId>>();
             WallsByTiles = new Dictionary<(int x, int y), List<EntityId>>();
         }
 
-        public void AddTile(int x, int y) =>
-            WallsByTiles[(x, y)] = new List<EntityId>();
+        public void AddTile(int x, int y, EntityId tileId)
+        {
+            var coords = (x, y);
+            CoordsByTileId[tileId] = coords;
+            TileIdByCoords[coords] = tileId;
+            TilesNeighbours[coords] = new List<EntityId>();
+            WallsByTiles[coords] = new List<EntityId>();
+        }
+
+        public void SetTilesNeighbours() =>
+            CoordsByTileId.ToList().ForEach(cbti => SetTileNeighbours(cbti.Value));
 
         public void AddWall(IEntity wall, IWallComp wallComp)
         {
@@ -51,10 +72,39 @@ namespace Rogueskiv.Core.Components.Board
             }
         }
 
-        public List<EntityId> GetWallsIdsNear(PositionComp position) =>
-            WallsByTiles[(
+        public List<EntityId> GetWallsIdsNear(PositionComp position)
+        {
+            var coords = (
                 (int)Math.Floor(position.X / TILE_SIZE),
                 (int)Math.Floor(position.Y / TILE_SIZE)
-            )];
+            );
+
+            if (!WallsByTiles.ContainsKey(coords))
+            {
+                Console.WriteLine( // TODO 
+                    $"WARNING: {position.X / TILE_SIZE}, {position.Y / TILE_SIZE} out of bounds {coords}"
+                );
+                return Enumerable.Empty<EntityId>().ToList();
+            }
+
+            var tilesCoords = TilesNeighbours[coords]
+                .Select(tileId => CoordsByTileId[tileId])
+                .ToList();
+
+            tilesCoords.Add(coords);
+
+            return tilesCoords.SelectMany(x => WallsByTiles[x]).Distinct().ToList();
+        }
+
+        private void SetTileNeighbours((int x, int y) tileCoords) =>
+            NeighbourCoords
+                .Select(nCoord => (
+                    tileCoords.x + nCoord.x,
+                    tileCoords.y + nCoord.y
+                ))
+                .Where(TileIdByCoords.ContainsKey)
+                .Select(nCoord => TileIdByCoords[nCoord])
+                .ToList()
+                .ForEach(TilesNeighbours[tileCoords].Add);
     }
 }

@@ -45,9 +45,11 @@ namespace Rogueskiv.Core.Systems
                 if (!IsTile(board, x, y))
                     return;
 
-                game.AddEntity(new TileComp(x, y));
-                boardComp.AddTile(x, y);
+                var tile = game.AddEntity(new TileComp(x, y));
+                boardComp.AddTile(x, y, tile.Id);
             });
+
+            boardComp.SetTilesNeighbours();
         }
 
         private static bool IsTile(List<string> board, int x, int y) =>
