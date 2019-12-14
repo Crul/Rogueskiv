@@ -30,7 +30,7 @@ namespace Rogueskiv.Ux
             );
 
             WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
-            SDL.SDL_SetRenderDrawColor(WRenderer, 255, 255, 255, 255);
+            SDL.SDL_SetRenderDrawColor(WRenderer, 0, 0, 0, 0);
 
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
