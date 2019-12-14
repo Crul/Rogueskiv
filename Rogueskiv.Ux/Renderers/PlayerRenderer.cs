@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Rogueskiv.Core.Components;
+using System;
 using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PlayerRenderer : PositionRenderer
+    class PlayerRenderer : InterpolatedPositionRenderer<PositionComp>
     {
         public PlayerRenderer(UxContext uxContext)
             : base(

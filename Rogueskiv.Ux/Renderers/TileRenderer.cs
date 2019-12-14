@@ -1,12 +1,11 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Entities;
 using System;
 using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class TileRenderer : ItemRenderer<TileComp>
+    class TileRenderer : PositionRenderer<TileComp>
     {
         public TileRenderer(UxContext uxContext)
             : base(
@@ -16,11 +15,5 @@ namespace Rogueskiv.Ux.Renderers
                   new Tuple<int, int>(30, 30)
             )
         { }
-
-        protected override void Render(IEntity entity, float interpolation)
-        {
-            var tileComp = entity.GetComponent<TileComp>();
-            Render(tileComp.X, tileComp.Y);
-        }
     }
 }

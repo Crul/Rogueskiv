@@ -5,7 +5,8 @@ using System;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PositionRenderer : ItemRenderer<PositionComp>
+    class PositionRenderer<T> : ItemRenderer<T>
+        where T : PositionComp
     {
         public PositionRenderer(
             UxContext uxContext,
@@ -17,30 +18,17 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(IEntity entity, float interpolation)
         {
-            if (!entity.HasComponent<PositionComp>())
+            if (!entity.HasComponent<T>())
                 return;
 
-            var positionComp = entity.GetComponent<PositionComp>();
-            var (x, y) = Interpolate(entity, positionComp, interpolation);
+            var positionComp = entity.GetComponent<T>();
+            var (x, y) = GetXY(entity, positionComp, interpolation);
 
             Render(x, y);
         }
 
-        protected virtual (float, float) Interpolate(
-            IEntity entity,
-            PositionComp positionComp,
-            float interpolation
-        )
-        {
-            // TODO wall bounces ?
-            if (!entity.HasComponent<MovementComp>())
-                return (positionComp.X, positionComp.Y);
-
-            var movementComp = entity.GetComponent<MovementComp>();
-            return (
-                positionComp.X + (movementComp.SpeedX * interpolation),
-                positionComp.Y + (movementComp.SpeedY * interpolation)
-            );
-        }
+        protected virtual (float x, float y) GetXY
+            (IEntity entity, T positionComp, float interpolation) =>
+            (positionComp.X, positionComp.Y);
     }
 }
