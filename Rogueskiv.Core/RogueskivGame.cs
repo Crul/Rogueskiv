@@ -18,7 +18,8 @@ namespace Rogueskiv.Core
                 {
                     new List<IComponent> {
                         new PlayerComp(),
-                        new PositionComp(){ X = 90, Y = 90 },
+                        new CurrentPositionComp(){ X = 90, Y = 90 },
+                        new LastPositionComp(),
                         new MovementComp()
                     },
                     new List<IComponent> { new BoardComp(boardData) },
@@ -26,6 +27,7 @@ namespace Rogueskiv.Core
                 systems: new List<ISystem> {
                     new PlayerSys(gameContext),
                     new MovementSys(),
+                    new WallSys(),
                     new BoardSys(),
                 },
                 quitControl: (int)Core.Controls.QUIT

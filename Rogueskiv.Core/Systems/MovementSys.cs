@@ -9,26 +9,23 @@ namespace Rogueskiv.Core.Systems
 {
     public class MovementSys : BaseSystem
     {
-        private WallSys WallSystem;
-
-        public MovementSys() => WallSystem = new WallSys();
-
         public override void Update(List<IEntity> entities, IEnumerable<int> controls) =>
             entities
                 .Where(e => e.HasComponent<MovementComp>())
                 .ToList()
-                .ForEach(e => Update(entities, e));
+                .ForEach(Update);
 
-        private void Update(List<IEntity> entities, IEntity entity)
+        private void Update(IEntity entity)
         {
+            var lastPosition = entity.GetComponent<LastPositionComp>();
+            var position = entity.GetComponent<CurrentPositionComp>();
             var movement = entity.GetComponent<MovementComp>();
-            var position = entity.GetComponent<PositionComp>();
 
-            var oldPosition = position.Clone();
+            lastPosition.X = position.X;
+            lastPosition.Y = position.Y;
+
             position.X += movement.SpeedX;
             position.Y += movement.SpeedY;
-
-            WallSystem.Update(entities, movement, position, oldPosition);
         }
     }
 }

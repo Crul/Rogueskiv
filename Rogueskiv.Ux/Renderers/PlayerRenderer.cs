@@ -6,7 +6,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PlayerRenderer : InterpolatedPositionRenderer<PositionComp>
+    class PlayerRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
         public PlayerRenderer(UxContext uxContext)
             : base(
