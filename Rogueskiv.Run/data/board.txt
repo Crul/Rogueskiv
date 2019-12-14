@@ -1,0 +1,16 @@
+﻿...................
+...................
+..TTTTTTT..........
+..TTTTTTTTTTTTTTTTT
+..TTTTTTT.........T
+..TTTTTTT.TTTTTTTTT
+..TTTTTTT.TTTTTTTTT
+....TTT...TTTTTTTTT
+....TTT...TTTTTTTTT
+....TTT...TTTTTTTTT
+....TTT...TTTTTTTTT
+....TTT....T....TT.
+..TTTTTTT.TTT..TTTT
+..TTTTTTTTTTTTTTTTT
+..TTTTTTT.TTT..TTTT
+..TTTTTTT..........

@@ -30,6 +30,9 @@ namespace Rogueskiv.Engine
             long nextGameTick = currentTime;
             long nextUxTick = currentTime;
             var stepsWithoutRender = 0;
+
+            Game.Init();
+
             while (true)
             {
                 InputHandler.ProcessEvents();

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Rogueskiv.Core.Systems
 {
-    class WallSys
+    public class WallSys
     {
         public void Update(
             List<IEntity> entities,

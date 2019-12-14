@@ -1,6 +1,8 @@
-﻿namespace Rogueskiv.Core.Entities
+﻿using System;
+
+namespace Rogueskiv.Core.Entities
 {
-    public struct EntityId
+    public struct EntityId : IComparable
     {
         private readonly int _Value;
 
@@ -19,5 +21,19 @@
             !(left == right);
 
         public override string ToString() => _Value.ToString();
+
+        public int CompareTo(object obj) => _Value.CompareTo((EntityId)obj);
+
+        public static bool operator <(EntityId left, EntityId right) =>
+            left.CompareTo(right) < 0;
+
+        public static bool operator <=(EntityId left, EntityId right) =>
+            left.CompareTo(right) <= 0;
+
+        public static bool operator >(EntityId left, EntityId right) =>
+            left.CompareTo(right) > 0;
+
+        public static bool operator >=(EntityId left, EntityId right) =>
+            left.CompareTo(right) >= 0;
     }
 }

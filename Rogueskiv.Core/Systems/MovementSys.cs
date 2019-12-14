@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Rogueskiv.Core.Systems
 {
-    public class MovementSys : ISystem
+    public class MovementSys : BaseSystem
     {
         private WallSys WallSystem;
 
         public MovementSys() => WallSystem = new WallSys();
 
-        public void Update(List<IEntity> entities) =>
+        public override void Update(List<IEntity> entities) =>
             entities
                 .Where(e => e.HasComponent<MovementComp>())
                 .ToList()

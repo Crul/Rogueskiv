@@ -15,4 +15,10 @@
     <ProjectReference Include="..\Rogueskiv.Ux\Rogueskiv.Ux.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="data\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
 </Project>

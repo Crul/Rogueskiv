@@ -13,7 +13,7 @@ namespace Rogueskiv.Core
         public bool Quit { get; private set; }
         public List<IEntity> Entities { get; }
 
-        private readonly List<ISystem> Systems;
+        private List<ISystem> Systems;
         private readonly PlayerSys PlayerSystem;
 
         public Game(
@@ -26,6 +26,9 @@ namespace Rogueskiv.Core
             Systems = systems;
             PlayerSystem = playerSystem;
         }
+
+        public void Init() =>
+            Systems = Systems.Where(sys => sys.Init(Entities)).ToList();
 
         public void Update()
         {

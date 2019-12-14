@@ -11,7 +11,7 @@ namespace Rogueskiv.Core
     {
         private static int EntityIdCounter = 0;
 
-        public RogueskivGame(IGameContext gameContext)
+        public RogueskivGame(IGameContext gameContext, string boardData)
             : base(
                 entities: new List<IEntity>()
                 {
@@ -19,6 +19,9 @@ namespace Rogueskiv.Core
                         .AddComponent(new PlayerComp())
                         .AddComponent(new PositionComp(){ X = 90, Y = 90 })
                         .AddComponent(new MovementComp()),
+
+                    new Entity(new EntityId(EntityIdCounter++))
+                        .AddComponent(new BoardComp(boardData)),
 
                     new Entity(new EntityId(EntityIdCounter++)).AddComponent(new RightWallComp(2, 2, 4)),
 
@@ -62,29 +65,13 @@ namespace Rogueskiv.Core
                     new Entity(new EntityId(EntityIdCounter++)).AddComponent(new DownWallComp(12, 12, 1)),
                     new Entity(new EntityId(EntityIdCounter++)).AddComponent(new UpWallComp(10, 15, 3)),
                 },
-                systems: new List<ISystem>() { new MovementSys() },
+                systems: new List<ISystem>() {
+                    new MovementSys(),
+                    new BoardSys(),
+
+                },
                 playerSystem: new PlayerSys(gameContext)
             )
-        {
-            var rooms = new List<(int x, int y, int width, int height)>()
-            {
-                (2, 2, 7, 5),
-                (4, 7, 3, 5),
-                (2, 12, 7, 4),
-                (10, 12, 3, 3),
-                (9, 13, 1, 1),
-                (11, 11, 1, 1),
-                (10, 5, 9, 6),
-                (9, 3, 10, 1),
-                (18, 4, 1, 1),
-            };
-
-            rooms.ForEach(room =>
-            {
-                for (var x = room.x; x < room.x + room.width; x++)
-                    for (var y = room.y; y < room.y + room.height; y++)
-                        Entities.Add(new Entity(new EntityId(EntityIdCounter++)).AddComponent(new TileComp(x, y)));
-            });
-        }
+        { }
     }
 }
