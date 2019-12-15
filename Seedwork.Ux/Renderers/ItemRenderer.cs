@@ -38,7 +38,7 @@ namespace Seedwork.Ux.Renderers
 
         protected abstract void Render(IEntity entity, float interpolation);
 
-        protected void Render(double posX, double posY)
+        protected virtual void Render(double posX, double posY)
         {
             var x = GetPositionComponent(posX, UxContext.CenterX);
             var y = GetPositionComponent(posY, UxContext.CenterY);

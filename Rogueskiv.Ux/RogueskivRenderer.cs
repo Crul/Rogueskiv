@@ -12,7 +12,8 @@ namespace Rogueskiv.Ux
     {
         private readonly IRenderizable Game;
 
-        public RogueskivRenderer(IRenderizable game) : base("Rogueskiv")
+        public RogueskivRenderer(IRenderizable game)
+            : base(UxContext.SCREEN_WIDTH, UxContext.SCREEN_HEIGHT, "Rogueskiv")
         {
             Game = game;
             var uxContext = new UxContext(WRenderer);
