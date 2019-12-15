@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components;
+using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
@@ -14,6 +15,7 @@ namespace Rogueskiv.Core.Systems
         private static float MAX_POS_SPEED;
         private static float MAX_NEG_SPEED;
         private static float STOP_ABS_SPEED;
+        private MovementComp PlayerMovementComp;
 
         public PlayerSys(IGameContext gameContext)
         {
@@ -32,6 +34,13 @@ namespace Rogueskiv.Core.Systems
             STOP_ABS_SPEED = 1f / fps;
         }
 
+        public override void Init(Game game) =>
+            PlayerMovementComp = game
+                .Entities
+                .GetWithComponent<PlayerComp>()
+                .Single()
+                .GetComponent<MovementComp>();
+
         public override void Update(EntityList entities, IEnumerable<int> controls)
         {
             // TODO proper inertia (using angle)
@@ -42,16 +51,14 @@ namespace Rogueskiv.Core.Systems
             if (controls.Any(c => c == (int)Controls.LEFT)) speedX = -ACCELERATION;
             if (controls.Any(c => c == (int)Controls.RIGHT)) speedX = ACCELERATION;
 
-            var player = entities.Single(e => e.Value.HasComponent<PlayerComp>()).Value;
-            var movementComp = player.GetComponent<MovementComp>();
             if (speedX == 0)
-                speedX = -movementComp.FrictionFactor * movementComp.SpeedX;
+                speedX = -PlayerMovementComp.FrictionFactor * PlayerMovementComp.SpeedX;
 
             if (speedY == 0)
-                speedY = -movementComp.FrictionFactor * movementComp.SpeedY;
+                speedY = -PlayerMovementComp.FrictionFactor * PlayerMovementComp.SpeedY;
 
-            movementComp.SpeedX = BoundSpeed(movementComp.SpeedX + speedX);
-            movementComp.SpeedY = BoundSpeed(movementComp.SpeedY + speedY);
+            PlayerMovementComp.SpeedX = BoundSpeed(PlayerMovementComp.SpeedX + speedX);
+            PlayerMovementComp.SpeedY = BoundSpeed(PlayerMovementComp.SpeedY + speedY);
         }
 
         private static float BoundSpeed(float speed)

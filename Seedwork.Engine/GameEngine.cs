@@ -54,9 +54,11 @@ namespace Seedwork.Engine
                 currentTime = CurrentTime();
                 if (currentTime > nextUxTick)
                 {
-                    // TODO interpolate animations
-                    var interpolation = 1f - (((float)(nextGameTick - currentTime)) / GameContext.GameTicks);
-                    Renderer.Render(interpolation);
+                    if (!Game.Pause)
+                    {
+                        var interpolation = 1f - (((float)(nextGameTick - currentTime)) / GameContext.GameTicks);
+                        Renderer.Render(interpolation);
+                    }
                     nextUxTick += GameContext.UxTicks;
                     stepsWithoutRender = 0;
                 }

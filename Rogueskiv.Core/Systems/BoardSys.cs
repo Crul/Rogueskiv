@@ -1,4 +1,6 @@
-﻿using Rogueskiv.Core.Components.Board;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
@@ -13,32 +15,40 @@ namespace Rogueskiv.Core.Systems
     {
         private const string TILE_CHAR = "T";
 
-        public override bool Init(Game game)
+        private BoardComp BoardComp;
+
+        public override void Init(Game game)
         {
-            var boardComp = game
+            BoardComp = game
                 .Entities
                 .GetWithComponent<BoardComp>()
                 .Single()
                 .GetComponent<BoardComp>();
 
-            var board = boardComp.Board;
+            var board = BoardComp.Board;
             var width = board[0].Length;
             var height = board.Count;
 
-            AddTiles(game, boardComp, board, width, height);
+            AddTiles(game, board, width, height);
             // TODO fix empty cell needed around the board to make all walls
-            AddUpWalls(game, boardComp, board, width, height);
-            AddDownWalls(game, boardComp, board, width, height);
-            AddLeftWalls(game, boardComp, board, width, height);
-            AddRightWalls(game, boardComp, board, width, height);
-
-            return false;
+            AddUpWalls(game, board, width, height);
+            AddDownWalls(game, board, width, height);
+            AddLeftWalls(game, board, width, height);
+            AddRightWalls(game, board, width, height);
         }
 
+        public override void Update(EntityList entities, IEnumerable<int> controls) =>
+            entities
+                .GetWithComponent<MovementComp>()
+                .ForEach(entity => BoardComp.UpdateEntity(
+                    entity.Id,
+                    entity.GetComponent<CurrentPositionComp>(),
+                    entity.GetComponent<LastPositionComp>()
+                )
+            );
+
         #region Tiles
-        private static void AddTiles(
-            Game game, BoardComp boardComp, List<string> board, int width, int height
-        )
+        private void AddTiles(Game game, List<string> board, int width, int height)
         {
             ForAllCells(width, height, (x, y) =>
             {
@@ -46,10 +56,10 @@ namespace Rogueskiv.Core.Systems
                     return;
 
                 var tile = game.AddEntity(new TileComp(x, y));
-                boardComp.AddTile(x, y, tile.Id);
+                BoardComp.AddTile(x, y, tile.Id);
             });
 
-            boardComp.SetTilesNeighbours();
+            BoardComp.SetTilesNeighbours();
         }
 
         private static bool IsTile(List<string> board, int x, int y) =>
@@ -58,11 +68,9 @@ namespace Rogueskiv.Core.Systems
         #endregion
 
         #region Walls
-        private static void AddUpWalls(
-            Game game, BoardComp boardComp, List<string> board, int width, int height
-        ) =>
+        private void AddUpWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
-                game, boardComp,
+                game,
                 height, width,
                 isWall: (y, x) => IsTile(board, x, y - 1) && !IsTile(board, x, y),
                 initWall: (y, x) => (x, y, 1),
@@ -70,45 +78,35 @@ namespace Rogueskiv.Core.Systems
                 initIndex1: 1
             );
 
-        private static void AddDownWalls(
-            Game game, BoardComp boardComp, List<string> board, int width, int height
-        ) =>
+        private void AddDownWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
-                game, boardComp,
-                height, width,
+                game, height, width,
                 isWall: (y, x) => !IsTile(board, x, y - 1) && IsTile(board, x, y),
                 initWall: (y, x) => (x, y, 1),
                 createComponent: wall => new DownWallComp(wall.x, wall.y, wall.size),
                 initIndex1: 1
             );
 
-        private static void AddLeftWalls(
-            Game game, BoardComp boardComp, List<string> board, int width, int height
-        ) =>
+        private void AddLeftWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
-                game, boardComp,
-                width, height,
+                game, width, height,
                 isWall: (x, y) => !IsTile(board, x, y) && IsTile(board, x - 1, y),
                 initWall: (x, y) => (x, y, 1),
                 createComponent: wall => new LeftWallComp(wall.x, wall.y, wall.size),
                 initIndex1: 1
             );
 
-        private static void AddRightWalls(
-            Game game, BoardComp boardComp, List<string> board, int width, int height
-        ) =>
+        private void AddRightWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
-                game, boardComp,
-                width, height,
+                game, width, height,
                 isWall: (x, y) => !IsTile(board, x - 1, y) && IsTile(board, x, y),
                 initWall: (x, y) => (x, y, 1),
                 createComponent: wall => new RightWallComp(wall.x, wall.y, wall.size),
                 initIndex1: 1
             );
 
-        private static void AddWalls(
+        private void AddWalls(
             Game game,
-            BoardComp boardComp,
             int lengthIndex1,
             int lengthIndex2,
             Func<int, int, bool> isWall,
@@ -133,20 +131,20 @@ namespace Rogueskiv.Core.Systems
                     }
                     else if (tmpWall.HasValue)
                     {
-                        AddWall(game, boardComp, createComponent(tmpWall.Value));
+                        AddWall(game, createComponent(tmpWall.Value));
                         tmpWall = null;
                     }
                 }
 
                 if (tmpWall.HasValue)
-                    AddWall(game, boardComp, createComponent(tmpWall.Value));
+                    AddWall(game, createComponent(tmpWall.Value));
             }
         }
 
-        private static void AddWall(Game game, BoardComp boardComp, IWallComp wallComp)
+        private void AddWall(Game game, IWallComp wallComp)
         {
             var wall = game.AddEntity(wallComp);
-            boardComp.AddWall(wall, wallComp);
+            BoardComp.AddWall(wall, wallComp);
         }
 
         private static (int x, int y, int size)? ExtendWall((int x, int y, int size) wall) =>
@@ -160,7 +158,5 @@ namespace Rogueskiv.Core.Systems
                 for (var x = 0; x < width; x++)
                     action(x, y);
         }
-
-        public override void Update(EntityList entities, IEnumerable<int> controls) { }
     }
 }
