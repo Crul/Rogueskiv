@@ -25,9 +25,8 @@ namespace Rogueskiv.Core.Systems
                 .Single()
                 .GetComponent<BoardComp>();
 
+            (var width, var height) = GetSize(BoardComp);
             var board = BoardComp.Board;
-            var width = board[0].Length;
-            var height = board.Count;
 
             AddTiles(game, board, width, height);
             // TODO fix empty cell needed around the board to make all walls
@@ -47,6 +46,9 @@ namespace Rogueskiv.Core.Systems
                 )
             );
 
+        public static (int width, int height) GetSize(BoardComp boardComp) =>
+            (boardComp.Board[0].Length, boardComp.Board.Count);
+
         #region Tiles
         private void AddTiles(Game game, List<string> board, int width, int height)
         {
@@ -62,7 +64,7 @@ namespace Rogueskiv.Core.Systems
             BoardComp.SetTilesNeighbours();
         }
 
-        private static bool IsTile(List<string> board, int x, int y) =>
+        public static bool IsTile(List<string> board, int x, int y) =>
             board[y].Substring(x, 1) == TILE_CHAR;
 
         #endregion
@@ -152,7 +154,7 @@ namespace Rogueskiv.Core.Systems
 
         #endregion
 
-        private static void ForAllCells(int width, int height, Action<int, int> action)
+        public static void ForAllCells(int width, int height, Action<int, int> action)
         {
             for (var y = 0; y < height; y++)
                 for (var x = 0; x < width; x++)

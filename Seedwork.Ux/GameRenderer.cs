@@ -31,6 +31,7 @@ namespace Seedwork.Ux
 
             WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
             SDL.SDL_SetRenderDrawColor(WRenderer, 0, 0, 0, 0);
+            SDL.SDL_SetRenderDrawBlendMode(WRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
             Renderers = new Dictionary<Type, IItemRenderer>();
         }

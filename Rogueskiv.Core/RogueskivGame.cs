@@ -39,6 +39,7 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new BoardSys(),
                     new CollisionSys(),
+                    new FOVSys(),
                     new DeathSys()
                 },
                 quitControl: (int)Core.Controls.QUIT

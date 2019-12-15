@@ -54,7 +54,7 @@ namespace Seedwork.Ux.Renderers
             SDL.SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref tRect);
         }
 
-        private static int GetPositionComponent(double positionComponent, int windowCenter) =>
+        protected static int GetPositionComponent(double positionComponent, int windowCenter) =>
             (int)(positionComponent * UxContext.Zoom) + windowCenter;
 
         public void Dispose()
