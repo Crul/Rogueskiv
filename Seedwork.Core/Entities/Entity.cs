@@ -26,7 +26,7 @@ namespace Seedwork.Core.Entities
             Components.Any(c => c is T);
 
         public bool HasComponent(Type t) =>
-            Components.Any(c => c.GetType().IsAssignableFrom(t));
+            Components.Any(c => t.IsAssignableFrom(c.GetType()));
 
         public T GetComponent<T>() where T : IComponent =>
             (T)Components.Single(c => c is T);
