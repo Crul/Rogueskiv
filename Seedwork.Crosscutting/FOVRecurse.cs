@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-
+using System.Linq;
 
 namespace Seedwork.Crosscutting
 {
@@ -126,6 +126,8 @@ namespace Seedwork.Crosscutting
             VisiblePoints = new List<Point> { new Point(player.X, player.Y) };
             foreach (int o in VisibleOctants)
                 ScanOctant(1, o, 1.0, 0.0);
+
+            VisiblePoints = VisiblePoints.Distinct().ToList();
 
         }
 
