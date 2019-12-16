@@ -10,7 +10,7 @@ namespace Rogueskiv.Core.Components.Board
 {
     public class BoardComp : IComponent
     {
-        private const int TILE_SIZE = 30; // TODO proper tile size
+        public const int TILE_SIZE = 30; // TODO proper tile size
 
         private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
         {
@@ -84,8 +84,6 @@ namespace Rogueskiv.Core.Components.Board
             {
                 var init = (int)(wallComp.Position.X / TILE_SIZE);
                 var y = (int)(wallComp.Position.Y / TILE_SIZE);
-                if (wallComp is UpWallComp)
-                    y -= 1;
 
                 for (var x = init; x < init + size; x++)
                     WallsByTiles[(x, y)].Add(wall.Id);
@@ -94,8 +92,6 @@ namespace Rogueskiv.Core.Components.Board
             {
                 var init = (int)(wallComp.Position.Y / TILE_SIZE);
                 var x = (int)(wallComp.Position.X / TILE_SIZE);
-                if (wallComp is LeftWallComp)
-                    x -= 1;
 
                 for (var y = init; y < init + size; y++)
                     WallsByTiles[(x, y)].Add(wall.Id);

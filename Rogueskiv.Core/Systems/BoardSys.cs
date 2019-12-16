@@ -74,10 +74,10 @@ namespace Rogueskiv.Core.Systems
             AddWalls(
                 game,
                 height, width,
-                isWall: (y, x) => IsTile(board, x, y - 1) && !IsTile(board, x, y),
+                isWall: (y, x) => IsTile(board, x, y) && !IsTile(board, x, y + 1),
                 initWall: (y, x) => (x, y, 1),
                 createComponent: wall => new UpWallComp(wall.x, wall.y, wall.size),
-                initIndex1: 1
+                maringIndex1: 1
             );
 
         private void AddDownWalls(Game game, List<string> board, int width, int height) =>
@@ -92,10 +92,10 @@ namespace Rogueskiv.Core.Systems
         private void AddLeftWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
                 game, width, height,
-                isWall: (x, y) => !IsTile(board, x, y) && IsTile(board, x - 1, y),
+                isWall: (x, y) => !IsTile(board, x + 1, y) && IsTile(board, x, y),
                 initWall: (x, y) => (x, y, 1),
                 createComponent: wall => new LeftWallComp(wall.x, wall.y, wall.size),
-                initIndex1: 1
+                maringIndex1: 1
             );
 
         private void AddRightWalls(Game game, List<string> board, int width, int height) =>
@@ -115,15 +115,15 @@ namespace Rogueskiv.Core.Systems
             Func<int, int, (int x, int y, int size)> initWall,
             Func<(int x, int y, int size), IWallComp> createComponent,
             int initIndex1 = 0,
-            int initIndex2 = 0
+            int maringIndex1 = 0
         )
         {
             (int x, int y, int size)? tmpWall;
 
-            for (var i1 = initIndex1; i1 < lengthIndex1; i1++)
+            for (var i1 = initIndex1; i1 < lengthIndex1 - maringIndex1; i1++)
             {
                 tmpWall = null;
-                for (var i2 = initIndex2; i2 < lengthIndex2; i2++)
+                for (var i2 = 0; i2 < lengthIndex2; i2++)
                 {
                     if (isWall(i1, i2))
                     {
