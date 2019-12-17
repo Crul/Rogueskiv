@@ -24,6 +24,9 @@ namespace Rogueskiv.Ux.Renderers
                 return;
 
             var positionComp = entity.GetComponent<T>();
+            if (!positionComp.Visible)
+                return;
+
             var (x, y) = GetXY(entity, positionComp, interpolation);
 
             Render(x, y);

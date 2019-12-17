@@ -19,6 +19,7 @@ Rogueskiv makes use of the following projects:
 
 - [SDL 2.0](https://www.libsdl.org/index.php), see [credits](https://www.libsdl.org/credits.php) ([zlib license](https://www.libsdl.org/license.php))
 - [SDL2-CS](https://github.com/flibitijibibo/SDL2-CS) by [Ethan Lee](http://www.flibitijibibo.com/) ([zlib license](https://github.com/flibitijibibo/SDL2-CS/blob/master/LICENSE))
+- [FOVRecurse](https://github.com/AndyStobirski/RogueLike) by [Andy Stobirski](http://www.evilscience.co.uk/) (no license)
 
 ## License (AGPL-3.0)
 

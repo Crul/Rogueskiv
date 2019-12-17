@@ -6,5 +6,6 @@ namespace Rogueskiv.Core.Components.Position
     {
         public float X { get; set; }
         public float Y { get; set; }
+        public virtual bool Visible { get; set; } = true;
     }
 }
