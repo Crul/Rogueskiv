@@ -19,6 +19,7 @@ namespace Seedwork.Ux
             ScreenHeight = screenHeight;
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
+            SDL_ttf.TTF_Init();
 
             Window = SDL.SDL_CreateWindow(
                 windowTitle,

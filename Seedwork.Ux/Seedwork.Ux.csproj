@@ -19,6 +19,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SDL2_image.dll</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2_ttf.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2_ttf.dll</TargetPath>
+    </ContentWithTargetPath>
     <ContentWithTargetPath Include="dlls\libjpeg-9.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libjpeg-9.dll</TargetPath>
@@ -34,6 +38,10 @@
     <ContentWithTargetPath Include="dlls\libwebp-7.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwebp-7.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libfreetype-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libfreetype-6.dll</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="dlls\zlib1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
