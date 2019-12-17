@@ -19,6 +19,7 @@ namespace Rogueskiv.Ux
             // TODO cache rendered background
             Renderers[typeof(TileComp)] = new TileRenderer(uxContext);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
+            Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
         }
 
         protected override void RenderGame(float interpolation) =>

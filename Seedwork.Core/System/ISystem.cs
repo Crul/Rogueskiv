@@ -5,7 +5,7 @@ namespace Seedwork.Core.Systems
 {
     public interface ISystem
     {
-        bool Init(Game game);
+        void Init(Game game);
         void Update(EntityList entities, IEnumerable<int> controls);
     }
 }

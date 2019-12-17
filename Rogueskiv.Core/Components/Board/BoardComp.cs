@@ -25,6 +25,7 @@ namespace Rogueskiv.Core.Components.Board
         private readonly Dictionary<(int x, int y), EntityId> TileIdByCoords;
         private readonly Dictionary<(int x, int y), List<EntityId>> TilesNeighbours;
         private readonly Dictionary<(int x, int y), List<EntityId>> WallsByTiles;
+        private readonly Dictionary<(int x, int y), List<EntityId>> EntitiesByTiles;
 
         public BoardComp(string boardData)
         {
@@ -33,7 +34,35 @@ namespace Rogueskiv.Core.Components.Board
             TileIdByCoords = new Dictionary<(int x, int y), EntityId>();
             TilesNeighbours = new Dictionary<(int x, int y), List<EntityId>>();
             WallsByTiles = new Dictionary<(int x, int y), List<EntityId>>();
+            EntitiesByTiles = new Dictionary<(int x, int y), List<EntityId>>();
         }
+
+        public void UpdateEntity(
+            EntityId entityId, CurrentPositionComp currentPos, LastPositionComp lastPos)
+        {
+            var lastX = (int)Math.Floor(lastPos.X / TILE_SIZE);
+            var lastY = (int)Math.Floor(lastPos.Y / TILE_SIZE);
+            var currX = (int)Math.Floor(currentPos.X / TILE_SIZE);
+            var currY = (int)Math.Floor(currentPos.Y / TILE_SIZE);
+            if (currX == lastX && currY == lastY)
+                return;
+
+            var lastTileEntityList = EntitiesByTiles[(lastX, lastY)];
+            if (lastTileEntityList.Contains(entityId))
+                lastTileEntityList.Remove(entityId);
+
+            EntitiesByTiles[(currX, currY)].Add(entityId);
+        }
+
+        public void RemoveEntity(EntityId entityId, PositionComp position)
+        {
+            var x = (int)Math.Floor(position.X / TILE_SIZE);
+            var y = (int)Math.Floor(position.Y / TILE_SIZE);
+            EntitiesByTiles[(x, y)].Remove(entityId);
+        }
+
+        public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp position) =>
+            GetIdsNear(EntitiesByTiles, entityId, position);
 
         public void AddTile(int x, int y, EntityId tileId)
         {
@@ -42,6 +71,7 @@ namespace Rogueskiv.Core.Components.Board
             TileIdByCoords[coords] = tileId;
             TilesNeighbours[coords] = new List<EntityId>();
             WallsByTiles[coords] = new List<EntityId>();
+            EntitiesByTiles[coords] = new List<EntityId>();
         }
 
         public void SetTilesNeighbours() =>
@@ -72,14 +102,21 @@ namespace Rogueskiv.Core.Components.Board
             }
         }
 
-        public List<EntityId> GetWallsIdsNear(PositionComp position)
+        public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp position) =>
+            GetIdsNear(WallsByTiles, entityId, position);
+
+        public List<EntityId> GetIdsNear(
+            Dictionary<(int x, int y), List<EntityId>> EntityIdsDict,
+            EntityId entityId,
+            PositionComp position
+        )
         {
             var coords = (
                 (int)Math.Floor(position.X / TILE_SIZE),
                 (int)Math.Floor(position.Y / TILE_SIZE)
             );
 
-            if (!WallsByTiles.ContainsKey(coords))
+            if (!EntityIdsDict.ContainsKey(coords))
             {
                 Console.WriteLine( // TODO 
                     $"WARNING: {position.X / TILE_SIZE}, {position.Y / TILE_SIZE} out of bounds {coords}"
@@ -93,7 +130,11 @@ namespace Rogueskiv.Core.Components.Board
 
             tilesCoords.Add(coords);
 
-            return tilesCoords.SelectMany(x => WallsByTiles[x]).Distinct().ToList();
+            return tilesCoords
+                .SelectMany(x => EntityIdsDict[x])
+                .Distinct()
+                .Where(id => id != entityId)
+                .ToList();
         }
 
         private void SetTileNeighbours((int x, int y) tileCoords) =>

@@ -14,6 +14,7 @@ namespace Seedwork.Core
 
         private List<ISystem> Systems;
         public IEnumerable<int> Controls { get; set; }
+        public bool Pause { get; set; }
         public bool Quit { get; private set; }
 
         private readonly int QuitControl;
@@ -32,17 +33,19 @@ namespace Seedwork.Core
             QuitControl = quitControl;
         }
 
-        public void Init() =>
-            Systems = Systems.Where(sys => sys.Init(this)).ToList();
+        public void Init() => Systems.ForEach(sys => sys.Init(this));
 
         public void Update()
         {
             Quit = Controls.Any(c => c == QuitControl);
-            Systems.ForEach(s => s.Update(Entities, Controls));
+            if (!Pause)
+                Systems.ForEach(s => s.Update(Entities, Controls));
         }
 
         public IEntity AddEntity(IComponent entityComponent) =>
             AddEntity(new List<IComponent> { entityComponent });
+
+        public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
 
         public IEntity AddEntity(List<IComponent> entityComponents)
         {
