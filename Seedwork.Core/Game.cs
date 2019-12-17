@@ -14,6 +14,8 @@ namespace Seedwork.Core
 
         private List<ISystem> Systems;
         public IEnumerable<int> Controls { get; set; }
+        public GameStageCode StageCode { get; protected set; } = default;
+        public IGameResult Result { get; set; }
         public bool Pause { get; set; }
         public bool Quit { get; private set; }
 
@@ -23,10 +25,12 @@ namespace Seedwork.Core
 
         public Game(
             int quitControl,
+            GameStageCode stageCode = default,
             List<List<IComponent>> entitiesComponents = null,
             List<ISystem> systems = null
         )
         {
+            StageCode = stageCode;
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
             Systems = systems ?? new List<ISystem>();
