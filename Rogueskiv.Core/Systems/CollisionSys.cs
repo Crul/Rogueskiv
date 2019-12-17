@@ -13,8 +13,9 @@ namespace Rogueskiv.Core.Systems
     class CollisionSys : BaseSystem
     {
         private const int COLLISION_DISTANCE = 14; // calc from entity sizes
-        private const int COLLISION_DAMAGE = 5;
+        private const int COLLISION_DAMAGE = 20;
 
+        private Game Game;
         private BoardComp BoardComp;
         private EntityId PlayerId;
         private CurrentPositionComp PlayerPos;
@@ -22,14 +23,16 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            BoardComp = game
+            Game = game;
+
+            BoardComp = Game
                 .Entities
                 .GetWithComponent<BoardComp>()
                 .Single()
                 .GetComponent<BoardComp>();
 
 
-            var player = game
+            var player = Game
                 .Entities
                 .GetWithComponent<PlayerComp>()
                 .Single();
@@ -40,19 +43,23 @@ namespace Rogueskiv.Core.Systems
             PlayerHealth = player.GetComponent<HealthComp>();
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls) =>
-            PlayerHealth.Health -= GetDamage(entities);
+        public override void Update(EntityList entities, IEnumerable<int> controls)
+        {
+            var collidedEntityIds = GetCollidedEntityIds(entities);
+            collidedEntityIds.ForEach(Game.RemoveEntity);
 
-        private int GetDamage(EntityList entities) =>
-            COLLISION_DAMAGE * BoardComp
+            PlayerHealth.Health -= COLLISION_DAMAGE * collidedEntityIds.Count;
+        }
+
+        private List<EntityId> GetCollidedEntityIds(EntityList entities) =>
+            BoardComp
                 .GetEntityIdsNear(PlayerId, PlayerPos)
-                .Select(id => entities[id])
-                .Where(enemy =>
+                .Where(id =>
                 {
-                    var enemyPos = enemy.GetComponent<CurrentPositionComp>();
-                    var distance = Distance.Get(enemyPos.X - PlayerPos.X, enemyPos.Y - PlayerPos.Y);
+                    var position = entities[id].GetComponent<CurrentPositionComp>();
+                    var distance = Distance.Get(position.X - PlayerPos.X, position.Y - PlayerPos.Y);
                     return (distance < COLLISION_DISTANCE);
                 })
-                .Count();
+                .ToList();
     }
 }

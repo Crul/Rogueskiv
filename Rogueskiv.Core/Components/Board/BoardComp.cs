@@ -54,6 +54,13 @@ namespace Rogueskiv.Core.Components.Board
             EntitiesByTiles[(currX, currY)].Add(entityId);
         }
 
+        public void RemoveEntity(EntityId entityId, PositionComp position)
+        {
+            var x = (int)Math.Floor(position.X / TILE_SIZE);
+            var y = (int)Math.Floor(position.Y / TILE_SIZE);
+            EntitiesByTiles[(x, y)].Remove(entityId);
+        }
+
         public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp position) =>
             GetIdsNear(EntitiesByTiles, entityId, position);
 

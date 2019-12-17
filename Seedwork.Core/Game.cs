@@ -45,6 +45,8 @@ namespace Seedwork.Core
         public IEntity AddEntity(IComponent entityComponent) =>
             AddEntity(new List<IComponent> { entityComponent });
 
+        public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
+
         public IEntity AddEntity(List<IComponent> entityComponents)
         {
             var entity = new Entity(new EntityId(EntityIdCounter++));

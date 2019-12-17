@@ -4,15 +4,19 @@ using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Systems;
 using Seedwork.Core;
 using Seedwork.Core.Components;
+using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        private BoardComp BoardComp;
+
         public RogueskivGame(IGameContext gameContext, string boardData)
             : base(
                 entitiesComponents: new List<List<IComponent>>()
@@ -40,6 +44,11 @@ namespace Rogueskiv.Core
                 quitControl: (int)Core.Controls.QUIT
             )
         {
+            BoardComp = Entities
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
+
             var rnd = new Random();
             for (var i = 0; i < 3; i++)
                 for (var j = 0; j < 4; j++)
@@ -56,6 +65,13 @@ namespace Rogueskiv.Core
                         }
                     }
                 );
+        }
+
+        public override void RemoveEntity(EntityId id)
+        {
+            var position = Entities[id].GetComponent<CurrentPositionComp>();
+            BoardComp.RemoveEntity(id, position);
+            base.RemoveEntity(id);
         }
     }
 }
