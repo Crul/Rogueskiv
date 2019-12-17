@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedwork.Ux", "Seedwork.Ux\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedwork.Core", "Seedwork.Core\Seedwork.Core.csproj", "{654AE2C4-A5D9-4CF7-8DFD-E6AEDE57D757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedwork.Crosscutting", "Seedwork.Crosscutting\Seedwork.Crosscutting.csproj", "{095199E0-733F-4946-B8B7-A84D078BCE0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedwork.Crosscutting", "Seedwork.Crosscutting\Seedwork.Crosscutting.csproj", "{095199E0-733F-4946-B8B7-A84D078BCE0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.MapGeneration", "Rogueskiv.MapGeneration\Rogueskiv.MapGeneration.csproj", "{D10056DB-1878-46B3-B326-B00D7C93BAE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{095199E0-733F-4946-B8B7-A84D078BCE0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{095199E0-733F-4946-B8B7-A84D078BCE0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{095199E0-733F-4946-B8B7-A84D078BCE0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

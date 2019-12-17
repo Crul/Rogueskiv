@@ -29,7 +29,11 @@ namespace Rogueskiv.Core.Components.Board
 
         public BoardComp(string boardData)
         {
-            Board = boardData.Split(Environment.NewLine).ToList();
+            Board = boardData
+                .Split(Environment.NewLine)
+                .Where(line => !string.IsNullOrEmpty(line))
+                .ToList();
+
             CoordsByTileId = new Dictionary<EntityId, (int x, int y)>();
             TileIdByCoords = new Dictionary<(int x, int y), EntityId>();
             TilesNeighbours = new Dictionary<(int x, int y), List<EntityId>>();
