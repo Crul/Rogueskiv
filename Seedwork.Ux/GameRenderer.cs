@@ -9,31 +9,15 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        protected readonly IntPtr Window;
-        protected readonly IntPtr WRenderer;
+        private readonly IntPtr Window;
+        private readonly IntPtr WRenderer;
 
-        protected readonly IDictionary<Type, IItemRenderer> Renderers;
+        protected IDictionary<Type, IItemRenderer> Renderers { get; }
 
-        public GameRenderer(
-            int screenWidth,
-            int screenHeight,
-            string windowTitle = "MyGame"
-        )
+        public GameRenderer(UxContext uxContext)
         {
-            SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
-
-            Window = SDL.SDL_CreateWindow(
-                windowTitle,
-                SDL.SDL_WINDOWPOS_CENTERED,
-                SDL.SDL_WINDOWPOS_CENTERED,
-                screenWidth, screenHeight,
-                0
-            );
-
-            WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
-            SDL.SDL_SetRenderDrawColor(WRenderer, 0, 0, 0, 0);
-            SDL.SDL_SetRenderDrawBlendMode(WRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
-
+            Window = uxContext.Window;
+            WRenderer = uxContext.WRenderer;
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
 
@@ -56,10 +40,6 @@ namespace Seedwork.Ux
         {
             if (cleanManagedResources)
                 Renderers.ToList().ForEach(renderer => renderer.Value.Dispose());
-
-            SDL.SDL_DestroyRenderer(WRenderer);
-            SDL.SDL_DestroyWindow(Window);
-            SDL.SDL_Quit();
         }
     }
 }

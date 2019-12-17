@@ -26,13 +26,17 @@ namespace Seedwork.Engine
 
         public void RunLoop()
         {
+            Game.Init();
+            RunGameLoop();
+            Renderer.Dispose();
+        }
+
+        private void RunGameLoop()
+        {
             var currentTime = CurrentTime();
             long nextGameTick = currentTime;
             long nextUxTick = currentTime;
             var stepsWithoutRender = 0;
-
-            Game.Init();
-
             while (true)
             {
                 InputHandler.ProcessEvents();

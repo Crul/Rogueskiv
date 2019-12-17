@@ -12,11 +12,10 @@ namespace Rogueskiv.Ux
     {
         private readonly IRenderizable Game;
 
-        public RogueskivRenderer(IRenderizable game)
-            : base(UxContext.SCREEN_WIDTH, UxContext.SCREEN_HEIGHT, "Rogueskiv")
+        public RogueskivRenderer(UxContext uxContext, IRenderizable game)
+            : base(uxContext)
         {
             Game = game;
-            var uxContext = new UxContext(WRenderer);
             // TODO cache rendered background
             Renderers[typeof(TileComp)] = new TileRenderer(uxContext);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
