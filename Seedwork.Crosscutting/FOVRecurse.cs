@@ -287,12 +287,12 @@ namespace Seedwork.Crosscutting
 
                             if (Map[x, y] == 1)
                             {
-                                if (x + 1 < Map.GetLength(1) && Map[x + 1, y] == 0)
+                                if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, player.X, player.Y, false));
                             }
                             else
                             {
-                                if (x + 1 < Map.GetLength(1)
+                                if (x + 1 < Map.GetLength(0)
                                         && Map[x + 1, y] == 1)
                                     pStartSlope = GetSlope(x + 0.5, y + 0.5, player.X, player.Y, false);
 
