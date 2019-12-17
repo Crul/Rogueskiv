@@ -13,7 +13,7 @@ namespace Rogueskiv.Core.Systems
     class CollisionSys : BaseSystem
     {
         private const int COLLISION_DISTANCE = 14; // calc from entity sizes
-        private const int COLLISION_DAMAGE = 20;
+        private const int COLLISION_DAMAGE = 10;
 
         private Game Game;
         private BoardComp BoardComp;
@@ -21,7 +21,7 @@ namespace Rogueskiv.Core.Systems
         private CurrentPositionComp PlayerPos;
         private HealthComp PlayerHealth;
 
-        public override void Init(Game game)
+        public override bool Init(Game game)
         {
             Game = game;
 
@@ -41,6 +41,8 @@ namespace Rogueskiv.Core.Systems
 
             PlayerPos = player.GetComponent<CurrentPositionComp>();
             PlayerHealth = player.GetComponent<HealthComp>();
+
+            return base.Init(game);
         }
 
         public override void Update(EntityList entities, IEnumerable<int> controls)
@@ -56,6 +58,9 @@ namespace Rogueskiv.Core.Systems
                 .GetEntityIdsNear(PlayerId, PlayerPos)
                 .Where(id =>
                 {
+                    if (!entities.ContainsKey(id)) // TODO debug corner case
+                        return false;
+
                     var position = entities[id].GetComponent<CurrentPositionComp>();
                     var distance = Distance.Get(position.X - PlayerPos.X, position.Y - PlayerPos.Y);
                     return (distance < COLLISION_DISTANCE);

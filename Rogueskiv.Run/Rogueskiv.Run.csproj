@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rogueskiv.Core\Rogueskiv.Core.csproj" />
+    <ProjectReference Include="..\Rogueskiv.MapGeneration\Rogueskiv.MapGeneration.csproj" />
     <ProjectReference Include="..\Rogueskiv.Ux\Rogueskiv.Ux.csproj" />
   </ItemGroup>
 

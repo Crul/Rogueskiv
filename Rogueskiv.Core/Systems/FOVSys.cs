@@ -18,7 +18,7 @@ namespace Rogueskiv.Core.Systems
         private CurrentPositionComp PlayerPosComp;
         private List<TileComp> TileComps;
 
-        public override void Init(Game game)
+        public override bool Init(Game game)
         {
             PlayerPosComp = game
                 .Entities
@@ -33,6 +33,8 @@ namespace Rogueskiv.Core.Systems
                 .ToList();
 
             InitFOV(game);
+
+            return base.Init(game);
         }
 
         public override void Update(EntityList entities, IEnumerable<int> controls)

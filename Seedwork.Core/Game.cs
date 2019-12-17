@@ -22,18 +22,18 @@ namespace Seedwork.Core
         private int EntityIdCounter;
 
         public Game(
-            List<List<IComponent>> entitiesComponents,
-            List<ISystem> systems,
-            int quitControl
+            int quitControl,
+            List<List<IComponent>> entitiesComponents = null,
+            List<ISystem> systems = null
         )
         {
             Entities = new EntityList();
-            entitiesComponents.ForEach(e => AddEntity(e));
-            Systems = systems;
+            entitiesComponents?.ForEach(e => AddEntity(e));
+            Systems = systems ?? new List<ISystem>();
             QuitControl = quitControl;
         }
 
-        public void Init() => Systems.ForEach(sys => sys.Init(this));
+        public void Init() => Systems = Systems.Where(sys => sys.Init(this)).ToList();
 
         public void Update()
         {
