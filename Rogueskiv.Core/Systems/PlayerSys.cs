@@ -34,12 +34,16 @@ namespace Rogueskiv.Core.Systems
             STOP_ABS_SPEED = 1f / fps;
         }
 
-        public override void Init(Game game) =>
+        public override bool Init(Game game)
+        {
             PlayerMovementComp = game
                 .Entities
                 .GetWithComponent<PlayerComp>()
                 .Single()
                 .GetComponent<MovementComp>();
+
+            return base.Init(game);
+        }
 
         public override void Update(EntityList entities, IEnumerable<int> controls)
         {

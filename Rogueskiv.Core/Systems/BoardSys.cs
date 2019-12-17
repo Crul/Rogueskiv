@@ -17,7 +17,7 @@ namespace Rogueskiv.Core.Systems
 
         private BoardComp BoardComp;
 
-        public override void Init(Game game)
+        public override bool Init(Game game)
         {
             BoardComp = game
                 .Entities
@@ -34,6 +34,8 @@ namespace Rogueskiv.Core.Systems
             AddDownWalls(game, board, width, height);
             AddLeftWalls(game, board, width, height);
             AddRightWalls(game, board, width, height);
+
+            return base.Init(game);
         }
 
         public override void Update(EntityList entities, IEnumerable<int> controls) =>

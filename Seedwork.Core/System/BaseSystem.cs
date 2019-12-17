@@ -5,7 +5,7 @@ namespace Seedwork.Core.Systems
 {
     public abstract class BaseSystem : ISystem
     {
-        public virtual void Init(Game game) { }
+        public virtual bool Init(Game game) => true;
 
         public abstract void Update(EntityList entities, IEnumerable<int> controls);
     }
