@@ -58,6 +58,9 @@ namespace Rogueskiv.Core.Systems
                 .GetEntityIdsNear(PlayerId, PlayerPos)
                 .Where(id =>
                 {
+                    if (!entities.ContainsKey(id)) // TODO debug corner case
+                        return false;
+
                     var position = entities[id].GetComponent<CurrentPositionComp>();
                     var distance = Distance.Get(position.X - PlayerPos.X, position.Y - PlayerPos.Y);
                     return (distance < COLLISION_DISTANCE);
