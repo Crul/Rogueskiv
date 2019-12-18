@@ -35,6 +35,14 @@ namespace Rogueskiv.Run
                 result => CreateGameStage(uxContext)
             );
             GameStages.Add(
+                (GameStageCodes.Game, RogueskivGameResults.WinResult.ResultCode),
+                result => CreateMenuStage(uxContext)
+            );
+            GameStages.Add(
+                (GameStageCodes.Game, RogueskivGameResults.DeathResult.ResultCode),
+                result => CreateMenuStage(uxContext)
+            );
+            GameStages.Add(
                 (GameStageCodes.Game, null),
                 result => CreateMenuStage(uxContext)
             );

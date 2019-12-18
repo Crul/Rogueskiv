@@ -11,8 +11,8 @@ namespace Rogueskiv.Ux
         public RogueskivRenderer(UxContext uxContext, IRenderizable game)
             : base(uxContext, game)
         {
-            // TODO cache rendered background
             Renderers[typeof(TileComp)] = new TileRenderer(uxContext);
+            Renderers[typeof(StairsComp)] = new StairsRenderer(uxContext);
             Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
             Renderers[typeof(IFOVComp)] = new FOVRenderer(uxContext);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);

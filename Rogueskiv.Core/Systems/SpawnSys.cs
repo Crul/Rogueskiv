@@ -17,6 +17,7 @@ namespace Rogueskiv.Core.Systems
     {
         private const int ENEMY_NUMBER = 30;
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
+        private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
 
         private readonly IGameContext GameContext;
 
@@ -36,13 +37,15 @@ namespace Rogueskiv.Core.Systems
 
             var playerTile = tileCoords[Luck.Next(tileCoords.Count)];
 
-            game.AddEntity(GetPlayer(playerTile));
+            game.AddEntity(CreatePlayer(playerTile));
 
             Enumerable
                 .Range(0, ENEMY_NUMBER)
-                .Select(i => GetEnemy(game, tileCoords, playerTile))
+                .Select(i => CreateEnemy(game, tileCoords, playerTile))
                 .ToList()
                 .ForEach(enemy => game.AddEntity(enemy));
+
+            game.AddEntity(CreateStairs(tileCoords, playerTile));
 
             return false;
         }
@@ -50,7 +53,7 @@ namespace Rogueskiv.Core.Systems
         public override void Update(EntityList entities, IEnumerable<int> controls) =>
             throw new NotImplementedException();
 
-        private List<IComponent> GetPlayer((int x, int y) playerTile)
+        private List<IComponent> CreatePlayer((int x, int y) playerTile)
         {
             var x = (BoardComp.TILE_SIZE / 2) + (playerTile.x * BoardComp.TILE_SIZE);
             var y = (BoardComp.TILE_SIZE / 2) + (playerTile.y * BoardComp.TILE_SIZE);
@@ -67,21 +70,11 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private List<IComponent> GetEnemy(
+        private List<IComponent> CreateEnemy(
             Game game, List<(int x, int y)> tileCoords, (int x, int y) playerTile
         )
         {
-            (int x, int y) enemyTile;
-            float distance;
-            do
-            {
-                enemyTile = tileCoords[Luck.Next(tileCoords.Count)];
-                distance = Distance.Get(enemyTile.x - playerTile.x, enemyTile.y - playerTile.y);
-
-            } while (distance < MIN_ENEMY_SPAWN_DISTANCE);
-
-            var x = (BoardComp.TILE_SIZE / 2) + (enemyTile.x * BoardComp.TILE_SIZE);
-            var y = (BoardComp.TILE_SIZE / 2) + (enemyTile.y * BoardComp.TILE_SIZE);
+            (int x, int y) = GetRandomPosition(tileCoords, playerTile, MIN_ENEMY_SPAWN_DISTANCE);
 
             return new List<IComponent>
             {
@@ -95,6 +88,38 @@ namespace Rogueskiv.Core.Systems
                     BounceAmortiguationFactor = 1
                 }
             };
+        }
+
+        private IComponent CreateStairs(
+            List<(int x, int y)> tileCoords, (int x, int y) playerTile
+        )
+        {
+            var maxDistance = tileCoords
+                .Max(tile => Distance.Get(tile.x - playerTile.x, tile.y - playerTile.y));
+
+            var minDistance = (int)(STAIRS_MIN_DISTANCE_FACTOR * maxDistance);
+            (int x, int y) = GetRandomPosition(tileCoords, playerTile, minDistance);
+
+            return new StairsComp() { X = x, Y = y };
+        }
+
+        private static (int x, int y) GetRandomPosition(
+            List<(int x, int y)> tileCoords, (int x, int y) playerTile, int minDistance
+        )
+        {
+            (int x, int y) tile;
+            float distance;
+            do
+            {
+                tile = tileCoords[Luck.Next(tileCoords.Count)];
+                distance = Distance.Get(tile.x - playerTile.x, tile.y - playerTile.y);
+
+            } while (distance < minDistance);
+
+            var x = (BoardComp.TILE_SIZE / 2) + (tile.x * BoardComp.TILE_SIZE);
+            var y = (BoardComp.TILE_SIZE / 2) + (tile.y * BoardComp.TILE_SIZE);
+
+            return (x, y);
         }
     }
 }
