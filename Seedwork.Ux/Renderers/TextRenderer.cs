@@ -43,6 +43,8 @@ namespace Seedwork.Ux.Renderers
             };
 
             SDL_RenderCopy(UxContext.WRenderer, texturedText, ref src, ref dest);
+            SDL_DestroyTexture(texturedText);
+            SDL_FreeSurface(renderedText);
         }
 
         protected abstract string GetText(T component);
