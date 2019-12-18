@@ -2,7 +2,7 @@
 
 namespace Rogueskiv.Core.Components.Board
 {
-    public class TileComp : PositionComp
+    public class TileComp : PositionComp, IFOVComp
     {
         private const int TILE_SIZE = 30; // TODO proper tile size
 
