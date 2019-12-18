@@ -20,8 +20,13 @@ namespace Rogueskiv.Core.Systems
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
 
         private readonly IGameContext GameContext;
+        private readonly int Floor;
 
-        public SpawnSys(IGameContext gameContext) => GameContext = gameContext;
+        public SpawnSys(IGameContext gameContext, int floor)
+        {
+            GameContext = gameContext;
+            Floor = floor;
+        }
 
         public override bool Init(Game game)
         {
@@ -45,7 +50,10 @@ namespace Rogueskiv.Core.Systems
                 .ToList()
                 .ForEach(enemy => game.AddEntity(enemy));
 
-            game.AddEntity(CreateStairs(tileCoords, playerTile));
+            game.AddEntity(CreateDownStairs(tileCoords, playerTile));
+
+            if (Floor > 0)
+                game.AddEntity(CreateUpStairs(playerTile));
 
             return false;
         }
@@ -90,7 +98,7 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private IComponent CreateStairs(
+        private IComponent CreateDownStairs(
             List<(int x, int y)> tileCoords, (int x, int y) playerTile
         )
         {
@@ -100,7 +108,15 @@ namespace Rogueskiv.Core.Systems
             var minDistance = (int)(STAIRS_MIN_DISTANCE_FACTOR * maxDistance);
             (int x, int y) = GetRandomPosition(tileCoords, playerTile, minDistance);
 
-            return new StairsComp() { X = x, Y = y };
+            return new DownStairsComp() { X = x, Y = y };
+        }
+
+        private IComponent CreateUpStairs((int x, int y) playerTile)
+        {
+            var x = (BoardComp.TILE_SIZE / 2) + (playerTile.x * BoardComp.TILE_SIZE);
+            var y = (BoardComp.TILE_SIZE / 2) + (playerTile.y * BoardComp.TILE_SIZE);
+
+            return new UpStairsComp() { X = x, Y = y };
         }
 
         private static (int x, int y) GetRandomPosition(

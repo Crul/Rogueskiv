@@ -2,7 +2,7 @@
 
 namespace Rogueskiv.Core.Components
 {
-    public class StairsComp : CurrentPositionComp
+    public abstract class StairsComp : CurrentPositionComp
     {
         // TODO DRY TileComp
         public bool HasBeenSeen { get; private set; }

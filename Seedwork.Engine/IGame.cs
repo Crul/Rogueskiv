@@ -6,7 +6,7 @@
         IGameResult Result { get; }
         bool Pause { get; set; }
         bool Quit { get; }
-        void Init();
         void Update();
+        void Restart();
     }
 }

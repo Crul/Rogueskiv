@@ -1,4 +1,5 @@
-﻿using Rogueskiv.Core.Components.Board;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Systems;
 using Seedwork.Core;
@@ -18,7 +19,8 @@ namespace Rogueskiv.Core
         public RogueskivGame(
             IGameContext gameContext,
             string boardData,
-            GameStageCode stageCode
+            GameStageCode stageCode,
+            int floor
         )
             : base(
                 quitControl: (int)Core.Controls.QUIT,
@@ -29,7 +31,7 @@ namespace Rogueskiv.Core
                 },
                 systems: new List<ISystem> {
                     new BoardSys(),
-                    new SpawnSys(gameContext),
+                    new SpawnSys(gameContext, floor),
                     new PlayerSys(gameContext),
                     new MovementSys(),
                     new WallSys(),
@@ -42,6 +44,19 @@ namespace Rogueskiv.Core
                     .GetWithComponent<BoardComp>()
                     .Single()
                     .GetComponent<BoardComp>();
+
+        public override void Restart()
+        {
+            base.Restart();
+
+            var playerMovementComp = Entities
+                .GetWithComponent<PlayerComp>()
+                .Single()
+                .GetComponent<MovementComp>();
+
+            playerMovementComp.SpeedX = 0;
+            playerMovementComp.SpeedY = 0;
+        }
 
         public override void RemoveEntity(EntityId id)
         {

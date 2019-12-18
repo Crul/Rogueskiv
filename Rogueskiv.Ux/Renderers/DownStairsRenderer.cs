@@ -6,9 +6,9 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class StairsRenderer : PositionRenderer<StairsComp>
+    class DownStairsRenderer : PositionRenderer<StairsComp>
     {
-        public StairsRenderer(UxContext uxContext)
+        public DownStairsRenderer(UxContext uxContext)
             : base(
                   uxContext,
                   Path.Combine("imgs", "stairs-down.png"),

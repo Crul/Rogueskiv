@@ -31,19 +31,30 @@ namespace Seedwork.Core
         )
         {
             StageCode = stageCode;
+            QuitControl = quitControl;
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
             Systems = systems ?? new List<ISystem>();
-            QuitControl = quitControl;
+            Systems = Systems.Where(sys => sys.Init(this)).ToList();
         }
-
-        public void Init() => Systems = Systems.Where(sys => sys.Init(this)).ToList();
 
         public void Update()
         {
             Quit = Controls.Any(c => c == QuitControl);
             if (!Pause)
                 Systems.ForEach(s => s.Update(Entities, Controls));
+        }
+
+        public virtual void Restart()
+        {
+            Quit = false;
+            Result = default;
+        }
+
+        public virtual void EndGame(IGameResult gameResult)
+        {
+            Result = gameResult;
+            Quit = true;
         }
 
         public IEntity AddEntity(IComponent entityComponent) =>
@@ -57,12 +68,6 @@ namespace Seedwork.Core
             entity.Components.AddRange(entityComponents);
             Entities.Add(entity.Id, entity);
             return entity;
-        }
-
-        public virtual void EndGame(IGameResult gameResult)
-        {
-            Result = gameResult;
-            Quit = true;
         }
     }
 }

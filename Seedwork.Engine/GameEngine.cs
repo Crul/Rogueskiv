@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Seedwork.Engine
 {
-    public class GameEngine
+    public class GameEngine : IDisposable
     {
         public IGame Game { get; }
         private readonly IGameContext GameContext;
@@ -26,9 +26,9 @@ namespace Seedwork.Engine
 
         public IGameResult RunLoop()
         {
-            Game.Init();
+            InputHandler.Reset();
+            Game.Restart();
             RunGameLoop();
-            Renderer.Dispose();
 
             return Game.Result;
         }
@@ -75,5 +75,17 @@ namespace Seedwork.Engine
             CurrentTime() > nextGameTick && stepsWithoutRender < MAX_STEPS_WITHOUT_RENDER;
 
         private static long CurrentTime() => DateTime.Now.Ticks;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                Renderer.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

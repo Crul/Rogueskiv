@@ -40,7 +40,11 @@ namespace Rogueskiv.Run
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.FloorDown.ResultCode),
-                result => CreateGameStage(uxContext)
+                result => GetFloorDown(uxContext)
+            );
+            GameStages.Add(
+                (GameStageCodes.Game, RogueskivGameResults.FloorUp.ResultCode),
+                result => GetFloorUp()
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.WinResult.ResultCode),
@@ -54,6 +58,16 @@ namespace Rogueskiv.Run
                 (GameStageCodes.Game, null),
                 result => CreateMenuStage(uxContext)
             );
+        }
+
+        private GameEngine GetFloorUp() => Floors[--CurrentFloor];
+
+        private GameEngine GetFloorDown(UxContext uxContext)
+        {
+            if (CurrentFloor + 1 < Floors.Count)
+                return Floors[++CurrentFloor];
+
+            return CreateGameStage(uxContext);
         }
 
         private GameEngine CreateGameStage(UxContext uxContext)
@@ -71,14 +85,15 @@ namespace Rogueskiv.Run
 
             Console.WriteLine(boardData);
 
+            CurrentFloor = Floors.Count;
+
             var gameContext = new GameContext();
-            var game = new RogueskivGame(gameContext, boardData, GameStageCodes.Game);
+            var game = new RogueskivGame(gameContext, boardData, GameStageCodes.Game, CurrentFloor);
             var userInput = new RogueskivInputHandler(game);
             var renderer = new RogueskivRenderer(uxContext, game);
             var engine = new GameEngine(gameContext, userInput, game, renderer);
 
             Floors.Add(engine);
-            CurrentFloor = Floors.Count - 1;
 
             return engine;
         }
@@ -86,6 +101,8 @@ namespace Rogueskiv.Run
         private GameEngine CreateMenuStage(UxContext uxContext)
         {
             CurrentFloor = 0;
+            Floors.ForEach(gameEngine => gameEngine.Dispose());
+            Floors.Clear();
 
             var gameContext = new GameContext();
             var game = new RogueskivMenu(GameStageCodes.Menu);
