@@ -43,7 +43,7 @@ namespace Rogueskiv.Core.Systems
                 && PlayerPositionComp.Y > StairsComp.Y - (TILE_SIZE / 2)
                 && PlayerPositionComp.Y < StairsComp.Y + (TILE_SIZE / 2)
             )
-                Game.EndGame(RogueskivGameResults.WinResult);
+                Game.EndGame(RogueskivGameResults.FloorDown);
         }
     }
 }
