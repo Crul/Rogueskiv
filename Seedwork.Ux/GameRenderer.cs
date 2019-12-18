@@ -1,4 +1,6 @@
 ﻿using SDL2;
+using Seedwork.Core;
+using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux.Renderers;
 using System;
@@ -11,11 +13,13 @@ namespace Seedwork.Ux
     {
         private readonly IntPtr Window;
         private readonly IntPtr WRenderer;
+        private readonly IRenderizable Game;
 
         protected IDictionary<Type, IItemRenderer> Renderers { get; }
 
-        public GameRenderer(UxContext uxContext)
+        public GameRenderer(UxContext uxContext, IRenderizable game)
         {
+            Game = game;
             Window = uxContext.Window;
             WRenderer = uxContext.WRenderer;
             Renderers = new Dictionary<Type, IItemRenderer>();
@@ -28,7 +32,11 @@ namespace Seedwork.Ux
             SDL.SDL_RenderPresent(WRenderer);
         }
 
-        protected virtual void RenderGame(float interpolation) { }
+        protected virtual void RenderGame(float interpolation) =>
+            Renderers.ToList()
+                .ForEach(r =>
+                    r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
+                );
 
         public void Dispose()
         {
