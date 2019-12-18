@@ -10,7 +10,7 @@ namespace Seedwork.Ux.Renderers
     {
         protected readonly UxContext UxContext;
 
-        public BaseItemRenderer(UxContext uxContext) => UxContext = uxContext;
+        protected BaseItemRenderer(UxContext uxContext) => UxContext = uxContext;
 
         public void Render(List<IEntity> entities, float interpolation) =>
             entities.ForEach(e => RenderIfComponent(e, interpolation));

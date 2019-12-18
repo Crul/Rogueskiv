@@ -12,7 +12,7 @@ namespace Seedwork.Ux.Renderers
     {
         private readonly IntPtr Font;
 
-        public TextRenderer(UxContext uxContext, IntPtr font)
+        protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
 
         protected override void Render(IEntity entity, float interpolation)
