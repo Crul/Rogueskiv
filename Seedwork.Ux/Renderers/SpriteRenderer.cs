@@ -1,42 +1,27 @@
 ﻿using SDL2;
 using Seedwork.Core.Components;
-using Seedwork.Core.Entities;
 using System;
-using System.Collections.Generic;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class ItemRenderer<T> : IItemRenderer
+    public abstract class SpriteRenderer<T> : BaseItemRenderer<T>
         where T : IComponent
     {
-        protected readonly UxContext UxContext;
         protected readonly Tuple<int, int> OutputSize;
         protected readonly IntPtr Texture;
         protected SDL.SDL_Rect TextureRect;
 
-        public ItemRenderer(
+        public SpriteRenderer(
             UxContext uxContext,
             string imgPath,
             SDL.SDL_Rect textureRect,
             Tuple<int, int> outputSize = null
-        )
+        ) : base(uxContext)
         {
-            UxContext = uxContext;
             Texture = SDL_image.IMG_LoadTexture(UxContext.WRenderer, imgPath);
             TextureRect = textureRect;
             OutputSize = outputSize ?? new Tuple<int, int>(textureRect.w, textureRect.h);
         }
-
-        public void Render(List<IEntity> entities, float interpolation) =>
-            entities.ForEach(e => RenderIfComponent(e, interpolation));
-
-        private void RenderIfComponent(IEntity entity, float interpolation)
-        {
-            if (entity.HasComponent<T>())
-                Render(entity, interpolation);
-        }
-
-        protected abstract void Render(IEntity entity, float interpolation);
 
         protected virtual void Render(double posX, double posY)
         {
@@ -57,13 +42,7 @@ namespace Seedwork.Ux.Renderers
         protected static int GetPositionComponent(double positionComponent, int windowCenter) =>
             (int)(positionComponent * UxContext.Zoom) + windowCenter;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool cleanManagedResources) =>
+        protected override void Dispose(bool cleanManagedResources) =>
             SDL.SDL_DestroyTexture(Texture);
     }
 }
