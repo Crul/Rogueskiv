@@ -35,7 +35,7 @@ namespace Rogueskiv.MapGeneration
                 }
 
                 var roomArea = (float)rooms
-                    .Where(room => room.Width >= minRoomSize && room.Height >= minRoomSize)
+                    .Where(room => RoomHasMinSize(room, minRoomSize))
                     .Sum(room => room.Width * room.Height);
 
                 density = roomArea / area;
@@ -44,7 +44,7 @@ namespace Rogueskiv.MapGeneration
             }
 
             rooms = rooms
-                .Where(room => room.Width >= minRoomSize && room.Height >= minRoomSize)
+                .Where(room => RoomHasMinSize(room, minRoomSize))
                 .ToList();
 
             var corridors = ConnectRooms(width, height, rooms, corridorTurnProbability);
@@ -63,11 +63,12 @@ namespace Rogueskiv.MapGeneration
                 Expanded = false
             };
 
-            var isAdjacentToOtherRoom = rooms
-                .Any(room =>
-                    (room.X == newRoom.X && Math.Abs(room.Y - newRoom.Y) <= 1)
-                    || (room.Y == newRoom.Y && Math.Abs(room.X - newRoom.X) <= 1)
-                );
+            var isAdjacentToOtherRoom = rooms.Any(room =>
+                newRoom.X >= (room.X - 1)
+                && newRoom.X <= (room.X + room.Width)
+                && newRoom.Y >= (room.Y - 1)
+                && newRoom.Y <= (room.Y + room.Height)
+            );
 
             if (!isAdjacentToOtherRoom)
                 rooms.Add(newRoom);
@@ -160,6 +161,11 @@ namespace Rogueskiv.MapGeneration
                 var endRooms = rooms.Where(room => RoomHasCell(room, currentTile.x, currentTile.y)).ToList();
                 if (endRooms.Count > 0)
                 {
+                    if (endRooms.Count > 1)
+                    {
+                        Console.WriteLine(PrintBoard(width, height, rooms, new List<Corridor>()));
+                        throw new Exception("More than 1 room with the same tile");
+                    }
                     var endRoom = endRooms.Single();
                     newCorridor.EndRoom = endRoom;
                     newCorridor.EndX = newCorridor.Tiles.Last().x;
@@ -353,6 +359,9 @@ namespace Rogueskiv.MapGeneration
 
             return board;
         }
+
+        private static bool RoomHasMinSize(Room room, int minRoomSize) =>
+            room.Width >= minRoomSize && room.Height >= minRoomSize;
 
         private static bool RoomHasCell
             (Room room, int cellX, int cellY) =>
