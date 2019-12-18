@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
@@ -10,14 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rogueskiv.Core\Rogueskiv.Core.csproj" />
-    <ProjectReference Include="..\Rogueskiv.MapGeneration\Rogueskiv.MapGeneration.csproj" />
-    <ProjectReference Include="..\Rogueskiv.Menus\Rogueskiv.Menus.csproj" />
-    <ProjectReference Include="..\Rogueskiv.Ux\Rogueskiv.Ux.csproj" />
+    <ProjectReference Include="..\Seedwork.Core\Seedwork.Core.csproj" />
+    <ProjectReference Include="..\Seedwork.Ux\Seedwork.Ux.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="data\*.*">
+    <None Update="fonts\Hack\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
