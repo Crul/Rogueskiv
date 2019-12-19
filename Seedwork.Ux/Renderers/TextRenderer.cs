@@ -12,7 +12,7 @@ namespace Seedwork.Ux.Renderers
     {
         private readonly IntPtr Font;
 
-        public TextRenderer(UxContext uxContext, IntPtr font)
+        protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
 
         protected override void Render(IEntity entity, float interpolation)
@@ -43,6 +43,8 @@ namespace Seedwork.Ux.Renderers
             };
 
             SDL_RenderCopy(UxContext.WRenderer, texturedText, ref src, ref dest);
+            SDL_DestroyTexture(texturedText);
+            SDL_FreeSurface(renderedText);
         }
 
         protected abstract string GetText(T component);

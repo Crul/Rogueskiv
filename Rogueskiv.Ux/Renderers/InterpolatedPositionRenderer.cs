@@ -8,7 +8,7 @@ using System;
 namespace Rogueskiv.Ux.Renderers
 {
     class InterpolatedPositionRenderer<T> : PositionRenderer<T>
-        where T : PositionComp
+        where T : IPositionComp
     {
         public InterpolatedPositionRenderer(
             UxContext uxContext,

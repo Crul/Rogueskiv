@@ -4,7 +4,7 @@ namespace Rogueskiv.Core.Components.Walls
 {
     abstract class VerticalWallComp : WallComp
     {
-        public VerticalWallComp(int x, int y, int height)
+        protected VerticalWallComp(int x, int y, int height)
             : base(x, y, height) { }
 
         protected override float FixedPosition => X;

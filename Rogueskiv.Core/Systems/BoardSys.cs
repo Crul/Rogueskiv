@@ -2,6 +2,7 @@
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Components.Walls;
+using Rogueskiv.MapGeneration;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
@@ -15,18 +16,39 @@ namespace Rogueskiv.Core.Systems
     {
         private const string TILE_CHAR = "T";
 
+        private MapGenerationParams MapGenerationParams;
+        private string BoardData;
         private BoardComp BoardComp;
+
+        public BoardSys(string boardData) =>
+             BoardData = boardData;
+
+        public BoardSys(MapGenerationParams mapGenerationParams) =>
+             MapGenerationParams = mapGenerationParams;
 
         public override bool Init(Game game)
         {
+            if (string.IsNullOrEmpty(BoardData))
+            {
+                while (string.IsNullOrEmpty(BoardData))
+                    BoardData = MapGenerator.GenerateMap(MapGenerationParams);
+
+                Console.WriteLine(BoardData);
+            }
+
             BoardComp = game
                 .Entities
                 .GetWithComponent<BoardComp>()
                 .Single()
                 .GetComponent<BoardComp>();
 
-            (var width, var height) = GetSize(BoardComp);
+            BoardComp.Board = BoardData
+                .Split(Environment.NewLine)
+                .Where(line => !string.IsNullOrEmpty(line))
+                .ToList();
+
             var board = BoardComp.Board;
+            (var width, var height) = GetSize(board);
 
             AddTiles(game, board, width, height);
             // TODO fix empty cell needed around the board to make all walls
@@ -48,8 +70,8 @@ namespace Rogueskiv.Core.Systems
                 )
             );
 
-        public static (int width, int height) GetSize(BoardComp boardComp) =>
-            (boardComp.Board[0].Length, boardComp.Board.Count);
+        public static (int width, int height) GetSize(List<string> board) =>
+            (board[0].Length, board.Count);
 
         #region Tiles
         private void AddTiles(Game game, List<string> board, int width, int height)

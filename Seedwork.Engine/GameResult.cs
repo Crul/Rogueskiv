@@ -1,10 +1,16 @@
-﻿namespace Seedwork.Engine
+﻿using System.Collections.Generic;
+
+namespace Seedwork.Engine
 {
-    public class GameResult : IGameResult
+    public class GameResult<T> : IGameResult<T>
     {
         public GameResultCode ResultCode { get; }
+        public List<T> Data { get; }
 
-        public GameResult(int resultCode) =>
+        public GameResult(int resultCode)
+        {
             ResultCode = new GameResultCode(resultCode);
+            Data = new List<T>();
+        }
     }
 }

@@ -27,13 +27,8 @@ namespace Rogueskiv.Core.Components.Board
         private readonly Dictionary<(int x, int y), List<EntityId>> WallsByTiles;
         private readonly Dictionary<(int x, int y), List<EntityId>> EntitiesByTiles;
 
-        public BoardComp(string boardData)
+        public BoardComp()
         {
-            Board = boardData
-                .Split(Environment.NewLine)
-                .Where(line => !string.IsNullOrEmpty(line))
-                .ToList();
-
             CoordsByTileId = new Dictionary<EntityId, (int x, int y)>();
             TileIdByCoords = new Dictionary<(int x, int y), EntityId>();
             TilesNeighbours = new Dictionary<(int x, int y), List<EntityId>>();

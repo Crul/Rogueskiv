@@ -8,14 +8,14 @@ using System.Linq;
 
 namespace Seedwork.Core
 {
-    public class Game : IGame, IControlable, IRenderizable
+    public class Game : IGame<IEntity>, IControlable, IRenderizable
     {
         public EntityList Entities { get; }
 
         private List<ISystem> Systems;
         public IEnumerable<int> Controls { get; set; }
         public GameStageCode StageCode { get; protected set; } = default;
-        public IGameResult Result { get; protected set; }
+        public IGameResult<IEntity> Result { get; protected set; }
         public bool Pause { get; set; }
         public bool Quit { get; protected set; }
 
@@ -31,19 +31,30 @@ namespace Seedwork.Core
         )
         {
             StageCode = stageCode;
+            QuitControl = quitControl;
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
             Systems = systems ?? new List<ISystem>();
-            QuitControl = quitControl;
+            Systems = Systems.Where(sys => sys.Init(this)).ToList();
         }
-
-        public void Init() => Systems = Systems.Where(sys => sys.Init(this)).ToList();
 
         public void Update()
         {
             Quit = Controls.Any(c => c == QuitControl);
             if (!Pause)
                 Systems.ForEach(s => s.Update(Entities, Controls));
+        }
+
+        public virtual void Restart(IGameResult<IEntity> result)
+        {
+            Quit = false;
+            Result = default;
+        }
+
+        public virtual void EndGame(IGameResult<IEntity> gameResult)
+        {
+            Result = gameResult;
+            Quit = true;
         }
 
         public IEntity AddEntity(IComponent entityComponent) =>
@@ -57,12 +68,6 @@ namespace Seedwork.Core
             entity.Components.AddRange(entityComponents);
             Entities.Add(entity.Id, entity);
             return entity;
-        }
-
-        public virtual void EndGame(IGameResult gameResult)
-        {
-            Result = gameResult;
-            Quit = true;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Rogueskiv.Core.Components.Walls
 
         protected float BounceLimit; // set by children
 
-        public WallComp(int x, int y, int size)
+        protected WallComp(int x, int y, int size)
         {
             X = TILE_SIZE * x;
             Y = TILE_SIZE * y;

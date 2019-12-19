@@ -10,10 +10,19 @@ namespace Seedwork.Core.Entities
         public static List<IEntity> GetWithComponent<T>
             (this EntityList entities)
             where T : IComponent =>
-            entities.Where(e => e.Value.HasComponent<T>()).Select(e => e.Value).ToList();
+            entities.Values.ToList().GetWithComponent<T>();
 
         public static List<IEntity> GetWithComponent
             (this EntityList entities, Type componentType) =>
-            entities.Where(e => e.Value.HasComponent(componentType)).Select(e => e.Value).ToList();
+            entities.Values.ToList().GetWithComponent(componentType);
+
+        public static List<IEntity> GetWithComponent<T>
+            (this List<IEntity> entities)
+            where T : IComponent =>
+            entities.Where(e => e.HasComponent<T>()).ToList();
+
+        public static List<IEntity> GetWithComponent
+            (this List<IEntity> entities, Type componentType) =>
+            entities.Where(e => e.HasComponent(componentType)).ToList();
     }
 }

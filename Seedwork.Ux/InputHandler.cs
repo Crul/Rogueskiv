@@ -60,5 +60,8 @@ namespace Seedwork.Ux
             if (KeyPressStates.ContainsKey(intKey))
                 KeyPressStates[intKey] = pressed;
         }
+
+        public void Reset() =>
+            KeyPressStates.Keys.ToList().ForEach(k => KeyPressStates[k] = false);
     }
 }

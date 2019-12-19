@@ -1,12 +1,12 @@
 ﻿namespace Seedwork.Engine
 {
-    public interface IGame
+    public interface IGame<T>
     {
         GameStageCode StageCode { get; }
-        IGameResult Result { get; }
+        IGameResult<T> Result { get; }
         bool Pause { get; set; }
         bool Quit { get; }
-        void Init();
         void Update();
+        void Restart(IGameResult<T> result);
     }
 }

@@ -11,7 +11,7 @@ namespace Seedwork.Ux.Renderers
         protected readonly IntPtr Texture;
         protected SDL.SDL_Rect TextureRect;
 
-        public SpriteRenderer(
+        protected SpriteRenderer(
             UxContext uxContext,
             string imgPath,
             SDL.SDL_Rect textureRect,
