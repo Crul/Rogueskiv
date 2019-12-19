@@ -3,9 +3,9 @@ using System.Threading;
 
 namespace Seedwork.Engine
 {
-    public class GameEngine : IDisposable
+    public class GameEngine<T> : IDisposable
     {
-        public IGame Game { get; }
+        public IGame<T> Game { get; }
         private readonly IGameContext GameContext;
         private readonly IInputHandler InputHandler;
         private readonly IGameRenderer Renderer;
@@ -14,7 +14,7 @@ namespace Seedwork.Engine
         public GameEngine(
             IGameContext gameContext,
             IInputHandler inputHandler,
-            IGame game,
+            IGame<T> game,
             IGameRenderer renderer
         )
         {
@@ -24,10 +24,9 @@ namespace Seedwork.Engine
             Renderer = renderer;
         }
 
-        public IGameResult RunLoop()
+        public IGameResult<T> RunLoop()
         {
             InputHandler.Reset();
-            Game.Restart();
             RunGameLoop();
 
             return Game.Result;

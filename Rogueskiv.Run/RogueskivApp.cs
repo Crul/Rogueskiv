@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Menus;
 using Rogueskiv.Ux;
+using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace Rogueskiv.Run
         private const int SCREEN_HEIGHT = 520;
         private const int FLOOR_COUNT = 10;
 
-        private readonly GameStages GameStages = new GameStages();
+        private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
 
-        private readonly List<GameEngine> Floors = new List<GameEngine>();
+        private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
         private int CurrentFloor;
 
         public void Run()
@@ -39,11 +40,11 @@ namespace Rogueskiv.Run
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.FloorDown.ResultCode),
-                result => GetFloorDown(uxContext)
+                result => GetFloorDown(uxContext, result)
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.FloorUp.ResultCode),
-                result => GetFloorUp()
+                result => GetFloorUp(result)
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.WinResult.ResultCode),
@@ -59,46 +60,59 @@ namespace Rogueskiv.Run
             );
         }
 
-        private GameEngine GetFloorUp() => Floors[--CurrentFloor];
+        private GameEngine<IEntity> GetFloorUp(IGameResult<IEntity> result) =>
+            GetRestartFloorEngine(--CurrentFloor, result);
 
-        private GameEngine GetFloorDown(UxContext uxContext)
+        private GameEngine<IEntity> GetFloorDown(UxContext uxContext, IGameResult<IEntity> result)
         {
-            if (CurrentFloor + 1 < Floors.Count)
-                return Floors[++CurrentFloor];
+            if (CurrentFloor + 1 < FloorEngines.Count)
+                return GetRestartFloorEngine(++CurrentFloor, result);
 
-            return CreateGameStage(uxContext);
+            return CreateGameStage(uxContext, result);
         }
 
-        private GameEngine CreateGameStage(UxContext uxContext)
+        private GameEngine<IEntity> GetRestartFloorEngine(int floor, IGameResult<IEntity> result)
+        {
+            var donwFloorEngine = FloorEngines[floor];
+            donwFloorEngine.Game.Restart(result);
+
+            return donwFloorEngine;
+        }
+
+        private GameEngine<IEntity> CreateGameStage(UxContext uxContext, IGameResult<IEntity> result = null)
         {
             // var boardData = File.ReadAllText(Path.Combine("data", "board.txt"));
 
-            CurrentFloor = Floors.Count;
+            CurrentFloor = FloorEngines.Count;
 
             var gameContext = new GameContext();
             var game = new RogueskivGame(
-                gameContext, GameStageCodes.Game, FLOOR_COUNT, CurrentFloor
+                gameContext,
+                GameStageCodes.Game,
+                FLOOR_COUNT,
+                CurrentFloor,
+                result
             );
             var userInput = new RogueskivInputHandler(game);
             var renderer = new RogueskivRenderer(uxContext, game);
-            var engine = new GameEngine(gameContext, userInput, game, renderer);
+            var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
-            Floors.Add(engine);
+            FloorEngines.Add(engine);
 
             return engine;
         }
 
-        private GameEngine CreateMenuStage(UxContext uxContext)
+        private GameEngine<IEntity> CreateMenuStage(UxContext uxContext)
         {
             CurrentFloor = 0;
-            Floors.ForEach(gameEngine => gameEngine.Dispose());
-            Floors.Clear();
+            FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
+            FloorEngines.Clear();
 
             var gameContext = new GameContext();
             var game = new RogueskivMenu(GameStageCodes.Menu);
             var userInput = new RogueskivMenuInputHandler(game);
             var renderer = new RogueskivMenuRenderer(uxContext, game);
-            var engine = new GameEngine(gameContext, userInput, game, renderer);
+            var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
             return engine;
         }

@@ -16,6 +16,7 @@ namespace Rogueskiv.Core.Systems
         private Game Game;
         private UpStairsComp UpStairsComp;
         private DownStairsComp DownStairsComp;
+        private IEntity PlayerEntity;
         private PositionComp PlayerPositionComp;
         private bool HasExitedStairs = false;
 
@@ -31,11 +32,12 @@ namespace Rogueskiv.Core.Systems
             UpStairsComp = (UpStairsComp)stairsComps.FirstOrDefault(s => s is UpStairsComp);
             DownStairsComp = (DownStairsComp)stairsComps.Single(s => s is DownStairsComp);
 
-            PlayerPositionComp = game
+            PlayerEntity = game
                 .Entities
                 .GetWithComponent<PlayerComp>()
-                .Single()
-                .GetComponent<CurrentPositionComp>();
+                .Single();
+
+            PlayerPositionComp = PlayerEntity.GetComponent<CurrentPositionComp>();
 
             return base.Init(game);
         }
@@ -60,12 +62,15 @@ namespace Rogueskiv.Core.Systems
                 HasExitedStairs = true;
         }
 
-        private void EndGame(IGameResult gameresult, StairsComp stairsComp)
+        private void EndGame(IGameResult<IEntity> gameresult, StairsComp stairsComp)
         {
             // reset for next floor execution
             HasExitedStairs = false;
             PlayerPositionComp.X = stairsComp.X;
             PlayerPositionComp.Y = stairsComp.Y;
+
+            gameresult.Data.Clear();
+            gameresult.Data.Add(PlayerEntity);
 
             Game.EndGame(gameresult);
         }

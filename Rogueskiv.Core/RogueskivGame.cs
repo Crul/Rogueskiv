@@ -23,6 +23,7 @@ namespace Rogueskiv.Core
             GameStageCode stageCode,
             int floorCount,
             int floor,
+            IGameResult<IEntity> previousFloorResult,
             string boardData = default
         )
             : base(
@@ -38,8 +39,8 @@ namespace Rogueskiv.Core
                         : new BoardSys(boardData),
                     new SpawnSys(
                         gameContext,
-                        GetEnemyNumber(floorCount, floor),
-                        isFirstFloor: floor == 0
+                        previousFloorResult,
+                        GetEnemyNumber(floorCount, floor)
                     ),
                     new PlayerSys(gameContext),
                     new MovementSys(),
@@ -79,17 +80,27 @@ namespace Rogueskiv.Core
             );
         }
 
-        public override void Restart()
+        public override void Restart(IGameResult<IEntity> previousFloorResult)
         {
-            base.Restart();
+            base.Restart(previousFloorResult);
 
-            var playerMovementComp = Entities
+            var playerComp = Entities
                 .GetWithComponent<PlayerComp>()
-                .Single()
-                .GetComponent<MovementComp>();
+                .Single();
 
+            var playerMovementComp = playerComp.GetComponent<MovementComp>();
             playerMovementComp.SpeedX = 0;
             playerMovementComp.SpeedY = 0;
+
+            var previousPlayerComp = previousFloorResult
+                .Data
+                .GetWithComponent<PlayerComp>()
+                .Single();
+
+            var previousPlayerHealtComp = previousPlayerComp.GetComponent<HealthComp>();
+            var playerHealthComp = playerComp.GetComponent<HealthComp>();
+
+            playerHealthComp.Health = previousPlayerHealtComp.Health;
         }
 
         public override void RemoveEntity(EntityId id)

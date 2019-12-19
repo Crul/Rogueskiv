@@ -19,8 +19,8 @@ namespace Rogueskiv.Core.Systems
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
 
         private readonly IGameContext GameContext;
+        private readonly IGameResult<IEntity> PreviousFloorResult;
         private readonly int EnemyNumber;
-        private readonly bool IsFirstFloor;
 
         private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
         {
@@ -30,12 +30,14 @@ namespace Rogueskiv.Core.Systems
         };
 
         public SpawnSys(
-            IGameContext gameContext, int enemyNumber, bool isFirstFloor
+            IGameContext gameContext,
+            IGameResult<IEntity> previousFloorResult,
+            int enemyNumber
         )
         {
             GameContext = gameContext;
+            PreviousFloorResult = previousFloorResult;
             EnemyNumber = enemyNumber;
-            IsFirstFloor = isFirstFloor;
         }
 
         public override bool Init(Game game)
@@ -74,7 +76,8 @@ namespace Rogueskiv.Core.Systems
 
             game.AddEntity(CreateDownStairs(tileCoords, tileCordsAndDistances));
 
-            if (!IsFirstFloor)
+            var isFirstFloor = PreviousFloorResult == null;
+            if (!isFirstFloor)
                 game.AddEntity(CreateUpStairs(playerTile));
 
             return false;
@@ -90,7 +93,7 @@ namespace Rogueskiv.Core.Systems
 
             return new List<IComponent> {
                 new PlayerComp(),
-                new HealthComp() { Health = 100 },
+                new HealthComp() { Health = GetPreviousHealth() ?? 100 },
                 new CurrentPositionComp() { X = x, Y = y },
                 new LastPositionComp() { X = x, Y = y },
                 new MovementComp(){
@@ -98,6 +101,22 @@ namespace Rogueskiv.Core.Systems
                     BounceAmortiguationFactor = 2f / 3f
                 }
             };
+        }
+
+        private int? GetPreviousHealth()
+        {
+            if (PreviousFloorResult == null)
+                return null;
+
+            var previousPlayerComp = PreviousFloorResult
+                .Data
+                .GetWithComponent<PlayerComp>()
+                .Single();
+
+            var previousPlayerHealtComp = previousPlayerComp
+                .GetComponent<HealthComp>();
+
+            return previousPlayerHealtComp.Health;
         }
 
         private List<IComponent> CreateEnemy(
