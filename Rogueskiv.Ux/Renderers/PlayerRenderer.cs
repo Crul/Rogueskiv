@@ -19,8 +19,8 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(double posX, double posY)
         {
-            UxContext.CenterX = (int)((UxContext.SCREEN_WIDTH / 2) - posX);
-            UxContext.CenterY = (int)((UxContext.SCREEN_HEIGHT / 2) - posY);
+            UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - posX);
+            UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - posY);
             base.Render(posX, posY);
         }
     }

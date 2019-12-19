@@ -7,7 +7,7 @@ using System;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PositionRenderer<T> : ItemRenderer<T>
+    class PositionRenderer<T> : SpriteRenderer<T>
         where T : PositionComp
     {
         public PositionRenderer(

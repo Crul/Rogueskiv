@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedwork.Core", "Seedwork.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedwork.Crosscutting", "Seedwork.Crosscutting\Seedwork.Crosscutting.csproj", "{095199E0-733F-4946-B8B7-A84D078BCE0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.MapGeneration", "Rogueskiv.MapGeneration\Rogueskiv.MapGeneration.csproj", "{D10056DB-1878-46B3-B326-B00D7C93BAE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rogueskiv.MapGeneration", "Rogueskiv.MapGeneration\Rogueskiv.MapGeneration.csproj", "{D10056DB-1878-46B3-B326-B00D7C93BAE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rogueskiv.Menus", "Rogueskiv.Menus\Rogueskiv.Menus.csproj", "{E3E82F29-8929-4586-B355-5082BF28A7D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D10056DB-1878-46B3-B326-B00D7C93BAE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3E82F29-8929-4586-B355-5082BF28A7D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E82F29-8929-4586-B355-5082BF28A7D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E82F29-8929-4586-B355-5082BF28A7D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E82F29-8929-4586-B355-5082BF28A7D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

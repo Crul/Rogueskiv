@@ -5,9 +5,9 @@ namespace Seedwork.Engine
 {
     public class GameEngine
     {
+        public IGame Game { get; }
         private readonly IGameContext GameContext;
         private readonly IInputHandler InputHandler;
-        private readonly IGame Game;
         private readonly IGameRenderer Renderer;
         private const int MAX_STEPS_WITHOUT_RENDER = 5;
 
@@ -24,15 +24,21 @@ namespace Seedwork.Engine
             Renderer = renderer;
         }
 
-        public void RunLoop()
+        public IGameResult RunLoop()
+        {
+            Game.Init();
+            RunGameLoop();
+            Renderer.Dispose();
+
+            return Game.Result;
+        }
+
+        private void RunGameLoop()
         {
             var currentTime = CurrentTime();
             long nextGameTick = currentTime;
             long nextUxTick = currentTime;
             var stepsWithoutRender = 0;
-
-            Game.Init();
-
             while (true)
             {
                 InputHandler.ProcessEvents();

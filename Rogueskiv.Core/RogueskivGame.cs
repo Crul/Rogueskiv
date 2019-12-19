@@ -15,9 +15,14 @@ namespace Rogueskiv.Core
     {
         private readonly BoardComp BoardComp;
 
-        public RogueskivGame(IGameContext gameContext, string boardData)
+        public RogueskivGame(
+            IGameContext gameContext,
+            string boardData,
+            GameStageCode stageCode
+        )
             : base(
                 quitControl: (int)Core.Controls.QUIT,
+                stageCode: stageCode,
                 entitiesComponents: new List<List<IComponent>>
                 {
                     new List<IComponent> { new BoardComp(boardData) }

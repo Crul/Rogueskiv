@@ -1,4 +1,6 @@
 ﻿using SDL2;
+using Seedwork.Core;
+using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux.Renderers;
 using System;
@@ -9,31 +11,17 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        protected readonly IntPtr Window;
-        protected readonly IntPtr WRenderer;
+        private readonly IntPtr Window;
+        private readonly IntPtr WRenderer;
+        private readonly IRenderizable Game;
 
-        protected readonly IDictionary<Type, IItemRenderer> Renderers;
+        protected IDictionary<Type, IItemRenderer> Renderers { get; }
 
-        public GameRenderer(
-            int screenWidth,
-            int screenHeight,
-            string windowTitle = "MyGame"
-        )
+        public GameRenderer(UxContext uxContext, IRenderizable game)
         {
-            SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
-
-            Window = SDL.SDL_CreateWindow(
-                windowTitle,
-                SDL.SDL_WINDOWPOS_CENTERED,
-                SDL.SDL_WINDOWPOS_CENTERED,
-                screenWidth, screenHeight,
-                0
-            );
-
-            WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
-            SDL.SDL_SetRenderDrawColor(WRenderer, 0, 0, 0, 0);
-            SDL.SDL_SetRenderDrawBlendMode(WRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
-
+            Game = game;
+            Window = uxContext.Window;
+            WRenderer = uxContext.WRenderer;
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
 
@@ -44,7 +32,11 @@ namespace Seedwork.Ux
             SDL.SDL_RenderPresent(WRenderer);
         }
 
-        protected virtual void RenderGame(float interpolation) { }
+        protected virtual void RenderGame(float interpolation) =>
+            Renderers.ToList()
+                .ForEach(r =>
+                    r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
+                );
 
         public void Dispose()
         {
@@ -56,10 +48,6 @@ namespace Seedwork.Ux
         {
             if (cleanManagedResources)
                 Renderers.ToList().ForEach(renderer => renderer.Value.Dispose());
-
-            SDL.SDL_DestroyRenderer(WRenderer);
-            SDL.SDL_DestroyWindow(Window);
-            SDL.SDL_Quit();
         }
     }
 }
