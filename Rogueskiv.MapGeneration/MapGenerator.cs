@@ -7,57 +7,71 @@ namespace Rogueskiv.MapGeneration
 {
     public static class MapGenerator
     {
-        public static string GenerateMap(
-            int width,
-            int height,
-            float roomExpandProbability,
-            float corridorTurnProbability,
-            float minDensity,
-            int initialRooms,
-            int minRoomSize
-        )
+        private const int INITIAL_ROOMS_MAX_LOOPS = 50;
+        private const int EXPAND_CORRIDOR_MAX_LOOPS = 50;
+        private const int CONNECT_ROOMS_MAX_LOOPS = 250;
+
+        public static string GenerateMap(MapGenerationParams mapParams)
         {
-            var area = width * height;
+            try
+            {
+                return TryGenerateMap(mapParams);
+            }
+            catch (InvalidMapException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return string.Empty;
+            }
+        }
+
+        private static string TryGenerateMap(MapGenerationParams mapParams)
+        {
+            var area = mapParams.Width * mapParams.Height;
             var density = 0f;
             var rooms = new List<Room>();
 
-            while (rooms.Count < initialRooms)
-                AddNewRoom(width, height, rooms);
+            while (rooms.Count < mapParams.InitialRooms)
+                AddNewRoom(mapParams, rooms);
 
+            var whileLoops = 0;
             while (true)
             {
-                rooms.ForEach(room => TryToExpand(width, height, rooms, room, roomExpandProbability));
+                whileLoops++;
+                if (whileLoops > INITIAL_ROOMS_MAX_LOOPS)
+                    throw new InvalidMapException("Creating initial rooms");
+
+                rooms.ForEach(room => TryToExpand(mapParams, rooms, room));
                 var expaned = rooms.Any(room => room.Expanded);
                 if (!expaned)
                 {
-                    AddNewRoom(width, height, rooms);
+                    AddNewRoom(mapParams, rooms);
                     continue;
                 }
 
                 var roomArea = (float)rooms
-                    .Where(room => RoomHasMinSize(room, minRoomSize))
+                    .Where(room => RoomHasMinSize(room, mapParams.MinRoomSize))
                     .Sum(room => room.Width * room.Height);
 
                 density = roomArea / area;
-                if (density >= minDensity)
+                if (density >= mapParams.MinDensity)
                     break;
             }
 
             rooms = rooms
-                .Where(room => RoomHasMinSize(room, minRoomSize))
+                .Where(room => RoomHasMinSize(room, mapParams.MinRoomSize))
                 .ToList();
 
-            var corridors = ConnectRooms(width, height, rooms, corridorTurnProbability);
+            var corridors = ConnectRooms(mapParams, rooms);
 
-            return PrintBoard(width, height, rooms, corridors);
+            return PrintBoard(mapParams, rooms, corridors);
         }
 
-        private static void AddNewRoom(int width, int height, List<Room> rooms)
+        private static void AddNewRoom(MapGenerationParams mapParams, List<Room> rooms)
         {
             var newRoom = new Room()
             {
-                X = Luck.Next(1, width - 1),  // external wall border required
-                Y = Luck.Next(1, height - 1), // external wall border required
+                X = Luck.Next(1, mapParams.Width - 1),  // external wall border required
+                Y = Luck.Next(1, mapParams.Height - 1), // external wall border required
                 Width = 1,
                 Height = 1,
                 Expanded = false
@@ -75,13 +89,21 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static List<Corridor> ConnectRooms(
-            int width, int height, List<Room> rooms, float turnProbability
+            MapGenerationParams mapParams, List<Room> rooms
         )
         {
             var corridors = new List<Corridor>();
+            var whileLoops = 0;
             while (true)
             {
-                var room = rooms[Luck.Next(rooms.Count)];
+                whileLoops++;
+                if (whileLoops > CONNECT_ROOMS_MAX_LOOPS)
+                    throw new InvalidMapException("Connecting rooms");
+
+                var roomsWithoutCorridors = rooms.Where(r => r.Corridors.Count == 0).ToList();
+                var room = (roomsWithoutCorridors.Count > 0)
+                    ? roomsWithoutCorridors[Luck.Next(roomsWithoutCorridors.Count)]
+                    : rooms[Luck.Next(rooms.Count)];
 
                 var availableTiles = new List<((int x, int y) tile, Direction direction)>();
                 for (var x = room.X + 1; x < room.X + room.Width - 1; x++)
@@ -92,7 +114,7 @@ namespace Rogueskiv.MapGeneration
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileAbove.tile)))
                             availableTiles.Add(tileAbove);
                     }
-                    if (room.Y + room.Height < height)
+                    if (room.Y + room.Height < mapParams.Height)
                     {
                         var tileBelow = (tile: (x, room.Y + room.Height), Direction.DOWN);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileBelow.tile)))
@@ -108,7 +130,7 @@ namespace Rogueskiv.MapGeneration
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileLeft.tile)))
                             availableTiles.Add(tileLeft);
                     }
-                    if (room.X + room.Width < width)
+                    if (room.X + room.Width < mapParams.Width)
                     {
                         var tileRight = (tile: (room.X + room.Width, y), dir: Direction.RIGHT);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileRight.tile)))
@@ -127,7 +149,9 @@ namespace Rogueskiv.MapGeneration
                 newCorridor.StartX = tile.x;
                 newCorridor.StartY = tile.y;
 
-                ExpandCorridor(width, height, newCorridor, direction, rooms, turnProbability);
+                ExpandCorridor(
+                    mapParams, corridors, newCorridor, direction, rooms
+                );
 
                 if (newCorridor.EndRoom == null)
                     continue;
@@ -144,16 +168,29 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static void ExpandCorridor(
-            int width, int height, Corridor newCorridor, Direction direction, List<Room> rooms, float turnProbability
+            MapGenerationParams mapParams,
+            List<Corridor> corridors,
+            Corridor newCorridor,
+            Direction direction,
+            List<Room> rooms
         )
         {
             var currentTile = (x: newCorridor.StartX, y: newCorridor.StartY);
+            var whileLoops = 0;
             while (true)
             {
-                if (currentTile.x < 1 || currentTile.x > width - 2 || currentTile.y < 1 || currentTile.y > height - 2)
+                whileLoops++;
+                if (whileLoops > EXPAND_CORRIDOR_MAX_LOOPS)
+                    throw new InvalidMapException("Expanding corridor");
+
+                if (currentTile.x < 1
+                    || currentTile.x > mapParams.Width - 2
+                    || currentTile.y < 1
+                    || currentTile.y > mapParams.Height - 2)
                     break;
 
-                if (newCorridor.Tiles.Contains(currentTile))
+                if (newCorridor.Tiles.Contains(currentTile)
+                    || corridors.Any(c => c.Tiles.Contains(currentTile)))
                     break;
 
                 newCorridor.Tiles.Add(currentTile);
@@ -163,7 +200,7 @@ namespace Rogueskiv.MapGeneration
                 {
                     if (endRooms.Count > 1)
                     {
-                        Console.WriteLine(PrintBoard(width, height, rooms, new List<Corridor>()));
+                        Console.WriteLine(PrintBoard(mapParams, rooms, new List<Corridor>()));
                         throw new Exception("More than 1 room with the same tile");
                     }
                     var endRoom = endRooms.Single();
@@ -189,7 +226,7 @@ namespace Rogueskiv.MapGeneration
                         break;
                 }
 
-                if (Luck.NextDouble() < turnProbability)
+                if (Luck.NextDouble() < mapParams.CorridorTurnProbability)
                 {
                     if (direction == Direction.UP || direction == Direction.DOWN)
                         direction = (Luck.NextDouble() > 0.5 ? Direction.LEFT : Direction.RIGHT);
@@ -202,34 +239,9 @@ namespace Rogueskiv.MapGeneration
         private static bool AreAllConnected(List<Room> rooms)
         {
             rooms.ForEach(room => room.Visited = false);
-
             VisitRoom(rooms[0]);
 
             return rooms.All(room => room.Visited);
-            /*
-            while (true)
-            {
-                var connectedRooms = currentRoom
-                    .Corridors
-                    .SelectMany(corridor => new List<Room> { corridor.StartRoom, corridor.EndRoom })
-                    .Distinct()
-                    .Where(room => room != currentRoom)
-                    .ToList();
-
-                if (connectedRooms.Count == 0)
-                    return false;
-
-                rooms.Where(room => connectedRooms.Contains(info))
-                    .ToList()
-                    .ForEach(info => info.visited = true);
-
-                var nonVisited = data.Where(info => !info.visited).ToList();
-                if (nonVisited.Count == 0)
-                    return true;
-
-                currentRoom =
-            }
-            */
         }
 
         private static void VisitRoom(Room room)
@@ -244,29 +256,33 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static void TryToExpand(
-            int width, int height, List<Room> rooms, Room room, float expandProbability
+            MapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
             room.Expanded = false;
 
-            if (Luck.NextDouble() > expandProbability && CanExpandLeft(height, rooms, room))
+            if (Luck.NextDouble() > mapParams.RoomExpandProbability
+                && CanExpandLeft(mapParams.Height, rooms, room))
             {
                 room.X -= 1;
                 room.Width += 1;
                 room.Expanded = true;
             }
-            if (Luck.NextDouble() > expandProbability && CanExpandRight(width, height, rooms, room))
+            if (Luck.NextDouble() > mapParams.RoomExpandProbability
+                && CanExpandRight(mapParams, rooms, room))
             {
                 room.Width += 1;
                 room.Expanded = true;
             }
-            if (Luck.NextDouble() > expandProbability && CanExpandUp(width, rooms, room))
+            if (Luck.NextDouble() > mapParams.RoomExpandProbability
+                && CanExpandUp(mapParams, rooms, room))
             {
                 room.Y -= 1;
                 room.Height += 1;
                 room.Expanded = true;
             }
-            if (Luck.NextDouble() > expandProbability && CanExpandDown(width, height, rooms, room))
+            if (Luck.NextDouble() > mapParams.RoomExpandProbability
+                && CanExpandDown(mapParams, rooms, room))
             {
                 room.Height += 1;
                 room.Expanded = true;
@@ -291,9 +307,11 @@ namespace Rogueskiv.MapGeneration
             return true;
         }
 
-        private static bool CanExpandRight(int width, int height, List<Room> rooms, Room room)
+        private static bool CanExpandRight(
+            MapGenerationParams mapParams, List<Room> rooms, Room room
+        )
         {
-            if (room.X + room.Width >= width - 2)
+            if (room.X + room.Width >= mapParams.Width - 2)
                 return false;
 
             for (var y = room.Y - 1; y < room.Y + room.Height + 1; y++)
@@ -303,13 +321,16 @@ namespace Rogueskiv.MapGeneration
             if (room.Y > 1 && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y - 1)))
                 return false;
 
-            if (room.Y + room.Height > height - 1 && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y + room.Height)))
+            if (room.Y + room.Height > mapParams.Height - 1
+                && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y + room.Height)))
                 return false;
 
             return true;
         }
 
-        private static bool CanExpandUp(int width, List<Room> rooms, Room room)
+        private static bool CanExpandUp(
+            MapGenerationParams mapParams, List<Room> rooms, Room room
+        )
         {
             if (room.Y <= 1)
                 return false;
@@ -321,15 +342,18 @@ namespace Rogueskiv.MapGeneration
             if (room.X > 1 && rooms.Any(r => RoomHasCell(r, room.X - 1, room.Y - 1)))
                 return false;
 
-            if (room.X + room.Width > width - 1 && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y - 1)))
+            if (room.X + room.Width > mapParams.Width - 1
+                && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y - 1)))
                 return false;
 
             return true;
         }
 
-        private static bool CanExpandDown(int width, int height, List<Room> rooms, Room room)
+        private static bool CanExpandDown(
+            MapGenerationParams mapParams, List<Room> rooms, Room room
+        )
         {
-            if (room.Y + room.Height >= height - 2)
+            if (room.Y + room.Height >= mapParams.Height - 2)
                 return false;
 
             for (var x = room.X - 1; x < room.X + room.Width + 1; x++)
@@ -339,18 +363,21 @@ namespace Rogueskiv.MapGeneration
             if (room.X > 1 && rooms.Any(r => RoomHasCell(r, room.X - 1, room.Y + room.Height)))
                 return false;
 
-            if (room.X + room.Width > width - 1 && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y + room.Height)))
+            if (room.X + room.Width > mapParams.Width - 1
+                && rooms.Any(r => RoomHasCell(r, room.X + room.Width, room.Y + room.Height)))
                 return false;
 
             return true;
         }
 
-        private static string PrintBoard(int width, int height, List<Room> rooms, List<Corridor> corridors)
+        private static string PrintBoard(
+            MapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
+        )
         {
             var board = "";
-            for (var y = 0; y < height; y++)
+            for (var y = 0; y < mapParams.Height; y++)
             {
-                for (var x = 0; x < width; x++)
+                for (var x = 0; x < mapParams.Width; x++)
                     board += rooms.Any(room => RoomHasCell(room, x, y))
                         ? "T" : corridors.Any(c => c.Tiles.Contains((x, y))) ? "T" : ".";
 

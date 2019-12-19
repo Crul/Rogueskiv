@@ -79,7 +79,7 @@ namespace Rogueskiv.Core.Systems
                 .Single()
                 .GetComponent<BoardComp>();
 
-            (var width, var height) = BoardSys.GetSize(boardComp);
+            (var width, var height) = BoardSys.GetSize(boardComp.Board);
 
             FOVRecurse = new FOVRecurse(width, height, VISUAL_RANGE);
             BoardSys.ForAllCells(width, height, (x, y) =>

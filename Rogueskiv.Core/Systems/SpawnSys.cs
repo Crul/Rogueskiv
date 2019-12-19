@@ -15,12 +15,12 @@ namespace Rogueskiv.Core.Systems
 {
     class SpawnSys : BaseSystem
     {
-        private const int ENEMY_NUMBER = 30;
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
 
         private readonly IGameContext GameContext;
-        private readonly int Floor;
+        private readonly int EnemyNumber;
+        private readonly bool IsFirstFloor;
 
         private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
         {
@@ -29,10 +29,13 @@ namespace Rogueskiv.Core.Systems
             (-1,  1), (0,  1), (1,  1),
         };
 
-        public SpawnSys(IGameContext gameContext, int floor)
+        public SpawnSys(
+            IGameContext gameContext, int enemyNumber, bool isFirstFloor
+        )
         {
             GameContext = gameContext;
-            Floor = floor;
+            EnemyNumber = enemyNumber;
+            IsFirstFloor = isFirstFloor;
         }
 
         public override bool Init(Game game)
@@ -64,14 +67,14 @@ namespace Rogueskiv.Core.Systems
                 .ToList();
 
             Enumerable
-                .Range(0, ENEMY_NUMBER)
+                .Range(0, EnemyNumber)
                 .Select(i => CreateEnemy(game, tileCordsAndDistances))
                 .ToList()
                 .ForEach(enemy => game.AddEntity(enemy));
 
             game.AddEntity(CreateDownStairs(tileCoords, tileCordsAndDistances));
 
-            if (Floor > 0)
+            if (!IsFirstFloor)
                 game.AddEntity(CreateUpStairs(playerTile));
 
             return false;
