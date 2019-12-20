@@ -1,4 +1,5 @@
-﻿using Rogueskiv.Core.Components;
+﻿using Rogueskiv.Core;
+using Rogueskiv.Core.Components;
 using SDL2;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
@@ -31,7 +32,18 @@ namespace Rogueskiv.Ux.Renderers
         protected override (int x, int y) GetPosition(PopUpComp component) =>
             (UxContext.ScreenWidth / 2, UxContext.ScreenHeight / 2);
 
-        protected override string GetText(PopUpComp component) => "PAUSE";
+        protected override string GetText(PopUpComp component)
+        {
+            var resultCode = Game.Result?.ResultCode;
+
+            if (resultCode == RogueskivGameResults.DeathResult.ResultCode)
+                return "YOU'RE DEAD";
+
+            if (resultCode == RogueskivGameResults.WinResult.ResultCode)
+                return "YOU WIN";
+
+            return "PAUSE";
+        }
 
         protected override void RenderBgr((int x, int y) position)
         {

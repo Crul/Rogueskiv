@@ -47,7 +47,7 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new CollisionSys(),
                     new FOVSys(),
-                    new StairsSys(),
+                    new StairsSys(floorCount == floor),
                     new DeathSys()
                 },
                 pauseControl: (int)Core.Controls.PAUSE,

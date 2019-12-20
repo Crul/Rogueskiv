@@ -56,10 +56,13 @@ namespace Seedwork.Core
             Result = default;
         }
 
-        public virtual void EndGame(IGameResult<IEntity> gameResult)
+        public virtual void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
         {
             Result = gameResult;
-            Quit = true;
+            if (pauseBeforeQuit)
+                Pause = true;
+            else
+                Quit = true;
         }
 
         public IEntity AddEntity(IComponent entityComponent) =>

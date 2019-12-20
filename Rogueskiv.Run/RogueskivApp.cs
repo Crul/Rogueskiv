@@ -13,7 +13,7 @@ namespace Rogueskiv.Run
     {
         private const int SCREEN_WIDTH = 800;
         private const int SCREEN_HEIGHT = 520;
-        private const int FLOOR_COUNT = 10;
+        private const int FLOOR_COUNT = 10 - 1; // 0 index
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
 
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();

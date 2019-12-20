@@ -1,4 +1,5 @@
 ﻿using Seedwork.Core.Entities;
+using Seedwork.Engine;
 
 namespace Seedwork.Core
 {
@@ -6,5 +7,6 @@ namespace Seedwork.Core
     {
         EntityList Entities { get; }
         bool Pause { get; }
+        IGameResult<IEntity> Result { get; }
     }
 }
