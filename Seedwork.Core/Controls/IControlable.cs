@@ -4,6 +4,6 @@ namespace Seedwork.Core.Controls
 {
     public interface IControlable
     {
-        IEnumerable<int> Controls { get; set; }
+        List<int> Controls { get; set; }
     }
 }

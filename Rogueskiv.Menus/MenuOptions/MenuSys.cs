@@ -18,7 +18,7 @@ namespace Rogueskiv.Menus.MenuOptions
             return base.Init(game);
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, List<int> controls)
         {
             var controlList = controls.ToList();
             if (controlList.Count == 0)

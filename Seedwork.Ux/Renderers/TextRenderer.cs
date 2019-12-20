@@ -11,9 +11,9 @@ namespace Seedwork.Ux.Renderers
         where T : IComponent
     {
         private readonly IntPtr Font;
-        private (string text, (byte r, byte g, byte b, byte a), (int x, int y)) DataCache;
-        private SDL_Surface SurfaceCache;
+        protected SDL_Surface SurfaceCache;
         private IntPtr TextureCache;
+        private (string text, (byte r, byte g, byte b, byte a), (int x, int y)) DataCache;
 
         protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
@@ -35,6 +35,8 @@ namespace Seedwork.Ux.Renderers
                 SDL_FreeSurface(renderedText);
             }
 
+            RenderBgr(position);
+
             var src = new SDL_Rect()
             {
                 x = 0,
@@ -44,8 +46,8 @@ namespace Seedwork.Ux.Renderers
             };
             var dest = new SDL_Rect()
             {
-                x = position.x,
-                y = position.y,
+                x = position.x - SurfaceCache.w / 2,
+                y = position.y - SurfaceCache.h / 2,
                 w = SurfaceCache.w,
                 h = SurfaceCache.h
             };
@@ -57,16 +59,18 @@ namespace Seedwork.Ux.Renderers
         protected abstract SDL_Color GetColor(T component);
         protected abstract (int x, int y) GetPosition(T component);
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            SDL_DestroyTexture(TextureCache);
-        }
+        protected virtual void RenderBgr((int x, int y) position) { }
 
         private bool HasDataChanged(string text, SDL_Color color, (int, int) position) =>
             DataCache != (text, (color.r, color.g, color.b, color.a), position);
 
         private void SetCache(string text, SDL_Color color, (int, int) position) =>
             DataCache = (text, (color.r, color.g, color.b, color.a), position);
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            SDL_DestroyTexture(TextureCache);
+        }
     }
 }

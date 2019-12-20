@@ -42,7 +42,7 @@ namespace Rogueskiv.Core.Systems
             return base.Init(game);
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, List<int> controls)
         {
             var isInDownStairs = IsInStairs(DownStairsComp);
             if (isInDownStairs && HasExitedStairs)

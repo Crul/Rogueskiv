@@ -5,5 +5,6 @@ namespace Seedwork.Core
     public interface IRenderizable
     {
         EntityList Entities { get; }
+        bool Pause { get; }
     }
 }

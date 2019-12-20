@@ -33,7 +33,8 @@ namespace Seedwork.Ux
 
             Game.Controls = KeyPressStates
                 .Where(keyState => keyState.Value)
-                .Select(keyState => KeyControls[keyState.Key]);
+                .Select(keyState => KeyControls[keyState.Key])
+                .ToList();
         }
 
         private void ProcessEvent(SDL_Event ev)

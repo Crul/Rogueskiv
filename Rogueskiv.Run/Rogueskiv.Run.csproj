@@ -21,4 +21,10 @@
     </None>
   </ItemGroup>
   
+  <ItemGroup>
+    <None Update="fonts\Hack\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

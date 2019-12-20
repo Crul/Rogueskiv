@@ -5,6 +5,7 @@ using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Rogueskiv.Run
 {
@@ -13,6 +14,7 @@ namespace Rogueskiv.Run
         private const int SCREEN_WIDTH = 800;
         private const int SCREEN_HEIGHT = 520;
         private const int FLOOR_COUNT = 10;
+        private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
 
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
 
@@ -94,7 +96,7 @@ namespace Rogueskiv.Run
                 result
             );
             var userInput = new RogueskivInputHandler(game);
-            var renderer = new RogueskivRenderer(uxContext, game);
+            var renderer = new RogueskivRenderer(uxContext, game, FONT_FILE);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
             FloorEngines.Add(engine);
@@ -111,7 +113,7 @@ namespace Rogueskiv.Run
             var gameContext = new GameContext();
             var game = new RogueskivMenu(GameStageCodes.Menu);
             var userInput = new RogueskivMenuInputHandler(game);
-            var renderer = new RogueskivMenuRenderer(uxContext, game);
+            var renderer = new RogueskivMenuRenderer(uxContext, game, FONT_FILE);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
             return engine;

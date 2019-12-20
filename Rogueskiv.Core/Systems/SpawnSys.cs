@@ -83,7 +83,7 @@ namespace Rogueskiv.Core.Systems
             return false;
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls) =>
+        public override void Update(EntityList entities, List<int> controls) =>
             throw new NotImplementedException();
 
         private List<IComponent> CreatePlayer((int x, int y) playerTile)
