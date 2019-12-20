@@ -94,7 +94,10 @@ namespace Rogueskiv.Core.Systems
 
             return new List<IComponent> {
                 new PlayerComp(),
-                new HealthComp() { Health = GetPreviousHealth() ?? INITIAL_PLAYER_HEALTH },
+                new HealthComp() {
+                    MaxHealth = INITIAL_PLAYER_HEALTH,
+                    Health = GetPreviousHealth() ?? INITIAL_PLAYER_HEALTH
+                },
                 new CurrentPositionComp() { X = x, Y = y },
                 new LastPositionComp() { X = x, Y = y },
                 new MovementComp(){

@@ -24,6 +24,7 @@ namespace Rogueskiv.Ux
             Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
             Renderers[typeof(IFOVComp)] = new FOVRenderer(uxContext);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
+            Renderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
             Renderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 
