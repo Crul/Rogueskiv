@@ -52,7 +52,7 @@ namespace Rogueskiv.Core.Systems
 
             AddTiles(game, board, width, height);
 
-            // TODO fix empty cell needed around the board to make all walls
+            // TODO fix empty tile needed around the board to make all walls
             AddLeftWalls(game, board, width, height);
             AddRightWalls(game, board, width, height);
             var upWalls = AddUpWalls(game, board, width, height);
@@ -79,7 +79,7 @@ namespace Rogueskiv.Core.Systems
         #region Tiles
         private void AddTiles(Game game, List<string> board, int width, int height)
         {
-            ForAllCells(width, height, (x, y) =>
+            ForAllTiles(width, height, (x, y) =>
             {
                 if (!IsTile(board, x, y))
                     return;
@@ -264,7 +264,7 @@ namespace Rogueskiv.Core.Systems
 
         #endregion
 
-        public static void ForAllCells(int width, int height, Action<int, int> action)
+        public static void ForAllTiles(int width, int height, Action<int, int> action)
         {
             for (var y = 0; y < height; y++)
                 for (var x = 0; x < width; x++)

@@ -81,7 +81,7 @@ namespace Rogueskiv.Core.Systems
             (var width, var height) = BoardSys.GetSize(boardComp.Board);
 
             FOVRecurse = new FOVRecurse(width, height, VISUAL_RANGE);
-            BoardSys.ForAllCells(width, height, (x, y) =>
+            BoardSys.ForAllTiles(width, height, (x, y) =>
                 FOVRecurse.Point_Set(x, y, !BoardSys.IsTile(boardComp.Board, x, y) ? 1 : 0));
         }
     }
