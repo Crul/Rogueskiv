@@ -1,15 +1,18 @@
-﻿using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
+using System.Collections.Generic;
 
 namespace Rogueskiv.Core.Components.Walls
 {
-    abstract class WallComp : PositionComp, IWallComp
+    public abstract class WallComp : PositionComp, IWallComp
     {
         // TODO ¿move to system?
         protected const int ENTITY_SIZE = 16; // TODO proper entity size
-        private const int TILE_SIZE = 30;     // TODO proper tile size
 
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
         public PositionComp Position => this;
+        public WallFacingDirections Facing { get; }
+        public List<WallTile> Tiles { get; }
 
         protected abstract float FixedPosition { get; }
         protected abstract float VariablePosition { get; }
@@ -17,11 +20,15 @@ namespace Rogueskiv.Core.Components.Walls
 
         protected float BounceLimit; // set by children
 
-        protected WallComp(int x, int y, int size)
+        protected WallComp(
+            int x, int y, int size, WallFacingDirections facing, List<WallTile> tiles
+        )
         {
-            X = TILE_SIZE * x;
-            Y = TILE_SIZE * y;
-            Size = TILE_SIZE * size;
+            X = BoardComp.TILE_SIZE * x;
+            Y = BoardComp.TILE_SIZE * y;
+            Size = BoardComp.TILE_SIZE * size;
+            Facing = facing;
+            Tiles = tiles;
         }
 
         public bool CheckBounce(

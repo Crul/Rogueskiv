@@ -18,6 +18,14 @@ namespace Rogueskiv.Ux.Renderers
         ) : base(uxContext, imgPath, textureRect, outputSize)
         { }
 
+        public PositionRenderer(
+            UxContext uxContext,
+            IntPtr texture,
+            SDL.SDL_Rect textureRect,
+            Tuple<int, int> outputSize = null
+        ) : base(uxContext, texture, textureRect, outputSize)
+        { }
+
         protected override void Render(IEntity entity, float interpolation)
         {
             if (!entity.HasComponent<T>())

@@ -10,7 +10,7 @@ namespace Rogueskiv.Core.Components.Board
 {
     public class BoardComp : IComponent
     {
-        public const int TILE_SIZE = 30; // TODO proper tile size
+        public const int TILE_SIZE = 32; // TODO proper tile size
 
         private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
         {
@@ -21,10 +21,10 @@ namespace Rogueskiv.Core.Components.Board
 
         public List<string> Board { get; set; }
 
+        public Dictionary<(int x, int y), EntityId> TileIdByCoords { get; }
         private readonly Dictionary<EntityId, (int x, int y)> CoordsByTileId;
-        private readonly Dictionary<(int x, int y), EntityId> TileIdByCoords;
         private readonly Dictionary<(int x, int y), List<EntityId>> TilesNeighbours;
-        private readonly Dictionary<(int x, int y), List<EntityId>> WallsByTiles;
+        public Dictionary<(int x, int y), List<EntityId>> WallsByTiles { get; }
         private readonly Dictionary<(int x, int y), List<EntityId>> EntitiesByTiles;
 
         public BoardComp()

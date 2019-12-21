@@ -12,7 +12,6 @@ namespace Rogueskiv.Core.Systems
 {
     class FOVSys : BaseSystem
     {
-        private const int TILE_SIZE = 30;    // TODO proper tile size
         private const int VISUAL_RANGE = 10; // TODO proper visual range
         private FOVRecurse FOVRecurse;
         private CurrentPositionComp PlayerPosComp;
@@ -40,8 +39,8 @@ namespace Rogueskiv.Core.Systems
         public override void Update(EntityList entities, List<int> controls)
         {
             FOVRecurse.SetPlayerPos(
-                (int)(PlayerPosComp.X / TILE_SIZE),
-                (int)(PlayerPosComp.Y / TILE_SIZE)
+                (int)(PlayerPosComp.X / BoardComp.TILE_SIZE),
+                (int)(PlayerPosComp.Y / BoardComp.TILE_SIZE)
             );
 
             var otherPositions = entities
@@ -63,8 +62,8 @@ namespace Rogueskiv.Core.Systems
 
         private void SetVisibility(PositionComp positionComp)
         {
-            var tileX = (int)(positionComp.X / TILE_SIZE);
-            var tileY = (int)(positionComp.Y / TILE_SIZE);
+            var tileX = (int)(positionComp.X / BoardComp.TILE_SIZE);
+            var tileY = (int)(positionComp.Y / BoardComp.TILE_SIZE);
 
             positionComp.Visible = FOVRecurse
                 .VisiblePoints

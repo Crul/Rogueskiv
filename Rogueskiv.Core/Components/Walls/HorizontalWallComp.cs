@@ -1,11 +1,13 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using System.Collections.Generic;
 
 namespace Rogueskiv.Core.Components.Walls
 {
     abstract class HorizontalWallComp : WallComp
     {
-        protected HorizontalWallComp(int x, int y, int width)
-            : base(x, y, width) { }
+        protected HorizontalWallComp(
+            int x, int y, int width, WallFacingDirections facing, List<WallTile> tiles
+        ) : base(x, y, width, facing, tiles) { }
 
         protected override float FixedPosition => Y;
         protected override float VariablePosition => X;

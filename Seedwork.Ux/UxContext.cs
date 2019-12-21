@@ -5,7 +5,6 @@ namespace Seedwork.Ux
 {
     public class UxContext : IDisposable
     {
-        public const int Zoom = 1;
         public int ScreenWidth { get; }
         public int ScreenHeight { get; }
         public int CenterX { get; set; } = 0;
