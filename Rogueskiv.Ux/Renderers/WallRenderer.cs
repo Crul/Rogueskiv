@@ -6,6 +6,7 @@ using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using static SDL2.SDL;
 
@@ -71,7 +72,7 @@ namespace Rogueskiv.Ux.Renderers
             var wallComp = entity.GetComponent<IWallComp>();
 
             var wallTiles = wallComp.Tiles
-                .Where(wallTile => IsWallVisible(wallTile.Position.x, wallTile.Position.y))
+                .Where(wallTile => IsWallVisible(wallTile.TilePos))
                 .ToList();
 
             if (wallComp.Facing == WallFacingDirections.RIGHT)
@@ -103,8 +104,8 @@ namespace Rogueskiv.Ux.Renderers
         ) =>
             wallTiles.ForEach(wallTile =>
                 RenderWall(
-                    x: (BoardComp.TILE_SIZE * wallTile.Position.x) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
-                    y: (BoardComp.TILE_SIZE * wallTile.Position.y) + deltaY,
+                    x: (BoardComp.TILE_SIZE * wallTile.TilePos.X) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
+                    y: (BoardComp.TILE_SIZE * wallTile.TilePos.Y) + deltaY,
                     textureRect: WallTexutreRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
                 ));
 
@@ -115,16 +116,14 @@ namespace Rogueskiv.Ux.Renderers
         ) =>
             wallTiles.ForEach(wallTile =>
                 RenderWall(
-                    x: (BoardComp.TILE_SIZE * wallTile.Position.x) + deltaX,
-                    y: (BoardComp.TILE_SIZE * wallTile.Position.y) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
+                    x: (BoardComp.TILE_SIZE * wallTile.TilePos.X) + deltaX,
+                    y: (BoardComp.TILE_SIZE * wallTile.TilePos.Y) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
                     textureRect: WallTexutreRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
                 ));
 
-        private bool IsWallVisible(int tileX, int tileY)
+        private bool IsWallVisible(Point tilePos)
         {
-            // return true;
-            var tileCoords = (tileX, tileY);
-            var tileId = BoardComp.TileIdByCoords[tileCoords];
+            var tileId = BoardComp.TileIdByTilePos[tilePos];
 
             return Game.Entities[tileId].GetComponent<TileComp>().Visible;
         }

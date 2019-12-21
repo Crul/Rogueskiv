@@ -4,6 +4,7 @@ using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
+using System.Drawing;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -35,13 +36,13 @@ namespace Rogueskiv.Ux.Renderers
             if (!positionComp.Visible)
                 return;
 
-            var (x, y) = GetXY(entity, positionComp, interpolation);
+            var position = GetXY(entity, positionComp, interpolation);
 
-            Render(x, y);
+            Render(position);
         }
 
-        protected virtual (float x, float y) GetXY
+        protected virtual PointF GetXY
             (IEntity entity, T positionComp, float interpolation) =>
-            (positionComp.X, positionComp.Y);
+            positionComp.Position;
     }
 }

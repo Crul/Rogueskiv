@@ -6,7 +6,7 @@ namespace Rogueskiv.Core.Components.Walls
 {
     public interface IWallComp : IComponent
     {
-        PositionComp Position { get; }
+        PositionComp PositionComp { get; }
         int Size { get; }
         WallFacingDirections Facing { get; }
         List<WallTile> Tiles { get; }

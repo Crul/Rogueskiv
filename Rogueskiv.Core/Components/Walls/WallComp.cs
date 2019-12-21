@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
 {
@@ -10,7 +11,7 @@ namespace Rogueskiv.Core.Components.Walls
         protected const int ENTITY_SIZE = 16; // TODO proper entity size
 
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
-        public PositionComp Position => this;
+        public PositionComp PositionComp => this;
         public WallFacingDirections Facing { get; }
         public List<WallTile> Tiles { get; }
 
@@ -21,11 +22,12 @@ namespace Rogueskiv.Core.Components.Walls
         protected float BounceLimit; // set by children
 
         protected WallComp(
-            int x, int y, int size, WallFacingDirections facing, List<WallTile> tiles
-        )
+            Point tilePos, int size, WallFacingDirections facing, List<WallTile> tiles
+        ) : base(new PointF(
+                BoardComp.TILE_SIZE * tilePos.X,
+                BoardComp.TILE_SIZE * tilePos.Y
+            ))
         {
-            X = BoardComp.TILE_SIZE * x;
-            Y = BoardComp.TILE_SIZE * y;
             Size = BoardComp.TILE_SIZE * size;
             Facing = facing;
             Tiles = tiles;

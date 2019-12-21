@@ -8,6 +8,7 @@ using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.Core.Systems
@@ -79,20 +80,20 @@ namespace Rogueskiv.Core.Systems
         #region Tiles
         private void AddTiles(Game game, List<string> board, int width, int height)
         {
-            ForAllTiles(width, height, (x, y) =>
+            ForAllTiles(width, height, tilePos =>
             {
-                if (!IsTile(board, x, y))
+                if (!IsTile(board, tilePos))
                     return;
 
-                var tile = game.AddEntity(new TileComp(x, y));
-                BoardComp.AddTile(x, y, tile.Id);
+                var tile = game.AddEntity(new TileComp(tilePos));
+                BoardComp.AddTile(tilePos, tile.Id);
             });
 
             BoardComp.SetTilesNeighbours();
         }
 
-        public static bool IsTile(List<string> board, int x, int y) =>
-            board[y].Substring(x, 1) == TILE_CHAR;
+        public static bool IsTile(List<string> board, Point tilePos) =>
+            board[tilePos.Y].Substring(tilePos.X, 1) == TILE_CHAR;
 
         #endregion
 
@@ -101,40 +102,40 @@ namespace Rogueskiv.Core.Systems
             AddWalls(
                 game,
                 height, width,
-                isWall: (y, x) => IsTile(board, x, y) && !IsTile(board, x, y + 1),
+                isWall: (y, x) => IsTile(board, new Point(x, y)) && !IsTile(board, new Point(x, y + 1)),
                 initWall: (y, x) => (x, y, 1),
-                createWallTile: (y, x) => new WallTile((x, y)),
-                createComponent: wall => new UpWallComp(wall.x, wall.y, wall.size, wall.tiles),
+                createWallTile: (y, x) => new WallTile(new Point(x, y)),
+                createComponent: wall => new UpWallComp(new Point(wall.x, wall.y), wall.size, wall.tiles),
                 maringIndex1: 1
             );
 
         private List<IWallComp> AddDownWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
                 game, height, width,
-                isWall: (y, x) => !IsTile(board, x, y - 1) && IsTile(board, x, y),
+                isWall: (y, x) => !IsTile(board, new Point(x, y - 1)) && IsTile(board, new Point(x, y)),
                 initWall: (y, x) => (x, y, 1),
-                createWallTile: (y, x) => new WallTile((x, y)),
-                createComponent: wall => new DownWallComp(wall.x, wall.y, wall.size, wall.tiles),
+                createWallTile: (y, x) => new WallTile(new Point(x, y)),
+                createComponent: wall => new DownWallComp(new Point(wall.x, wall.y), wall.size, wall.tiles),
                 initIndex1: 1
             );
 
         private List<IWallComp> AddLeftWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
                 game, width, height,
-                isWall: (x, y) => !IsTile(board, x + 1, y) && IsTile(board, x, y),
+                isWall: (x, y) => !IsTile(board, new Point(x + 1, y)) && IsTile(board, new Point(x, y)),
                 initWall: (x, y) => (x, y, 1),
-                createWallTile: (x, y) => new WallTile((x, y)),
-                createComponent: wall => new LeftWallComp(wall.x, wall.y, wall.size, wall.tiles),
+                createWallTile: (x, y) => new WallTile(new Point(x, y)),
+                createComponent: wall => new LeftWallComp(new Point(wall.x, wall.y), wall.size, wall.tiles),
                 maringIndex1: 1
             );
 
         private List<IWallComp> AddRightWalls(Game game, List<string> board, int width, int height) =>
             AddWalls(
                 game, width, height,
-                isWall: (x, y) => !IsTile(board, x - 1, y) && IsTile(board, x, y),
+                isWall: (x, y) => !IsTile(board, new Point(x - 1, y)) && IsTile(board, new Point(x, y)),
                 initWall: (x, y) => (x, y, 1),
-                createWallTile: (x, y) => new WallTile((x, y)),
-                createComponent: wall => new RightWallComp(wall.x, wall.y, wall.size, wall.tiles),
+                createWallTile: (x, y) => new WallTile(new Point(x, y)),
+                createComponent: wall => new RightWallComp(new Point(wall.x, wall.y), wall.size, wall.tiles),
                 initIndex1: 1
             );
 
@@ -207,9 +208,9 @@ namespace Rogueskiv.Core.Systems
                 var initialTile = upWall.Tiles.First();
                 initialTile.InitialTip = GetConvexity(
                     game,
-                    targetTile: (
-                        initialTile.Position.x - 1,
-                        initialTile.Position.y + 1
+                    targetTile: new Point(
+                        initialTile.TilePos.X - 1,
+                        initialTile.TilePos.Y + 1
                     ),
                     facingTarget: WallFacingDirections.LEFT
                 );
@@ -217,9 +218,9 @@ namespace Rogueskiv.Core.Systems
                 var finalTile = upWall.Tiles.Last();
                 finalTile.FinalTip = GetConvexity(
                     game,
-                    targetTile: (
-                        finalTile.Position.x + 1,
-                        finalTile.Position.y + 1
+                    targetTile: new Point(
+                        finalTile.TilePos.X + 1,
+                        finalTile.TilePos.Y + 1
                     ),
                     facingTarget: WallFacingDirections.RIGHT
                 );
@@ -230,9 +231,9 @@ namespace Rogueskiv.Core.Systems
                 var initialTile = downWall.Tiles.First();
                 initialTile.InitialTip = GetConvexity(
                     game,
-                    targetTile: (
-                        initialTile.Position.x - 1,
-                        initialTile.Position.y - 1
+                    targetTile: new Point(
+                        initialTile.TilePos.X - 1,
+                        initialTile.TilePos.Y - 1
                     ),
                     facingTarget: WallFacingDirections.LEFT
                 );
@@ -240,16 +241,16 @@ namespace Rogueskiv.Core.Systems
                 var finalTile = downWall.Tiles.Last();
                 finalTile.FinalTip = GetConvexity(
                     game,
-                    targetTile: (
-                        finalTile.Position.x + 1,
-                        finalTile.Position.y - 1
+                    targetTile: new Point(
+                        finalTile.TilePos.X + 1,
+                        finalTile.TilePos.Y - 1
                     ),
                     facingTarget: WallFacingDirections.RIGHT
                 );
             });
         }
 
-        private WallTipTypes GetConvexity(Game game, (int, int) targetTile, WallFacingDirections facingTarget)
+        private WallTipTypes GetConvexity(Game game, Point targetTile, WallFacingDirections facingTarget)
         {
             var isConvexe =
                 BoardComp.WallsByTiles.ContainsKey(targetTile)
@@ -264,11 +265,11 @@ namespace Rogueskiv.Core.Systems
 
         #endregion
 
-        public static void ForAllTiles(int width, int height, Action<int, int> action)
+        public static void ForAllTiles(int width, int height, Action<Point> action)
         {
             for (var y = 0; y < height; y++)
                 for (var x = 0; x < width; x++)
-                    action(x, y);
+                    action(new Point(x, y));
         }
     }
 }

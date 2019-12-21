@@ -74,8 +74,7 @@ namespace Rogueskiv.Core.Systems
         {
             // reset for next floor execution
             HasExitedStairs = false;
-            PlayerPositionComp.X = stairsComp.X;
-            PlayerPositionComp.Y = stairsComp.Y;
+            PlayerPositionComp.Position = stairsComp.Position;
 
             gameresult.Data.Clear();
             gameresult.Data.Add(PlayerEntity);
@@ -84,9 +83,9 @@ namespace Rogueskiv.Core.Systems
         }
 
         private bool IsInStairs(StairsComp stairsComp) =>
-             PlayerPositionComp.X > stairsComp.X - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.X < stairsComp.X + (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Y > stairsComp.Y - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Y < stairsComp.Y + (BoardComp.TILE_SIZE / 2);
+             PlayerPositionComp.Position.X > stairsComp.Position.X - (BoardComp.TILE_SIZE / 2)
+            && PlayerPositionComp.Position.X < stairsComp.Position.X + (BoardComp.TILE_SIZE / 2)
+            && PlayerPositionComp.Position.Y > stairsComp.Position.Y - (BoardComp.TILE_SIZE / 2)
+            && PlayerPositionComp.Position.Y < stairsComp.Position.Y + (BoardComp.TILE_SIZE / 2);
     }
 }

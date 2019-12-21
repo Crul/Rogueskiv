@@ -1,18 +1,20 @@
-﻿namespace Rogueskiv.Core.Components.Walls
+﻿using System.Drawing;
+
+namespace Rogueskiv.Core.Components.Walls
 {
     public class WallTile
     {
-        public (int x, int y) Position { get; }
+        public Point TilePos { get; }
         public WallTipTypes InitialTip { get; set; }
         public WallTipTypes FinalTip { get; set; }
 
         public WallTile(
-            (int, int) position,
+            Point tilePos,
             WallTipTypes? initialTip = null,
             WallTipTypes? finalTip = null
         )
         {
-            Position = position;
+            TilePos = tilePos;
             InitialTip = initialTip ?? WallTipTypes.FLAT;
             FinalTip = finalTip ?? WallTipTypes.FLAT;
         }

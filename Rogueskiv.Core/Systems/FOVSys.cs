@@ -39,8 +39,8 @@ namespace Rogueskiv.Core.Systems
         public override void Update(EntityList entities, List<int> controls)
         {
             FOVRecurse.SetPlayerPos(
-                (int)(PlayerPosComp.X / BoardComp.TILE_SIZE),
-                (int)(PlayerPosComp.Y / BoardComp.TILE_SIZE)
+                (int)(PlayerPosComp.Position.X / BoardComp.TILE_SIZE),
+                (int)(PlayerPosComp.Position.Y / BoardComp.TILE_SIZE)
             );
 
             var otherPositions = entities
@@ -54,16 +54,14 @@ namespace Rogueskiv.Core.Systems
                 .ForEach(SetVisibility);
 
             TileComps.ForEach(tileComp =>
-                tileComp.DistanceFromPlayer = Distance.Get(
-                    tileComp.X - PlayerPosComp.X,
-                    tileComp.Y - PlayerPosComp.Y
-                ));
+                tileComp.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position)
+            );
         }
 
         private void SetVisibility(PositionComp positionComp)
         {
-            var tileX = (int)(positionComp.X / BoardComp.TILE_SIZE);
-            var tileY = (int)(positionComp.Y / BoardComp.TILE_SIZE);
+            var tileX = (int)(positionComp.Position.X / BoardComp.TILE_SIZE);
+            var tileY = (int)(positionComp.Position.Y / BoardComp.TILE_SIZE);
 
             positionComp.Visible = FOVRecurse
                 .VisiblePoints
@@ -81,8 +79,8 @@ namespace Rogueskiv.Core.Systems
             (var width, var height) = BoardSys.GetSize(boardComp.Board);
 
             FOVRecurse = new FOVRecurse(width, height, VISUAL_RANGE);
-            BoardSys.ForAllTiles(width, height, (x, y) =>
-                FOVRecurse.Point_Set(x, y, !BoardSys.IsTile(boardComp.Board, x, y) ? 1 : 0));
+            BoardSys.ForAllTiles(width, height, tilePos =>
+                FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));
         }
     }
 }

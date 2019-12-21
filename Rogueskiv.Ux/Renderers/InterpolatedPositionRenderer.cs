@@ -4,6 +4,7 @@ using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using System;
+using System.Drawing;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -18,18 +19,18 @@ namespace Rogueskiv.Ux.Renderers
         ) : base(uxContext, imgPath, textureRect, outputSize)
         { }
 
-        protected override (float x, float y) GetXY
+        protected override PointF GetXY
             (IEntity entity, T positionComp, float interpolation) =>
             Interpolate(entity, positionComp, interpolation);
 
-        private (float x, float y) Interpolate
+        private PointF Interpolate
             (IEntity entity, T positionComp, float interpolation)
         {
             // TODO wall bounces ?
             var movementComp = entity.GetComponent<MovementComp>();
-            return (
-                positionComp.X + (movementComp.SpeedX * interpolation),
-                positionComp.Y + (movementComp.SpeedY * interpolation)
+            return new PointF(
+                positionComp.Position.X + (movementComp.Speed.X * interpolation),
+                positionComp.Position.Y + (movementComp.Speed.Y * interpolation)
             );
         }
     }

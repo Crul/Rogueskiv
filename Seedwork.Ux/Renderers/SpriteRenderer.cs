@@ -1,6 +1,7 @@
 ﻿using SDL2;
 using Seedwork.Core.Components;
 using System;
+using System.Drawing;
 using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
@@ -45,15 +46,14 @@ namespace Seedwork.Ux.Renderers
             OutputSize = outputSize ?? new Tuple<int, int>(textureRect.w, textureRect.h);
         }
 
-        protected virtual void Render(double posX, double posY)
+        protected virtual void Render(PointF position)
         {
-            var x = GetPositionComponent(posX, UxContext.CenterX);
-            var y = GetPositionComponent(posY, UxContext.CenterY);
+            var screenPosition = GetScreenPosition(position, UxContext);
 
             var tRect = new SDL_Rect()
             {
-                x = x - OutputSize.Item1 / 2,
-                y = y - OutputSize.Item2 / 2,
+                x = (int)screenPosition.X - OutputSize.Item1 / 2,
+                y = (int)screenPosition.Y - OutputSize.Item2 / 2,
                 w = OutputSize.Item1,
                 h = OutputSize.Item2
             };
@@ -61,8 +61,11 @@ namespace Seedwork.Ux.Renderers
             SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref tRect);
         }
 
-        protected static int GetPositionComponent(double positionComponent, int windowCenter) =>
-            (int)positionComponent + windowCenter;
+        protected static PointF GetScreenPosition(PointF position, UxContext uxContext) =>
+            new PointF(
+                position.X + uxContext.CenterX,
+                position.Y + uxContext.CenterY
+            );
 
         protected override void Dispose(bool cleanManagedResources)
         {

@@ -5,6 +5,7 @@ using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using static SDL2.SDL;
@@ -51,18 +52,20 @@ namespace Rogueskiv.Ux.Renderers
                     * (positionComp.DistanceFromPlayer / (BoardComp.TILE_SIZE * VISUAL_RANGE))
                 );
 
-            var (posX, posY) = GetXY(entity, positionComp, interpolation);
+            var position = GetXY(entity, positionComp, interpolation);
 
             var wallFacingDirections = BoardComp
-                .WallsByTiles[((int)posX / BoardComp.TILE_SIZE, (int)posY / BoardComp.TILE_SIZE)]
+                .WallsByTiles[new Point(
+                    (int)position.X / BoardComp.TILE_SIZE,
+                    (int)position.Y / BoardComp.TILE_SIZE
+                )]
                 .Select(wallId => Game.Entities[wallId].GetComponent<IWallComp>().Facing);
 
-            var x = GetPositionComponent(posX, UxContext.CenterX);
-            var y = GetPositionComponent(posY, UxContext.CenterY);
+            var screenPosition = GetScreenPosition(position, UxContext);
             var tRect = new SDL_Rect()
             {
-                x = x - OutputSize.Item1 / 2,
-                y = y - OutputSize.Item2 / 2,
+                x = (int)screenPosition.X - OutputSize.Item1 / 2,
+                y = (int)screenPosition.Y - OutputSize.Item2 / 2,
                 w = OutputSize.Item1,
                 h = OutputSize.Item2
             };

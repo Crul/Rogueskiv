@@ -61,8 +61,8 @@ namespace Rogueskiv.Core.Systems
                     if (!entities.ContainsKey(id)) // TODO debug corner case
                         return false;
 
-                    var position = entities[id].GetComponent<CurrentPositionComp>();
-                    var distance = Distance.Get(position.X - PlayerPos.X, position.Y - PlayerPos.Y);
+                    var positionComp = entities[id].GetComponent<CurrentPositionComp>();
+                    var distance = Distance.Get(positionComp.Position, PlayerPos.Position);
                     return (distance < COLLISION_DISTANCE);
                 })
                 .ToList();

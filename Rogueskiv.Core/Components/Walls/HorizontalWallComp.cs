@@ -1,23 +1,27 @@
 ﻿using Rogueskiv.Core.Components.Position;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
 {
     abstract class HorizontalWallComp : WallComp
     {
         protected HorizontalWallComp(
-            int x, int y, int width, WallFacingDirections facing, List<WallTile> tiles
-        ) : base(x, y, width, facing, tiles) { }
+            Point tilePos, int width, WallFacingDirections facing, List<WallTile> tiles
+        ) : base(tilePos, width, facing, tiles) { }
 
-        protected override float FixedPosition => Y;
-        protected override float VariablePosition => X;
+        protected override float FixedPosition => Position.Y;
+        protected override float VariablePosition => Position.X;
 
-        protected override float GetFixedPosition(PositionComp position) => position.Y;
-        protected override float GetVariablePosition(PositionComp position) => position.X;
+        protected override float GetFixedPosition(PositionComp positionComp) =>
+            positionComp.Position.Y;
+        protected override float GetVariablePosition(PositionComp positionComp) =>
+            positionComp.Position.X;
 
         protected override void ReverseSpeed(MovementComp movement, float amortiguationFactor) =>
-            movement.SpeedY *= amortiguationFactor;
+            movement.Speed = new PointF(movement.Speed.X, movement.Speed.Y * amortiguationFactor);
 
-        protected override void SetPosition(PositionComp position, float value) => position.Y = value;
+        protected override void SetPosition(PositionComp positionComp, float value) =>
+            positionComp.Position = new PointF(positionComp.Position.X, value);
     }
 }
