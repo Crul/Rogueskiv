@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Seedwork.Core\Seedwork.Core.csproj" />
+    <ProjectReference Include="..\Seedwork.Crosscutting\Seedwork.Crosscutting.csproj" />
     <ProjectReference Include="..\Seedwork.Ux\Seedwork.Ux.csproj" />
   </ItemGroup>
 
