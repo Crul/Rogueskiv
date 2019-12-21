@@ -43,15 +43,13 @@ namespace Rogueskiv.Core.Systems
 
         public override bool Init(Game game)
         {
-            var tileCoords = game
+            var boardComp = game
                 .Entities
-                .GetWithComponent<TileComp>()
-                .Select(e => e.GetComponent<TileComp>())
-                .Select(tileComp => (
-                    x: (int)(tileComp.X / BoardComp.TILE_SIZE),
-                    y: (int)(tileComp.Y / BoardComp.TILE_SIZE)
-                ))
-                .ToList();
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
+
+            var tileCoords = boardComp.TileIdByCoords.Keys.ToList();
 
             var playerTile = (x: 0, y: 0);
             do
@@ -61,21 +59,15 @@ namespace Rogueskiv.Core.Systems
 
             game.AddEntity(CreatePlayer(playerTile));
 
-            var tileCordsAndDistances = tileCoords
-                .Select(tileCoord => (
-                    tileCoord,
-                    // TODO spawn distance taking into account the board
-                    distance: Distance.Get(tileCoord.x - playerTile.x, tileCoord.y - playerTile.y)
-                ))
-                .ToList();
+            var measuredTiles = GetDistancesFrom(boardComp, playerTile);
 
             Enumerable
                 .Range(0, EnemyNumber)
-                .Select(i => CreateEnemy(game, tileCordsAndDistances))
-                .ToList()
-                .ForEach(enemy => game.AddEntity(enemy));
+                    .Select(i => CreateEnemy(measuredTiles))
+                    .ToList()
+                    .ForEach(enemy => game.AddEntity(enemy));
 
-            game.AddEntity(CreateDownStairs(tileCoords, tileCordsAndDistances));
+            game.AddEntity(CreateDownStairs(tileCoords, measuredTiles));
 
             var isFirstFloor = PreviousFloorResult == null;
             if (!isFirstFloor)
@@ -123,9 +115,49 @@ namespace Rogueskiv.Core.Systems
             return previousPlayerHealtComp.Health;
         }
 
+        private List<((int x, int y) tileCoords, int distance)> GetDistancesFrom(
+            BoardComp boardComp, (int x, int y) initialTile
+        )
+        {
+            var initialTileEntityId = boardComp.TileIdByCoords[initialTile];
+
+            var measurePendignTileIds = boardComp
+                .TileIdByCoords
+                .Values
+                .Where(id => id != initialTileEntityId)
+                .ToList();
+
+            var currentDistance = 0;
+            var measuredTiles = new List<((int x, int y) tileCoords, int distance)>()
+                { (initialTile, currentDistance) };
+
+            while (measurePendignTileIds.Count > 0)
+            {
+                currentDistance++;
+                var neighbourTileIds = measuredTiles
+                    .SelectMany(tile => boardComp
+                        .TilesNeighbours[tile.tileCoords]
+                        .ToList()
+                        .Where(neighbourId => measurePendignTileIds.Contains(neighbourId))
+                    )
+                    .Distinct()
+                    .ToList();
+
+                measuredTiles.AddRange(
+                    neighbourTileIds.Select(neighbourId => (
+                        tileCoords: boardComp.CoordsByTileId[neighbourId],
+                        distance: currentDistance
+                    ))
+                );
+
+                neighbourTileIds.ForEach(id => measurePendignTileIds.Remove(id));
+            }
+
+            return measuredTiles;
+        }
+
         private List<IComponent> CreateEnemy(
-            Game game,
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances
+            List<((int x, int y) tileCoord, int distance)> tileCoordsAndDistances
         )
         {
             (int x, int y) = GetRandomPosition(tileCoordsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
@@ -149,7 +181,7 @@ namespace Rogueskiv.Core.Systems
 
         private IComponent CreateDownStairs(
             List<(int x, int y)> tileCoords,
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances
+            List<((int x, int y) tileCoord, int distance)> tileCoordsAndDistances
         )
         {
             var maxDistance = tileCoordsAndDistances.Max(tcd => tcd.distance);
@@ -198,7 +230,7 @@ namespace Rogueskiv.Core.Systems
             };
 
         private static (int x, int y) GetRandomPosition(
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances,
+            List<((int x, int y) tileCoord, int distance)> tileCoordsAndDistances,
             int minDistance
         )
         {

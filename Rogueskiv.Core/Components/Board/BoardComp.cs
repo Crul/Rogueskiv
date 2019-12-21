@@ -21,11 +21,12 @@ namespace Rogueskiv.Core.Components.Board
 
         public List<string> Board { get; set; }
 
-        public Dictionary<(int x, int y), EntityId> TileIdByCoords { get; }
-        private readonly Dictionary<EntityId, (int x, int y)> CoordsByTileId;
-        private readonly Dictionary<(int x, int y), List<EntityId>> TilesNeighbours;
-        public Dictionary<(int x, int y), List<EntityId>> WallsByTiles { get; }
-        private readonly Dictionary<(int x, int y), List<EntityId>> EntitiesByTiles;
+        public IDictionary<(int x, int y), EntityId> TileIdByCoords { get; }
+        public IDictionary<EntityId, (int x, int y)> CoordsByTileId { get; }
+        public IDictionary<(int x, int y), List<EntityId>> TilesNeighbours { get; }
+        public IDictionary<(int x, int y), List<EntityId>> WallsByTiles { get; }
+
+        private readonly IDictionary<(int x, int y), List<EntityId>> EntitiesByTiles;
 
         public BoardComp()
         {
@@ -100,8 +101,8 @@ namespace Rogueskiv.Core.Components.Board
         public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp position) =>
             GetIdsNear(WallsByTiles, entityId, position);
 
-        public List<EntityId> GetIdsNear(
-            Dictionary<(int x, int y), List<EntityId>> EntityIdsDict,
+        private List<EntityId> GetIdsNear(
+            IDictionary<(int x, int y), List<EntityId>> EntityIdsDict,
             EntityId entityId,
             PositionComp position
         )
