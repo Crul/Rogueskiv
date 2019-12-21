@@ -3,9 +3,9 @@ using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using static SDL2.SDL;
@@ -55,17 +55,16 @@ namespace Rogueskiv.Ux.Renderers
             var position = GetXY(entity, positionComp, interpolation);
 
             var wallFacingDirections = BoardComp
-                .WallsByTiles[new Point(
-                    (int)position.X / BoardComp.TILE_SIZE,
-                    (int)position.Y / BoardComp.TILE_SIZE
-                )]
+                .WallsByTiles[position.Divide(BoardComp.TILE_SIZE)]
                 .Select(wallId => Game.Entities[wallId].GetComponent<IWallComp>().Facing);
 
-            var screenPosition = GetScreenPosition(position, UxContext);
+            var screenPosition = GetScreenPosition(position)
+                .Substract(OutputSize.Item1 / 2, OutputSize.Item2 / 2);
+
             var tRect = new SDL_Rect()
             {
-                x = (int)screenPosition.X - OutputSize.Item1 / 2,
-                y = (int)screenPosition.Y - OutputSize.Item2 / 2,
+                x = screenPosition.X,
+                y = screenPosition.Y,
                 w = OutputSize.Item1,
                 h = OutputSize.Item2
             };

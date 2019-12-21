@@ -10,7 +10,6 @@ using Seedwork.Core.Systems;
 using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.Core
@@ -92,7 +91,7 @@ namespace Rogueskiv.Core
                 .Single();
 
             var playerMovementComp = playerComp.GetComponent<MovementComp>();
-            playerMovementComp.Speed = new PointF(0, 0);
+            playerMovementComp.Stop();
 
             var previousPlayerComp = previousFloorResult
                 .Data

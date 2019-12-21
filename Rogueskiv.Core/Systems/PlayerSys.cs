@@ -2,10 +2,10 @@
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
+using Seedwork.Crosscutting;
 using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.Core.Systems
@@ -62,10 +62,10 @@ namespace Rogueskiv.Core.Systems
             if (speedY == 0)
                 speedY = -PlayerMovementComp.FrictionFactor * PlayerMovementComp.Speed.Y;
 
-            PlayerMovementComp.Speed = new PointF(
-                BoundSpeed(PlayerMovementComp.Speed.X + speedX),
-                BoundSpeed(PlayerMovementComp.Speed.Y + speedY)
-            );
+            PlayerMovementComp.Speed = PlayerMovementComp
+                .Speed
+                .Add(speedX, speedY)
+                .Map(BoundSpeed);
         }
 
         private static float BoundSpeed(float speed)

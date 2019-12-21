@@ -2,6 +2,7 @@
 using Rogueskiv.Core.Components.Position;
 using SDL2;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using System;
 using System.Drawing;
@@ -28,10 +29,8 @@ namespace Rogueskiv.Ux.Renderers
         {
             // TODO wall bounces ?
             var movementComp = entity.GetComponent<MovementComp>();
-            return new PointF(
-                positionComp.Position.X + (movementComp.Speed.X * interpolation),
-                positionComp.Position.Y + (movementComp.Speed.Y * interpolation)
-            );
+
+            return positionComp.Position.Add(movementComp.Speed.Multiply(interpolation));
         }
     }
 }

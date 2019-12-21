@@ -48,24 +48,18 @@ namespace Seedwork.Ux.Renderers
 
         protected virtual void Render(PointF position)
         {
-            var screenPosition = GetScreenPosition(position, UxContext);
+            var screenPosition = GetScreenPosition(position);
 
             var tRect = new SDL_Rect()
             {
-                x = (int)screenPosition.X - OutputSize.Item1 / 2,
-                y = (int)screenPosition.Y - OutputSize.Item2 / 2,
+                x = screenPosition.X - OutputSize.Item1 / 2,
+                y = screenPosition.Y - OutputSize.Item2 / 2,
                 w = OutputSize.Item1,
                 h = OutputSize.Item2
             };
 
             SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref tRect);
         }
-
-        protected static PointF GetScreenPosition(PointF position, UxContext uxContext) =>
-            new PointF(
-                position.X + uxContext.CenterX,
-                position.Y + uxContext.CenterY
-            );
 
         protected override void Dispose(bool cleanManagedResources)
         {

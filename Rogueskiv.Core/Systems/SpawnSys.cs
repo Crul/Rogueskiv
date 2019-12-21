@@ -75,10 +75,10 @@ namespace Rogueskiv.Core.Systems
 
         private List<IComponent> CreatePlayer(Point playerTilePos)
         {
-            var playerPos = new PointF(
-                (BoardComp.TILE_SIZE / 2) + (playerTilePos.X * BoardComp.TILE_SIZE),
-                (BoardComp.TILE_SIZE / 2) + (playerTilePos.Y * BoardComp.TILE_SIZE)
-            );
+
+            var playerPos = playerTilePos
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
 
             return new List<IComponent> {
                 new PlayerComp(),
@@ -88,10 +88,10 @@ namespace Rogueskiv.Core.Systems
                 },
                 new CurrentPositionComp(playerPos),
                 new LastPositionComp(playerPos),
-                new MovementComp(){
-                    FrictionFactor = 1f / 5f,
-                    BounceAmortiguationFactor = 2f / 3f
-                }
+                new MovementComp(
+                    frictionFactor: 1f / 5f,
+                    bounceAmortiguationFactor: 2f / 3f
+                )
             };
         }
 
@@ -157,24 +157,21 @@ namespace Rogueskiv.Core.Systems
         )
         {
             var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
+            var enemyPos = enemyTilePos.Multiply(BoardComp.TILE_SIZE);
 
-            var enemyPos = new PointF(
-                BoardComp.TILE_SIZE * enemyTilePos.X,
-                BoardComp.TILE_SIZE * enemyTilePos.Y
-            );
             return new List<IComponent>
             {
                 new EnemyComp(),
                 new CurrentPositionComp(enemyPos),
                 new LastPositionComp(enemyPos),
-                new MovementComp() {
-                    Speed = new PointF(
+                new MovementComp(
+                    speed: new PointF(
                         (50 + Luck.Next(100)) / GameContext.GameFPS,
                         (50 + Luck.Next(100)) / GameContext.GameFPS
                     ),
-                    FrictionFactor = 1,
-                    BounceAmortiguationFactor = 1
-                }
+                    frictionFactor: 1,
+                    bounceAmortiguationFactor: 1
+                )
             };
         }
 
@@ -212,18 +209,14 @@ namespace Rogueskiv.Core.Systems
                     )
                 );
 
-        private IComponent CreateStairts<T>(Point tilePos, Func<Point, T> createStairs)
+        private IComponent CreateStairts<T>(Point tilePos, Func<PointF, T> createStairs)
             where T : StairsComp
         {
-            var position = new PointF(
-                tilePos.X * BoardComp.TILE_SIZE,
-                tilePos.Y * BoardComp.TILE_SIZE
-            );
+            var position = tilePos
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
 
-            return createStairs(new Point(
-                (BoardComp.TILE_SIZE / 2) + (int)position.X,
-                (BoardComp.TILE_SIZE / 2) + (int)position.Y
-            ));
+            return createStairs(position);
         }
 
         private static Point GetRandomTilePos(

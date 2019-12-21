@@ -11,7 +11,7 @@ namespace Rogueskiv.Core.Components.Board
 {
     public class BoardComp : IComponent
     {
-        public const int TILE_SIZE = 32; // TODO proper tile size
+        public const int TILE_SIZE = 32;
 
         public List<Point> NeighbourTilePositions { get; } = new List<Point>
         {
@@ -44,14 +44,9 @@ namespace Rogueskiv.Core.Components.Board
             LastPositionComp lastPosComp
         )
         {
-            var lastTilePos = new Point(
-                (int)Math.Floor(lastPosComp.Position.X / TILE_SIZE),
-                (int)Math.Floor(lastPosComp.Position.Y / TILE_SIZE)
-            );
-            var currentTilePos = new Point(
-                (int)Math.Floor(currentPosComp.Position.X / TILE_SIZE),
-                (int)Math.Floor(currentPosComp.Position.Y / TILE_SIZE)
-            );
+            var lastTilePos = lastPosComp.TilePos;
+            var currentTilePos = currentPosComp.TilePos;
+
             if (currentTilePos == lastTilePos)
                 return;
 
@@ -62,14 +57,8 @@ namespace Rogueskiv.Core.Components.Board
             EntitiesByTiles[currentTilePos].Add(entityId);
         }
 
-        public void RemoveEntity(EntityId entityId, PositionComp positionComp)
-        {
-            var point = new Point(
-                (int)Math.Floor(positionComp.Position.X / TILE_SIZE),
-                (int)Math.Floor(positionComp.Position.Y / TILE_SIZE)
-            );
-            EntitiesByTiles[point].Remove(entityId);
-        }
+        public void RemoveEntity(EntityId entityId, PositionComp positionComp) =>
+            EntitiesByTiles[positionComp.TilePos].Remove(entityId);
 
         public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp position) =>
             GetIdsNear(EntitiesByTiles, entityId, position);
@@ -116,10 +105,7 @@ namespace Rogueskiv.Core.Components.Board
             PositionComp positionComp
         )
         {
-            var tilePos = new Point(
-                (int)Math.Floor(positionComp.Position.X / TILE_SIZE),
-                (int)Math.Floor(positionComp.Position.Y / TILE_SIZE)
-            );
+            var tilePos = positionComp.TilePos;
 
             if (!EntityIdsByTilePos.ContainsKey(tilePos))
             {

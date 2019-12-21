@@ -2,6 +2,7 @@
 using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
@@ -21,7 +22,7 @@ namespace Rogueskiv.Ux.Renderers
         private readonly IDictionary<
                 (WallFacingDirections facing, WallTipTypes initialTip, WallTipTypes finalTip),
                 SDL_Rect
-            > WallTexutreRects = new Dictionary<
+            > WallTextureRects = new Dictionary<
                 (WallFacingDirections facing, WallTipTypes initialTip, WallTipTypes finalTip),
                 SDL_Rect
             >
@@ -103,11 +104,20 @@ namespace Rogueskiv.Ux.Renderers
             int deltaY
         ) =>
             wallTiles.ForEach(wallTile =>
+            {
+                var wallPosition = wallTile
+                    .TilePos
+                    .Multiply(BoardComp.TILE_SIZE)
+                    .Add(
+                        -(WallSize.length - BoardComp.TILE_SIZE) / 2,
+                        deltaY
+                    );
+
                 RenderWall(
-                    x: (BoardComp.TILE_SIZE * wallTile.TilePos.X) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
-                    y: (BoardComp.TILE_SIZE * wallTile.TilePos.Y) + deltaY,
-                    textureRect: WallTexutreRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
-                ));
+                    wallPosition,
+                    textureRect: WallTextureRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
+                );
+            });
 
         private void RenderVerticalWall(
             List<WallTile> wallTiles,
@@ -115,11 +125,20 @@ namespace Rogueskiv.Ux.Renderers
             int deltaX
         ) =>
             wallTiles.ForEach(wallTile =>
+            {
+                var wallPosition = wallTile
+                    .TilePos
+                    .Multiply(BoardComp.TILE_SIZE)
+                    .Add(
+                        deltaX,
+                        -(WallSize.length - BoardComp.TILE_SIZE) / 2
+                    );
+
                 RenderWall(
-                    x: (BoardComp.TILE_SIZE * wallTile.TilePos.X) + deltaX,
-                    y: (BoardComp.TILE_SIZE * wallTile.TilePos.Y) - (WallSize.length - BoardComp.TILE_SIZE) / 2,
-                    textureRect: WallTexutreRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
-                ));
+                    wallPosition,
+                    textureRect: WallTextureRects[(facing, wallTile.InitialTip, wallTile.FinalTip)]
+                );
+            });
 
         private bool IsWallVisible(Point tilePos)
         {
@@ -128,12 +147,13 @@ namespace Rogueskiv.Ux.Renderers
             return Game.Entities[tileId].GetComponent<TileComp>().Visible;
         }
 
-        private void RenderWall(int x, int y, SDL_Rect textureRect)
+        private void RenderWall(PointF position, SDL_Rect textureRect)
         {
+            var screenPosition = GetScreenPosition(position);
             var tRect = new SDL_Rect()
             {
-                x = GetPositionComponent(x, UxContext.CenterX),
-                y = GetPositionComponent(y, UxContext.CenterY),
+                x = screenPosition.X,
+                y = screenPosition.Y,
                 w = textureRect.w,
                 h = textureRect.h
             };

@@ -2,8 +2,8 @@
 using Rogueskiv.Core.Components.Position;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
+using Seedwork.Crosscutting;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace Rogueskiv.Core.Systems
 {
@@ -21,11 +21,7 @@ namespace Rogueskiv.Core.Systems
             var movementComp = entity.GetComponent<MovementComp>();
 
             lastPositionComp.Position = positionComp.Position;
-
-            positionComp.Position = new PointF(
-                positionComp.Position.X + movementComp.Speed.X,
-                positionComp.Position.Y + movementComp.Speed.Y
-            );
+            positionComp.Position = positionComp.Position.Add(movementComp.Speed);
         }
     }
 }

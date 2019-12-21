@@ -50,13 +50,18 @@ namespace Rogueskiv.Ux.Renderers
             var lastPositionComp = entity.GetComponent<LastPositionComp>();
             var position = GetXY(entity, positionComp, interpolation);
 
+            var lastMovmement = positionComp
+                .Position
+                .Substract(lastPositionComp.Position)
+                .ToPoint();
+
             BgrTextureRect.x = Maths.Modulo(
-                BgrTextureRect.x - (int)(positionComp.Position.X - lastPositionComp.Position.X),
+                BgrTextureRect.x - lastMovmement.X,
                 NonRepeatingBgrTextureSize
             );
 
             BgrTextureRect.y = Maths.Modulo(
-                BgrTextureRect.y - (int)(positionComp.Position.Y - lastPositionComp.Position.Y),
+                BgrTextureRect.y - lastMovmement.X,
                 NonRepeatingBgrTextureSize
             );
 
@@ -68,7 +73,7 @@ namespace Rogueskiv.Ux.Renderers
             UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - position.X);
             UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - position.Y);
 
-            var screenPosition = GetScreenPosition(position, UxContext);
+            var screenPosition = GetScreenPosition(position);
 
             BgrMaskTexture.ForEach(maskRect =>
             {
@@ -82,8 +87,8 @@ namespace Rogueskiv.Ux.Renderers
 
                 var outRect = new SDL_Rect()
                 {
-                    x = (int)screenPosition.X + maskRect.X - BgrOutputSize.Item1 / 2,
-                    y = (int)screenPosition.Y + maskRect.Y - BgrOutputSize.Item2 / 2,
+                    x = screenPosition.X + maskRect.X - BgrOutputSize.Item1 / 2,
+                    y = screenPosition.Y + maskRect.Y - BgrOutputSize.Item2 / 2,
                     w = maskRect.Width,
                     h = maskRect.Height
                 };

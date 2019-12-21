@@ -39,8 +39,8 @@ namespace Rogueskiv.Core.Systems
         public override void Update(EntityList entities, List<int> controls)
         {
             FOVRecurse.SetPlayerPos(
-                (int)(PlayerPosComp.Position.X / BoardComp.TILE_SIZE),
-                (int)(PlayerPosComp.Position.Y / BoardComp.TILE_SIZE)
+                PlayerPosComp.TilePos.X,
+                PlayerPosComp.TilePos.Y
             );
 
             var otherPositions = entities
@@ -58,15 +58,10 @@ namespace Rogueskiv.Core.Systems
             );
         }
 
-        private void SetVisibility(PositionComp positionComp)
-        {
-            var tileX = (int)(positionComp.Position.X / BoardComp.TILE_SIZE);
-            var tileY = (int)(positionComp.Position.Y / BoardComp.TILE_SIZE);
-
+        private void SetVisibility(PositionComp positionComp) =>
             positionComp.Visible = FOVRecurse
                 .VisiblePoints
-                .Any(vp => vp.X == tileX && vp.Y == tileY);
-        }
+                .Any(vp => vp == positionComp.TilePos);
 
         private void InitFOV(Game game)
         {

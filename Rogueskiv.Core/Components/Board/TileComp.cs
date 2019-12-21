@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Seedwork.Crosscutting;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Board
@@ -20,10 +21,6 @@ namespace Rogueskiv.Core.Components.Board
         }
 
         public TileComp(Point tilePos)
-            : base(new PointF(
-                BoardComp.TILE_SIZE * tilePos.X + (BoardComp.TILE_SIZE / 2),
-                BoardComp.TILE_SIZE * tilePos.Y + (BoardComp.TILE_SIZE / 2)
-            ))
-        { }
+            : base(tilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2)) { }
     }
 }

@@ -23,10 +23,7 @@ namespace Rogueskiv.Core.Components.Walls
 
         protected WallComp(
             Point tilePos, int size, WallFacingDirections facing, List<WallTile> tiles
-        ) : base(new PointF(
-                BoardComp.TILE_SIZE * tilePos.X,
-                BoardComp.TILE_SIZE * tilePos.Y
-            ))
+        ) : base(tilePos)
         {
             Size = BoardComp.TILE_SIZE * size;
             Facing = facing;
