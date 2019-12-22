@@ -22,10 +22,7 @@ namespace Rogueskiv.MapGeneration
                 if (whileLoops > CONNECT_ROOMS_MAX_LOOPS)
                     throw new InvalidMapException("Connecting rooms");
 
-                var roomsWithoutCorridors = rooms.Where(r => r.Corridors.Count == 0).ToList();
-                var room = (roomsWithoutCorridors.Count > 0)
-                    ? roomsWithoutCorridors[Luck.Next(roomsWithoutCorridors.Count)]
-                    : rooms[Luck.Next(rooms.Count)];
+                var room = rooms.OrderBy(r => r.Corridors.Count).First();
 
                 var availableTiles = new List<((int x, int y) tile, Direction direction)>();
                 for (var x = room.X + 1; x < room.X + room.Width - 1; x++)
