@@ -49,15 +49,15 @@ namespace Rogueskiv.Core.Systems
                 .ToList();
 
             var board = BoardComp.Board;
-            (var width, var height) = GetSize(board);
+            var size = GetSize(board);
 
-            AddTiles(game, board, width, height);
+            AddTiles(game, board, size);
 
             // TODO fix empty tile needed around the board to make all walls
-            AddLeftWalls(game, board, width, height);
-            AddRightWalls(game, board, width, height);
-            var upWalls = AddUpWalls(game, board, width, height);
-            var downWalls = AddDownWalls(game, board, width, height);
+            AddLeftWalls(game, board, size);
+            AddRightWalls(game, board, size);
+            var upWalls = AddUpWalls(game, board, size);
+            var downWalls = AddDownWalls(game, board, size);
 
             SetWallTips(game, upWalls, downWalls);
 
@@ -74,13 +74,13 @@ namespace Rogueskiv.Core.Systems
                 )
             );
 
-        public static (int width, int height) GetSize(List<string> board) =>
-            (board[0].Length, board.Count);
+        public static Size GetSize(List<string> board) =>
+            new Size(board[0].Length, board.Count);
 
         #region Tiles
-        private void AddTiles(Game game, List<string> board, int width, int height)
+        private void AddTiles(Game game, List<string> board, Size size)
         {
-            ForAllTiles(width, height, tilePos =>
+            ForAllTiles(size, tilePos =>
             {
                 if (!IsTile(board, tilePos))
                     return;
@@ -98,10 +98,10 @@ namespace Rogueskiv.Core.Systems
         #endregion
 
         #region Walls
-        private List<IWallComp> AddUpWalls(Game game, List<string> board, int width, int height) =>
+        private List<IWallComp> AddUpWalls(Game game, List<string> board, Size size) =>
             AddWalls(
                 game,
-                height, width,
+                size.Height, size.Width,
                 isWall: (y, x) => IsTile(board, new Point(x, y)) && !IsTile(board, new Point(x, y + 1)),
                 initWall: (y, x) => (x, y, 1),
                 createWallTile: (y, x) => new WallTile(new Point(x, y)),
@@ -109,9 +109,10 @@ namespace Rogueskiv.Core.Systems
                 maringIndex1: 1
             );
 
-        private List<IWallComp> AddDownWalls(Game game, List<string> board, int width, int height) =>
+        private List<IWallComp> AddDownWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, height, width,
+                game,
+                size.Height, size.Width,
                 isWall: (y, x) => !IsTile(board, new Point(x, y - 1)) && IsTile(board, new Point(x, y)),
                 initWall: (y, x) => (x, y, 1),
                 createWallTile: (y, x) => new WallTile(new Point(x, y)),
@@ -119,9 +120,10 @@ namespace Rogueskiv.Core.Systems
                 initIndex1: 1
             );
 
-        private List<IWallComp> AddLeftWalls(Game game, List<string> board, int width, int height) =>
+        private List<IWallComp> AddLeftWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, width, height,
+                game,
+                size.Width, size.Height,
                 isWall: (x, y) => !IsTile(board, new Point(x + 1, y)) && IsTile(board, new Point(x, y)),
                 initWall: (x, y) => (x, y, 1),
                 createWallTile: (x, y) => new WallTile(new Point(x, y)),
@@ -129,9 +131,10 @@ namespace Rogueskiv.Core.Systems
                 maringIndex1: 1
             );
 
-        private List<IWallComp> AddRightWalls(Game game, List<string> board, int width, int height) =>
+        private List<IWallComp> AddRightWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, width, height,
+                game,
+                size.Width, size.Height,
                 isWall: (x, y) => !IsTile(board, new Point(x - 1, y)) && IsTile(board, new Point(x, y)),
                 initWall: (x, y) => (x, y, 1),
                 createWallTile: (x, y) => new WallTile(new Point(x, y)),
@@ -265,10 +268,10 @@ namespace Rogueskiv.Core.Systems
 
         #endregion
 
-        public static void ForAllTiles(int width, int height, Action<Point> action)
+        public static void ForAllTiles(Size size, Action<Point> action)
         {
-            for (var y = 0; y < height; y++)
-                for (var x = 0; x < width; x++)
+            for (var y = 0; y < size.Height; y++)
+                for (var x = 0; x < size.Width; x++)
                     action(new Point(x, y));
         }
     }
