@@ -63,7 +63,7 @@ namespace Rogueskiv.Ux.Renderers
             );
 
             BgrTextureRect.y = Maths.Modulo(
-                BgrTextureRect.y - lastMovmement.X,
+                BgrTextureRect.y - lastMovmement.Y,
                 NonRepeatingBgrTextureSize
             );
 
