@@ -18,8 +18,8 @@ namespace Rogueskiv.Core.Systems
         private Game Game;
         private BoardComp BoardComp;
         private EntityId PlayerId;
-        private CurrentPositionComp PlayerPos;
-        private HealthComp PlayerHealth;
+        private CurrentPositionComp PlayerPosComp;
+        private HealthComp PlayerHealthComp;
 
         public override bool Init(Game game)
         {
@@ -39,8 +39,8 @@ namespace Rogueskiv.Core.Systems
 
             PlayerId = player.Id;
 
-            PlayerPos = player.GetComponent<CurrentPositionComp>();
-            PlayerHealth = player.GetComponent<HealthComp>();
+            PlayerPosComp = player.GetComponent<CurrentPositionComp>();
+            PlayerHealthComp = player.GetComponent<HealthComp>();
 
             return base.Init(game);
         }
@@ -50,19 +50,19 @@ namespace Rogueskiv.Core.Systems
             var collidedEntityIds = GetCollidedEntityIds(entities);
             collidedEntityIds.ForEach(Game.RemoveEntity);
 
-            PlayerHealth.Health -= COLLISION_DAMAGE * collidedEntityIds.Count;
+            PlayerHealthComp.Health -= COLLISION_DAMAGE * collidedEntityIds.Count;
         }
 
         private List<EntityId> GetCollidedEntityIds(EntityList entities) =>
             BoardComp
-                .GetEntityIdsNear(PlayerId, PlayerPos)
+                .GetEntityIdsNear(PlayerId, PlayerPosComp)
                 .Where(id =>
                 {
                     if (!entities.ContainsKey(id)) // TODO debug corner case
                         return false;
 
                     var positionComp = entities[id].GetComponent<CurrentPositionComp>();
-                    var distance = Distance.Get(positionComp.Position, PlayerPos.Position);
+                    var distance = Distance.Get(positionComp.Position, PlayerPosComp.Position);
                     return (distance < COLLISION_DISTANCE);
                 })
                 .ToList();
