@@ -19,6 +19,9 @@ namespace Rogueskiv.Core.Systems
         private IEntity PlayerEntity;
         private PositionComp PlayerPositionComp;
         private bool HasExitedStairs = false;
+        private readonly bool IsLastFloor;
+
+        public StairsSys(bool isLastFloor) => IsLastFloor = isLastFloor;
 
         public override bool Init(Game game)
         {
@@ -42,12 +45,16 @@ namespace Rogueskiv.Core.Systems
             return base.Init(game);
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, List<int> controls)
         {
             var isInDownStairs = IsInStairs(DownStairsComp);
             if (isInDownStairs && HasExitedStairs)
             {
-                EndGame(RogueskivGameResults.FloorDown, DownStairsComp);
+                if (IsLastFloor)
+                    EndGame(RogueskivGameResults.WinResult, DownStairsComp, pauseBeforeQuit: true);
+                else
+                    EndGame(RogueskivGameResults.FloorDown, DownStairsComp);
+
                 return;
             }
 
@@ -62,7 +69,9 @@ namespace Rogueskiv.Core.Systems
                 HasExitedStairs = true;
         }
 
-        private void EndGame(IGameResult<IEntity> gameresult, StairsComp stairsComp)
+        private void EndGame(
+            IGameResult<IEntity> gameresult, StairsComp stairsComp, bool pauseBeforeQuit = false
+        )
         {
             // reset for next floor execution
             HasExitedStairs = false;
@@ -72,7 +81,7 @@ namespace Rogueskiv.Core.Systems
             gameresult.Data.Clear();
             gameresult.Data.Add(PlayerEntity);
 
-            Game.EndGame(gameresult);
+            Game.EndGame(gameresult, pauseBeforeQuit);
         }
 
         private bool IsInStairs(StairsComp stairsComp) =>

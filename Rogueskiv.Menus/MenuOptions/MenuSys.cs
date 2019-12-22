@@ -1,6 +1,7 @@
 ﻿using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
+using Seedwork.Crosscutting;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace Rogueskiv.Menus.MenuOptions
             return base.Init(game);
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls)
+        public override void Update(EntityList entities, List<int> controls)
         {
             var controlList = controls.ToList();
             if (controlList.Count == 0)
@@ -54,12 +55,10 @@ namespace Rogueskiv.Menus.MenuOptions
                 return;
             }
 
-            var newActiveIndex = (
-                    menuOptions.IndexOf(activeMenuOption) + move
-                ) % menuOptions.Count;
-
-            if (newActiveIndex < 0)
-                newActiveIndex += menuOptions.Count;
+            var newActiveIndex = Maths.Modulo(
+                menuOptions.IndexOf(activeMenuOption) + move,
+                menuOptions.Count
+            );
 
             activeMenuOption.Active = false;
             menuOptions[newActiveIndex].Active = true;

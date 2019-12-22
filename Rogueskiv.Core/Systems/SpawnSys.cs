@@ -17,6 +17,7 @@ namespace Rogueskiv.Core.Systems
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
+        private const int INITIAL_PLAYER_HEALTH = 100;
 
         private readonly IGameContext GameContext;
         private readonly IGameResult<IEntity> PreviousFloorResult;
@@ -83,7 +84,7 @@ namespace Rogueskiv.Core.Systems
             return false;
         }
 
-        public override void Update(EntityList entities, IEnumerable<int> controls) =>
+        public override void Update(EntityList entities, List<int> controls) =>
             throw new NotImplementedException();
 
         private List<IComponent> CreatePlayer((int x, int y) playerTile)
@@ -93,7 +94,10 @@ namespace Rogueskiv.Core.Systems
 
             return new List<IComponent> {
                 new PlayerComp(),
-                new HealthComp() { Health = GetPreviousHealth() ?? 100 },
+                new HealthComp() {
+                    MaxHealth = INITIAL_PLAYER_HEALTH,
+                    Health = GetPreviousHealth() ?? INITIAL_PLAYER_HEALTH
+                },
                 new CurrentPositionComp() { X = x, Y = y },
                 new LastPositionComp() { X = x, Y = y },
                 new MovementComp(){
@@ -153,6 +157,7 @@ namespace Rogueskiv.Core.Systems
             (int x, int y) = (0, 0);
             do
             {
+                // TODO what if no available ???
                 (x, y) = GetRandomPosition(tileCoordsAndDistances, minDistance);
             } while (!IsValidStairs(tileCoords, (x, y)));
 

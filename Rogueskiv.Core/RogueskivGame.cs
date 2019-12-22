@@ -27,11 +27,11 @@ namespace Rogueskiv.Core
             string boardData = default
         )
             : base(
-                quitControl: (int)Core.Controls.QUIT,
                 stageCode: stageCode,
                 entitiesComponents: new List<List<IComponent>>
                 {
-                    new List<IComponent> { new BoardComp() }
+                    new List<IComponent> { new BoardComp() },
+                    new List<IComponent> { new PopUpComp() },
                 },
                 systems: new List<ISystem> {
                     string.IsNullOrEmpty(boardData)
@@ -47,9 +47,11 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new CollisionSys(),
                     new FOVSys(),
-                    new StairsSys(),
+                    new StairsSys(floorCount == floor),
                     new DeathSys()
-                }
+                },
+                pauseControl: (int)Core.Controls.PAUSE,
+                quitControl: (int)Core.Controls.QUIT
             ) => BoardComp = Entities
                     .GetWithComponent<BoardComp>()
                     .Single()

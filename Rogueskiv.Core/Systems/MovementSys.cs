@@ -8,7 +8,7 @@ namespace Rogueskiv.Core.Systems
 {
     public class MovementSys : BaseSystem
     {
-        public override void Update(EntityList entities, IEnumerable<int> controls) =>
+        public override void Update(EntityList entities, List<int> controls) =>
             entities
                 .GetWithComponent<MovementComp>()
                 .ForEach(Update);

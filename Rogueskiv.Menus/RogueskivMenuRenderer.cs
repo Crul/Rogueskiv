@@ -3,7 +3,6 @@ using SDL2;
 using Seedwork.Core;
 using Seedwork.Ux;
 using System;
-using System.IO;
 
 namespace Rogueskiv.Menus
 {
@@ -13,10 +12,10 @@ namespace Rogueskiv.Menus
         private const int FONT_SIZE = 28;
         private readonly IntPtr MenuFont;
 
-        public RogueskivMenuRenderer(UxContext uxContext, IRenderizable game)
+        public RogueskivMenuRenderer(UxContext uxContext, IRenderizable game, string fontFile)
             : base(uxContext, game)
         {
-            MenuFont = SDL_ttf.TTF_OpenFont(Path.Join("fonts", "Hack", "Hack-Regular.ttf"), FONT_SIZE);
+            MenuFont = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
             Renderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
         }
 

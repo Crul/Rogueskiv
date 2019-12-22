@@ -6,6 +6,7 @@
         DOWN,
         LEFT,
         RIGHT,
-        QUIT
+        QUIT,
+        PAUSE
     }
 }

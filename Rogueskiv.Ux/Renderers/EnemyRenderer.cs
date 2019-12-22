@@ -12,8 +12,8 @@ namespace Rogueskiv.Ux.Renderers
             : base(
                   uxContext,
                   Path.Combine("imgs", "enemy.png"),
-                  new SDL_Rect { x = 0, y = 0, w = 48, h = 48 },
-                  new Tuple<int, int>(12, 12)
+                  new SDL_Rect { x = 0, y = 0, w = 16, h = 16 },
+                  new Tuple<int, int>(16, 16)
             )
         { }
     }

@@ -11,6 +11,9 @@ namespace Seedwork.Ux.Renderers
         where T : IComponent
     {
         private readonly IntPtr Font;
+        protected SDL_Surface SurfaceCache;
+        private IntPtr TextureCache;
+        private (string text, (byte r, byte g, byte b, byte a), (int x, int y)) DataCache;
 
         protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
@@ -20,35 +23,54 @@ namespace Seedwork.Ux.Renderers
             var component = entity.GetComponent<T>();
             var text = GetText(component);
             var textColor = GetColor(component);
-            (var x, var y) = GetPosition(component);
+            var position = GetPosition(component);
 
-            // TODO cache and reuse rendered text if not changed
-            var renderedText = SDL_ttf.TTF_RenderText_Blended(Font, text, textColor);
-            var surface = (SDL_Surface)Marshal.PtrToStructure(renderedText, typeof(SDL_Surface));
-            var texturedText = SDL_CreateTextureFromSurface(UxContext.WRenderer, renderedText);
+            if (HasDataChanged(text, textColor, position))
+            {
+                SetCache(text, textColor, position);
+                SDL_DestroyTexture(TextureCache);
+                var renderedText = SDL_ttf.TTF_RenderText_Blended(Font, text, textColor);
+                SurfaceCache = (SDL_Surface)Marshal.PtrToStructure(renderedText, typeof(SDL_Surface));
+                TextureCache = SDL_CreateTextureFromSurface(UxContext.WRenderer, renderedText);
+                SDL_FreeSurface(renderedText);
+            }
+
+            RenderBgr(position);
 
             var src = new SDL_Rect()
             {
                 x = 0,
                 y = 0,
-                w = surface.w,
-                h = surface.h
+                w = SurfaceCache.w,
+                h = SurfaceCache.h
             };
             var dest = new SDL_Rect()
             {
-                x = x,
-                y = y,
-                w = surface.w,
-                h = surface.h
+                x = position.x - SurfaceCache.w / 2,
+                y = position.y - SurfaceCache.h / 2,
+                w = SurfaceCache.w,
+                h = SurfaceCache.h
             };
 
-            SDL_RenderCopy(UxContext.WRenderer, texturedText, ref src, ref dest);
-            SDL_DestroyTexture(texturedText);
-            SDL_FreeSurface(renderedText);
+            SDL_RenderCopy(UxContext.WRenderer, TextureCache, ref src, ref dest);
         }
 
         protected abstract string GetText(T component);
         protected abstract SDL_Color GetColor(T component);
         protected abstract (int x, int y) GetPosition(T component);
+
+        protected virtual void RenderBgr((int x, int y) position) { }
+
+        private bool HasDataChanged(string text, SDL_Color color, (int, int) position) =>
+            DataCache != (text, (color.r, color.g, color.b, color.a), position);
+
+        private void SetCache(string text, SDL_Color color, (int, int) position) =>
+            DataCache = (text, (color.r, color.g, color.b, color.a), position);
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            SDL_DestroyTexture(TextureCache);
+        }
     }
 }

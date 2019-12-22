@@ -59,11 +59,11 @@ namespace Seedwork.Engine
                 currentTime = CurrentTime();
                 if (currentTime > nextUxTick)
                 {
+                    var interpolation = 0f;
                     if (!Game.Pause)
-                    {
-                        var interpolation = 1f - (((float)(nextGameTick - currentTime)) / GameContext.GameTicks);
-                        Renderer.Render(interpolation);
-                    }
+                        interpolation = 1f - (((float)(nextGameTick - currentTime)) / GameContext.GameTicks);
+
+                    Renderer.Render(interpolation);
                     nextUxTick += GameContext.UxTicks;
                     stepsWithoutRender = 0;
                 }
