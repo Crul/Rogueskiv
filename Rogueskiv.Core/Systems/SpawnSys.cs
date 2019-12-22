@@ -36,7 +36,7 @@ namespace Rogueskiv.Core.Systems
             EnemyNumber = enemyNumber;
         }
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             var boardComp = game
                 .Entities
@@ -70,7 +70,7 @@ namespace Rogueskiv.Core.Systems
             if (!isFirstFloor)
                 game.AddEntity(CreateUpStairs(playerTile));
 
-            return false;
+            game.RemoveSystem(this);
         }
 
         public override void Update(EntityList entities, List<int> controls) =>

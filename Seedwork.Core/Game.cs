@@ -38,7 +38,7 @@ namespace Seedwork.Core
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
             Systems = systems ?? new List<ISystem>();
-            Systems = Systems.Where(sys => sys.Init(this)).ToList();
+            Systems.ToList().ForEach(sys => sys.Init(this));
         }
 
         public void Update()
@@ -68,8 +68,6 @@ namespace Seedwork.Core
         public IEntity AddEntity(IComponent entityComponent) =>
             AddEntity(new List<IComponent> { entityComponent });
 
-        public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
-
         public IEntity AddEntity(List<IComponent> entityComponents)
         {
             var entity = new Entity(new EntityId(EntityIdCounter++));
@@ -77,6 +75,11 @@ namespace Seedwork.Core
             Entities.Add(entity.Id, entity);
             return entity;
         }
+
+        public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
+
+        public void RemoveSystem(ISystem system) =>
+            Systems.Remove(system);
 
         private void SetPause()
         {

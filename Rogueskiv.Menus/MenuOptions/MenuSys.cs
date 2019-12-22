@@ -12,12 +12,7 @@ namespace Rogueskiv.Menus.MenuOptions
         private Game Game;
         private bool Moved = false;
 
-        public override bool Init(Game game)
-        {
-            Game = game;
-
-            return base.Init(game);
-        }
+        public override void Init(Game game) => Game = game;
 
         public override void Update(EntityList entities, List<int> controls)
         {

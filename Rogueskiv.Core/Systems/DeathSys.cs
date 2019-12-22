@@ -12,7 +12,7 @@ namespace Rogueskiv.Core.Systems
         private Game Game;
         private HealthComp PlayerHealth;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             Game = game;
 
@@ -21,8 +21,6 @@ namespace Rogueskiv.Core.Systems
                 .GetWithComponent<PlayerComp>()
                 .Single()
                 .GetComponent<HealthComp>();
-
-            return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls)

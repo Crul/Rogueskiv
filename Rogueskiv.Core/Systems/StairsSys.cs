@@ -21,7 +21,7 @@ namespace Rogueskiv.Core.Systems
 
         public StairsSys(bool isLastFloor) => IsLastFloor = isLastFloor;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             Game = game;
 
@@ -39,8 +39,6 @@ namespace Rogueskiv.Core.Systems
                 .Single();
 
             PlayerPositionComp = PlayerEntity.GetComponent<CurrentPositionComp>();
-
-            return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls)

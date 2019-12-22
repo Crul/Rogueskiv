@@ -21,7 +21,7 @@ namespace Rogueskiv.Core.Systems
         private CurrentPositionComp PlayerPosComp;
         private HealthComp PlayerHealthComp;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             Game = game;
 
@@ -41,8 +41,6 @@ namespace Rogueskiv.Core.Systems
 
             PlayerPosComp = player.GetComponent<CurrentPositionComp>();
             PlayerHealthComp = player.GetComponent<HealthComp>();
-
-            return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls)

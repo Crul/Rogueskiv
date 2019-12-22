@@ -27,7 +27,7 @@ namespace Rogueskiv.Core.Systems
         public BoardSys(MapGenerationParams mapGenerationParams) =>
              MapGenerationParams = mapGenerationParams;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             if (string.IsNullOrEmpty(BoardData))
             {
@@ -60,8 +60,6 @@ namespace Rogueskiv.Core.Systems
             var downWalls = AddDownWalls(game, board, size);
 
             SetWallTips(game, upWalls, downWalls);
-
-            return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls) =>
