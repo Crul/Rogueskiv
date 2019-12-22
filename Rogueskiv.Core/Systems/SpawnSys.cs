@@ -17,6 +17,7 @@ namespace Rogueskiv.Core.Systems
     class SpawnSys : BaseSystem
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
+        private const int MIN_FOOD_SPAWN_DISTANCE = 10;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
         private const int INITIAL_PLAYER_HEALTH = 100;
 
@@ -49,7 +50,7 @@ namespace Rogueskiv.Core.Systems
             do
             {
                 playerTile = tilePositions[Luck.Next(tilePositions.Count)];
-            } while (!IsValidStairs(boardComp, tilePositions, playerTile));
+            } while (!HasSpaceAround(boardComp, tilePositions, playerTile));
 
             game.AddEntity(CreatePlayer(playerTile));
 
@@ -60,6 +61,8 @@ namespace Rogueskiv.Core.Systems
                     .Select(i => CreateEnemy(measuredTiles))
                     .ToList()
                     .ForEach(enemy => game.AddEntity(enemy));
+
+            game.AddEntity(CreateFood(boardComp, tilePositions, measuredTiles));
 
             game.AddEntity(CreateDownStairs(boardComp, tilePositions, measuredTiles));
 
@@ -175,6 +178,19 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
+        private static IComponent CreateFood(
+            BoardComp boardComp,
+            List<Point> tilePositions,
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        )
+        {
+            var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_FOOD_SPAWN_DISTANCE)
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
+
+            return new FoodComp(foodTilePos);
+        }
+
         private static IComponent CreateDownStairs(
             BoardComp boardComp,
             List<Point> tilePositions,
@@ -187,7 +203,7 @@ namespace Rogueskiv.Core.Systems
             var tilePos = GetRandomTilePos(
                 tilePositionsAndDistances,
                 minDistance,
-                isValidTilePos: tilePos => IsValidStairs(boardComp, tilePositions, tilePos)
+                isValidTilePos: tilePos => HasSpaceAround(boardComp, tilePositions, tilePos)
             );
 
             return CreateStairts(tilePos, tilePos => new DownStairsComp(tilePos));
@@ -196,7 +212,7 @@ namespace Rogueskiv.Core.Systems
         private static IComponent CreateUpStairs(Point playerTilePos) =>
             CreateStairts(playerTilePos, tilePos => new UpStairsComp(tilePos));
 
-        private static bool IsValidStairs(
+        private static bool HasSpaceAround(
             BoardComp boardComp, List<Point> tilePositions, Point tilePos
         ) => boardComp
                 .NeighbourTilePositions
