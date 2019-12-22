@@ -111,7 +111,7 @@ namespace Rogueskiv.Core.Systems
             return previousPlayerHealtComp.Health;
         }
 
-        private List<(Point tilePos, int distance)> GetDistancesFrom(
+        private static List<(Point tilePos, int distance)> GetDistancesFrom(
             BoardComp boardComp, Point initialTile
         )
         {
@@ -175,7 +175,7 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private IComponent CreateDownStairs(
+        private static IComponent CreateDownStairs(
             BoardComp boardComp,
             List<Point> tilePositions,
             List<(Point tilePos, int distance)> tilePositionsAndDistances
@@ -183,20 +183,20 @@ namespace Rogueskiv.Core.Systems
         {
             var maxDistance = tilePositionsAndDistances.Max(tcd => tcd.distance);
             var minDistance = (int)(STAIRS_MIN_DISTANCE_FACTOR * maxDistance);
-            var tilePos = new Point();
-            do
-            {
-                // TODO what if no available ???
-                tilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
-            } while (!IsValidStairs(boardComp, tilePositions, tilePos));
+
+            var tilePos = GetRandomTilePos(
+                tilePositionsAndDistances,
+                minDistance,
+                isValidTilePos: tilePos => IsValidStairs(boardComp, tilePositions, tilePos)
+            );
 
             return CreateStairts(tilePos, tilePos => new DownStairsComp(tilePos));
         }
 
-        private IComponent CreateUpStairs(Point playerTilePos) =>
+        private static IComponent CreateUpStairs(Point playerTilePos) =>
             CreateStairts(playerTilePos, tilePos => new UpStairsComp(tilePos));
 
-        private bool IsValidStairs(
+        private static bool IsValidStairs(
             BoardComp boardComp, List<Point> tilePositions, Point tilePos
         ) => boardComp
                 .NeighbourTilePositions
@@ -209,7 +209,7 @@ namespace Rogueskiv.Core.Systems
                     )
                 );
 
-        private IComponent CreateStairts<T>(Point tilePos, Func<PointF, T> createStairs)
+        private static IComponent CreateStairts<T>(Point tilePos, Func<PointF, T> createStairs)
             where T : StairsComp
         {
             var position = tilePos
@@ -221,18 +221,39 @@ namespace Rogueskiv.Core.Systems
 
         private static Point GetRandomTilePos(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
-            int minDistance
+            int minDistance,
+            Func<Point, bool> isValidTilePos = null
         )
         {
             if (tilePositionsAndDistances.Count == 0)
                 throw new ArgumentException("SpawnSys.GetRandomPosition: empty tilePositionsAndDistances");
 
-            var candidates = tilePositionsAndDistances
-                .Where(tcd => tcd.distance > minDistance)
-                .Select(tcd => tcd.tilePos)
-                .ToList();
+            var tilePos = new Point();
+            var candidates = new List<Point>();
 
-            return candidates[Luck.Next(candidates.Count)];
+            while (true)
+            {
+                while (candidates.Count == 0)
+                {
+                    candidates = tilePositionsAndDistances
+                        .Where(tcd => tcd.distance > minDistance)
+                        .Select(tcd => tcd.tilePos)
+                        .ToList();
+
+                    minDistance--;
+                    if (minDistance < 0)
+                        throw new Exception("SpawnSys.CreateDownStaris: not tile available");
+                }
+
+                while (candidates.Count > 0)
+                {
+                    tilePos = candidates[Luck.Next(candidates.Count)];
+                    candidates.Remove(tilePos);
+
+                    if (isValidTilePos?.Invoke(tilePos) ?? true)
+                        return tilePos;
+                }
+            }
         }
     }
 }
