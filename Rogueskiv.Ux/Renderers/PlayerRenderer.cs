@@ -13,6 +13,8 @@ namespace Rogueskiv.Ux.Renderers
 {
     class PlayerRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
+        private const int CAMERA_MOVEMENT_FRICTION = 20;
+
         private readonly IntPtr BgrTexture;
         private SDL_Rect BgrTextureRect;
         private readonly Tuple<int, int> BgrOutputSize;
@@ -70,7 +72,7 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(PointF position)
         {
-            SetUxCenter(UxContext, position);
+            SetUxCenter(UxContext, position, CAMERA_MOVEMENT_FRICTION);
 
             var screenPosition = GetScreenPosition(position);
 
@@ -99,7 +101,7 @@ namespace Rogueskiv.Ux.Renderers
         }
 
         public static void SetUxCenter(
-            UxContext uxContext, PointF playerPosition
+            UxContext uxContext, PointF playerPosition, int friction = 1
         )
         {
             var targetCenter = uxContext
@@ -107,7 +109,8 @@ namespace Rogueskiv.Ux.Renderers
                 .Substract(playerPosition.ToPoint());
 
             var cameraMovement = targetCenter
-                .Substract(uxContext.Center);
+                .Substract(uxContext.Center)
+                .Divide(friction);
 
             uxContext.Center = uxContext.Center.Add(cameraMovement);
         }

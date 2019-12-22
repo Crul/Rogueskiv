@@ -23,6 +23,8 @@ namespace Seedwork.Ux
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
 
+        public virtual void Reset() { }
+
         public void Render(float interpolation)
         {
             SDL.SDL_RenderClear(WRenderer);
