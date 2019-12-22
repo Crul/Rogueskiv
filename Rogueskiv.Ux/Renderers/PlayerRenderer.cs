@@ -13,7 +13,7 @@ namespace Rogueskiv.Ux.Renderers
 {
     class PlayerRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
-        private const int CAMERA_MOVEMENT_FRICTION = 20;
+        public const int CAMERA_MOVEMENT_FRICTION = 20;
 
         private readonly IntPtr BgrTexture;
         private SDL_Rect BgrTextureRect;
@@ -72,8 +72,6 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(PointF position)
         {
-            SetUxCenter(UxContext, position, CAMERA_MOVEMENT_FRICTION);
-
             var screenPosition = GetScreenPosition(position);
 
             BgrMaskTexture.ForEach(maskRect =>

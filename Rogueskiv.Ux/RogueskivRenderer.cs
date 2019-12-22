@@ -53,6 +53,12 @@ namespace Rogueskiv.Ux
         public override void Reset() =>
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position);
 
+        protected override void RenderGame(float interpolation)
+        {
+            PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, PlayerRenderer.CAMERA_MOVEMENT_FRICTION);
+            base.RenderGame(interpolation);
+        }
+
         protected override void Dispose(bool cleanManagedResources)
         {
             base.Dispose(cleanManagedResources);
