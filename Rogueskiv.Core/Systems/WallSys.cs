@@ -29,13 +29,14 @@ namespace Rogueskiv.Core.Systems
         private void Update(IEntity entity, EntityList entities)
         {
             var lastPosition = entity.GetComponent<LastPositionComp>();
-            var position = entity.GetComponent<CurrentPositionComp>();
-            var movement = entity.GetComponent<MovementComp>();
+            var positionComp = entity.GetComponent<CurrentPositionComp>();
+            var movementComp = entity.GetComponent<MovementComp>();
 
             var wallComponents = BoardComp
-                .GetWallsIdsNear(entity.Id, position)
+                .GetWallsIdsNear(entity.Id, positionComp)
                 .Select(wei => entities[wei])
-                .Select(wall => wall.GetComponent<WallComp>());
+                .Select(wall => wall.GetComponent<WallComp>())
+                .ToList();
 
             int tmpCheck = 0; // TODO 
             bool checkBounces;
@@ -43,7 +44,7 @@ namespace Rogueskiv.Core.Systems
             {
                 tmpCheck++;
                 checkBounces = wallComponents
-                    .Any(wallComp => wallComp.CheckBounce(movement, position, lastPosition));
+                    .Any(wallComp => wallComp.CheckBounce(movementComp, positionComp, lastPosition));
 
                 if (tmpCheck > 10)
                     throw new System.Exception("TOO MANY BOUNCES!!!");
