@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Board
 {
-    public class TileComp : PositionComp, IFOVComp
+    public class TileComp : PositionComp
     {
         public bool HasBeenSeen { get; private set; }
         public bool VisibleByPlayer { get; private set; }

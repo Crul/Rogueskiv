@@ -32,7 +32,7 @@ namespace Rogueskiv.Ux
             Renderers[typeof(DownStairsComp)] = new DownStairsRenderer(uxContext, BoardTexture);
             Renderers[typeof(UpStairsComp)] = new UpStairsRenderer(uxContext, BoardTexture);
             Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
-            Renderers[typeof(IFOVComp)] = new FOVRenderer(uxContext, game);
+            Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext, game);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
             Renderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
             Renderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);

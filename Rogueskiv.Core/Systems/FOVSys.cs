@@ -12,9 +12,8 @@ namespace Rogueskiv.Core.Systems
 {
     class FOVSys : BaseSystem
     {
-        private const int VISUAL_RANGE = 10; // TODO proper visual range
-        private FOVRecurse FOVRecurse;
         private CurrentPositionComp PlayerPosComp;
+        private FOVComp FOVComp;
         private List<TileComp> TileComps;
 
         public override bool Init(Game game)
@@ -25,23 +24,32 @@ namespace Rogueskiv.Core.Systems
                 .Single()
                 .GetComponent<CurrentPositionComp>();
 
+            FOVComp = game
+                .Entities
+                .GetWithComponent<FOVComp>()
+                .Single()
+                .GetComponent<FOVComp>();
+
             TileComps = game
                 .Entities
                 .GetWithComponent<TileComp>()
                 .Select(e => e.GetComponent<TileComp>())
                 .ToList();
 
-            InitFOV(game);
+            var boardComp = game
+                .Entities
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
+
+            FOVComp.Init(boardComp);
 
             return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls)
         {
-            FOVRecurse.SetPlayerPos(
-                PlayerPosComp.TilePos.X,
-                PlayerPosComp.TilePos.Y
-            );
+            FOVComp.SetPlayerPos(PlayerPosComp);
 
             var otherPositions = entities
                 .GetWithComponent<CurrentPositionComp>()
@@ -51,31 +59,11 @@ namespace Rogueskiv.Core.Systems
                 .Select(t => (PositionComp)t)
                 .Concat(otherPositions)
                 .ToList()
-                .ForEach(SetVisibility);
+                .ForEach(comp => comp.Visible = FOVComp.IsVisible(comp));
 
             TileComps.ForEach(tileComp =>
                 tileComp.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position)
             );
-        }
-
-        private void SetVisibility(PositionComp positionComp) =>
-            positionComp.Visible = FOVRecurse
-                .VisiblePoints
-                .Any(vp => vp == positionComp.TilePos);
-
-        private void InitFOV(Game game)
-        {
-            var boardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
-
-            (var width, var height) = BoardSys.GetSize(boardComp.Board);
-
-            FOVRecurse = new FOVRecurse(width, height, VISUAL_RANGE);
-            BoardSys.ForAllTiles(width, height, tilePos =>
-                FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));
         }
     }
 }

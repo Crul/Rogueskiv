@@ -31,6 +31,7 @@ namespace Rogueskiv.Core
                 entitiesComponents: new List<List<IComponent>>
                 {
                     new List<IComponent> { new BoardComp() },
+                    new List<IComponent> { new FOVComp() },
                     new List<IComponent> { new PopUpComp() },
                 },
                 systems: new List<ISystem> {
