@@ -33,7 +33,7 @@ namespace Rogueskiv.Core
                 {
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
-                    new List<IComponent> { new PopUpComp() { Text = $"FLOOR {floor + 1}" } },
+                    new List<IComponent> { new PopUpComp() { Text = GetStartText(floor) } },
                 },
                 systems: new List<ISystem> {
                     string.IsNullOrEmpty(boardData)
@@ -64,6 +64,9 @@ namespace Rogueskiv.Core
                     .Single()
                     .GetComponent<BoardComp>();
         }
+
+        private static string GetStartText(int floor) =>
+            $"FLOOR {floor + 1} - Press any arrow to " + (floor == 0 ? "start" : "continue");
 
         private static MapGenerationParams GetMapGenerationParams
             (int floorCount, int floor)

@@ -16,7 +16,7 @@ namespace Rogueskiv.Ux
 {
     public class RogueskivRenderer : GameRenderer
     {
-        private const int FONT_SIZE = 28;
+        private const int FONT_SIZE = 18;
         private readonly UxContext UxContext;
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
