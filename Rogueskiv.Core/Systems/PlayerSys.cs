@@ -58,11 +58,14 @@ namespace Rogueskiv.Core.Systems
             if (speedY == 0)
                 speedY = -PlayerMovementComp.FrictionFactor * PlayerMovementComp.Speed.Y;
 
-            PlayerMovementComp.Speed = PlayerMovementComp
+            AddSped(PlayerMovementComp, speedX, speedY);
+        }
+
+        public static void AddSped(MovementComp movementComp, float speedX, float speedY) =>
+            movementComp.Speed = movementComp
                 .Speed
                 .Add(speedX, speedY)
                 .Map(BoundSpeed);
-        }
 
         private static float BoundSpeed(float speed)
         {
