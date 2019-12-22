@@ -26,6 +26,9 @@ namespace Rogueskiv.Core.Systems
 
         public override void Update(EntityList entities, List<int> controls)
         {
+            if (PlayerHealthComp.Full)
+                return;
+
             var pickedFoods = entities
                 .GetWithComponent<FoodComp>()
                 .Select(e => (

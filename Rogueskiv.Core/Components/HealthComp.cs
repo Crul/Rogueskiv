@@ -16,5 +16,7 @@ namespace Rogueskiv.Core.Components
         public int MaxHealth { get; set; }
 
         public float HealthFactor { get => (float)Health / MaxHealth; }
+
+        public bool Full { get => Health == MaxHealth; }
     }
 }
