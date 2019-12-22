@@ -1,5 +1,4 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
@@ -83,9 +82,6 @@ namespace Rogueskiv.Core.Systems
         }
 
         private bool IsInStairs(StairsComp stairsComp) =>
-             PlayerPositionComp.Position.X > stairsComp.Position.X - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.X < stairsComp.Position.X + (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.Y > stairsComp.Position.Y - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.Y < stairsComp.Position.Y + (BoardComp.TILE_SIZE / 2);
+            PlayerPositionComp.TilePos == stairsComp.TilePos;
     }
 }
