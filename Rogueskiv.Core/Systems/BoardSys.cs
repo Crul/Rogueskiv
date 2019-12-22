@@ -49,7 +49,7 @@ namespace Rogueskiv.Core.Systems
                 .ToList();
 
             var board = BoardComp.Board;
-            var size = GetSize(board);
+            var size = BoardComp.BoardSize;
 
             AddTiles(game, board, size);
 
@@ -74,8 +74,6 @@ namespace Rogueskiv.Core.Systems
                 )
             );
 
-        public static Size GetSize(List<string> board) =>
-            new Size(board[0].Length, board.Count);
 
         #region Tiles
         private void AddTiles(Game game, List<string> board, Size size)

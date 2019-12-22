@@ -8,7 +8,6 @@ namespace Rogueskiv.Core.Components
         // TODO DRY TileComp
         public bool HasBeenSeen { get; private set; }
         public bool VisibleByPlayer { get; private set; }
-        public float DistanceFromPlayer { get; set; }
 
         public override bool Visible
         {

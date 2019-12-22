@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
@@ -12,39 +13,43 @@ namespace Rogueskiv.Core.Systems
 {
     class FOVSys : BaseSystem
     {
+        private Game Game;
         private CurrentPositionComp PlayerPosComp;
         private FOVComp FOVComp;
+        private BoardComp BoardComp;
         private List<TileComp> TileComps;
 
         public override bool Init(Game game)
         {
-            PlayerPosComp = game
+            Game = game;
+
+            PlayerPosComp = Game
                 .Entities
                 .GetWithComponent<PlayerComp>()
                 .Single()
                 .GetComponent<CurrentPositionComp>();
 
-            FOVComp = game
+            FOVComp = Game
                 .Entities
                 .GetWithComponent<FOVComp>()
                 .Single()
                 .GetComponent<FOVComp>();
 
-            TileComps = game
+            TileComps = Game
                 .Entities
                 .GetWithComponent<TileComp>()
                 .Select(e => e.GetComponent<TileComp>())
                 .ToList();
 
-            var boardComp = game
+            BoardComp = Game
                 .Entities
                 .GetWithComponent<BoardComp>()
                 .Single()
                 .GetComponent<BoardComp>();
 
-            FOVComp.Init(boardComp);
+            FOVComp.Init(BoardComp);
 
-            return base.Init(game);
+            return base.Init(Game);
         }
 
         public override void Update(EntityList entities, List<int> controls)
@@ -61,9 +66,63 @@ namespace Rogueskiv.Core.Systems
                 .ToList()
                 .ForEach(comp => comp.Visible = FOVComp.IsVisible(comp));
 
-            TileComps.ForEach(tileComp =>
-                tileComp.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position)
-            );
+            FOVComp.Reset();
+            TileComps.ForEach(SetFOVInfo);
+        }
+
+        private void SetFOVInfo(TileComp tileComp)
+        {
+            (int tileX, int tileY) = (tileComp.TilePos.X, tileComp.TilePos.Y);
+
+            var tileFOVInfo = FOVComp.FOVTiles[tileX, tileY];
+            tileFOVInfo.Hidden = tileComp.Visible && !tileComp.VisibleByPlayer;
+            tileFOVInfo.VisibleByPlayer = tileComp.VisibleByPlayer;
+            tileFOVInfo.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position);
+
+            var wallFacingDirections = BoardComp
+                .WallsByTiles[tileComp.TilePos]
+                .Select(wallId => Game.Entities[wallId].GetComponent<IWallComp>().Facing)
+                .ToList();
+
+            var hasWallFacingLeft = wallFacingDirections.Contains(WallFacingDirections.LEFT);
+            var hasWallFacingRight = wallFacingDirections.Contains(WallFacingDirections.RIGHT);
+            var hasWallFacingUp = wallFacingDirections.Contains(WallFacingDirections.UP);
+            var hasWallFacingDown = wallFacingDirections.Contains(WallFacingDirections.DOWN);
+
+            if (hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY);
+
+            if (hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY);
+
+            if (hasWallFacingUp)
+                CopyFOVInfo(tileFOVInfo, tileX, tileY + 1);
+
+            if (hasWallFacingDown)
+                CopyFOVInfo(tileFOVInfo, tileX, tileY - 1);
+
+            if (hasWallFacingDown && hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY - 1);
+
+            if (hasWallFacingDown && hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY - 1);
+
+            if (hasWallFacingUp && hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY + 1);
+
+            if (hasWallFacingUp && hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY + 1);
+        }
+
+        private void CopyFOVInfo(TileFOVInfo tileFOVInfo, int targetTileX, int targetTileY)
+        {
+            var targetTileFOVInfo = FOVComp.FOVTiles[targetTileX, targetTileY];
+
+            targetTileFOVInfo.VisibleByPlayer = tileFOVInfo.VisibleByPlayer || tileFOVInfo.VisibleByPlayer;
+            targetTileFOVInfo.Hidden = targetTileFOVInfo.Hidden || tileFOVInfo.Hidden;
+
+            if (tileFOVInfo.DistanceFromPlayer < targetTileFOVInfo.DistanceFromPlayer)
+                targetTileFOVInfo.DistanceFromPlayer = tileFOVInfo.DistanceFromPlayer;
         }
     }
 }

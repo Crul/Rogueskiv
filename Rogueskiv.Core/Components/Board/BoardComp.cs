@@ -20,7 +20,17 @@ namespace Rogueskiv.Core.Components.Board
             new Point(-1,  1), new Point(0,  1), new Point(1,  1),
         };
 
-        public List<string> Board { get; set; }
+        private List<string> board;
+        public List<string> Board
+        {
+            get => board;
+            set
+            {
+                board = value;
+                BoardSize = GetSize(board);
+            }
+        }
+        public Size BoardSize { get; private set; }
 
         public IDictionary<Point, EntityId> TileIdByTilePos { get; }
         public IDictionary<EntityId, Point> TilePositionsByTileId { get; }
@@ -138,5 +148,8 @@ namespace Rogueskiv.Core.Components.Board
                 .Select(neighbourTilePos => TileIdByTilePos[neighbourTilePos])
                 .ToList()
                 .ForEach(TilesNeighbours[tilePos].Add);
+
+        private static Size GetSize(List<string> board) =>
+            new Size(board[0].Length, board.Count);
     }
 }
