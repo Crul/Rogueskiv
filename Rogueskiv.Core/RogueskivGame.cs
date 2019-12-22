@@ -41,8 +41,8 @@ namespace Rogueskiv.Core
                         : new BoardSys(boardData),
                     new SpawnSys(
                         gameContext,
-                        previousFloorResult,
-                        GetEnemyNumber(floorCount, floor)
+                        (float)floor / floorCount,
+                        previousFloorResult
                     ),
                     new PlayerSys(gameContext),
                     new MovementSys(),
@@ -64,9 +64,6 @@ namespace Rogueskiv.Core
                     .Single()
                     .GetComponent<BoardComp>();
         }
-
-        private static int GetEnemyNumber(int floorCount, int floor) =>
-            (int)Math.Pow(5 + (15 * ((float)floor / floorCount)), 1.5f);  // 11 ... 103
 
         private static MapGenerationParams GetMapGenerationParams
             (int floorCount, int floor)
