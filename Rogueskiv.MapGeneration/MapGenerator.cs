@@ -36,7 +36,7 @@ namespace Rogueskiv.MapGeneration
             {
                 for (var x = 0; x < mapParams.Width; x++)
                     board += rooms.Any(room => room.HasTile(x, y))
-                        ? "T" : corridors.Any(c => c.Tiles.Contains((x, y))) ? "T" : ".";
+                        ? "T" : corridors.Any(c => c.Tiles.Contains((x, y))) ? "t" : ".";
 
                 board += Environment.NewLine;
             }

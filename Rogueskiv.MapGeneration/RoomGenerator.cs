@@ -7,6 +7,8 @@ namespace Rogueskiv.MapGeneration
     class RoomGenerator
     {
         private const int INITIAL_ROOMS_MAX_LOOPS = 50;
+        private const int MIN_ROOM_DISTANCE = 1;
+        private const int MIN_ROOM_DISTANCE_PLUS_ONE = 1 + MIN_ROOM_DISTANCE;
 
         public static List<Room> GenerateRooms(MapGenerationParams mapParams)
         {
@@ -50,18 +52,18 @@ namespace Rogueskiv.MapGeneration
         {
             var newRoom = new Room()
             {
-                X = Luck.Next(1, mapParams.Width - 1),  // external wall border required
-                Y = Luck.Next(1, mapParams.Height - 1), // external wall border required
+                X = Luck.Next(1, mapParams.Width - 2),  // external wall border required
+                Y = Luck.Next(1, mapParams.Height - 2), // external wall border required
                 Width = 1,
                 Height = 1,
                 Expanded = false
             };
 
             var isAdjacentToOtherRoom = rooms.Any(room =>
-                newRoom.X >= (room.X - 1)
-                && newRoom.X <= (room.X + room.Width)
-                && newRoom.Y >= (room.Y - 1)
-                && newRoom.Y <= (room.Y + room.Height)
+                newRoom.X >= (room.X - MIN_ROOM_DISTANCE)
+                && newRoom.X <= (room.X + room.Width + MIN_ROOM_DISTANCE)
+                && newRoom.Y >= (room.Y - MIN_ROOM_DISTANCE)
+                && newRoom.Y <= (room.Y + room.Height + MIN_ROOM_DISTANCE)
             );
 
             if (!isAdjacentToOtherRoom)
@@ -75,7 +77,7 @@ namespace Rogueskiv.MapGeneration
             room.Expanded = false;
 
             if (Luck.NextDouble() > mapParams.RoomExpandProbability
-                && CanExpandLeft(mapParams.Height, rooms, room))
+                && CanExpandLeft(rooms, room))
             {
                 room.X -= 1;
                 room.Width += 1;
@@ -88,7 +90,7 @@ namespace Rogueskiv.MapGeneration
                 room.Expanded = true;
             }
             if (Luck.NextDouble() > mapParams.RoomExpandProbability
-                && CanExpandUp(mapParams, rooms, room))
+                && CanExpandUp(rooms, room))
             {
                 room.Y -= 1;
                 room.Height += 1;
@@ -102,20 +104,20 @@ namespace Rogueskiv.MapGeneration
             }
         }
 
-        private static bool CanExpandLeft(int height, List<Room> rooms, Room room)
+        private static bool CanExpandLeft(List<Room> rooms, Room room)
         {
-            if (room.X <= 1)
+            if (room.X <= 2)
                 return false;
 
-            for (var y = room.Y - 1; y < room.Y + room.Height + 1; y++)
-                if (rooms.Any(r => r.HasTile(room.X - 2, y)))
+            for (
+                var y = room.Y - MIN_ROOM_DISTANCE_PLUS_ONE;
+                y <= room.Y + room.Height + MIN_ROOM_DISTANCE_PLUS_ONE;
+                y++
+            )
+                if (rooms.Any(r => Enumerable
+                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
+                                    .Any(i => r.HasTile(room.X - i, y))))
                     return false;
-
-            if (room.Y > 1 && rooms.Any(r => r.HasTile(room.X - 1, room.Y - 1)))
-                return false;
-
-            if (room.Y + room.Height > height - 1 && rooms.Any(r => r.HasTile(room.X - 1, room.Y + room.Height)))
-                return false;
 
             return true;
         }
@@ -127,37 +129,33 @@ namespace Rogueskiv.MapGeneration
             if (room.X + room.Width >= mapParams.Width - 2)
                 return false;
 
-            for (var y = room.Y - 1; y < room.Y + room.Height + 1; y++)
-                if (rooms.Any(r => r.HasTile(room.X + room.Width + 1, y)))
+            for (
+                var y = room.Y - MIN_ROOM_DISTANCE_PLUS_ONE;
+                y <= room.Y + room.Height + MIN_ROOM_DISTANCE_PLUS_ONE;
+                y++
+            )
+                if (rooms.Any(r => Enumerable
+                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
+                                    .Any(i => r.HasTile(room.X + room.Width + i, y))))
                     return false;
-
-            if (room.Y > 1 && rooms.Any(r => r.HasTile(room.X + room.Width, room.Y - 1)))
-                return false;
-
-            if (room.Y + room.Height > mapParams.Height - 1
-                && rooms.Any(r => r.HasTile(room.X + room.Width, room.Y + room.Height)))
-                return false;
 
             return true;
         }
 
-        private static bool CanExpandUp(
-            MapGenerationParams mapParams, List<Room> rooms, Room room
-        )
+        private static bool CanExpandUp(List<Room> rooms, Room room)
         {
             if (room.Y <= 1)
                 return false;
 
-            for (var x = room.X - 1; x < room.X + room.Width + 1; x++)
-                if (rooms.Any(r => r.HasTile(x, room.Y - 2)))
+            for (
+                var x = room.X - MIN_ROOM_DISTANCE_PLUS_ONE;
+                x <= room.X + room.Width + MIN_ROOM_DISTANCE_PLUS_ONE;
+                x++
+            )
+                if (rooms.Any(r => Enumerable
+                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
+                                    .Any(i => r.HasTile(x, room.Y - i))))
                     return false;
-
-            if (room.X > 1 && rooms.Any(r => r.HasTile(room.X - 1, room.Y - 1)))
-                return false;
-
-            if (room.X + room.Width > mapParams.Width - 1
-                && rooms.Any(r => r.HasTile(room.X + room.Width, room.Y - 1)))
-                return false;
 
             return true;
         }
@@ -169,16 +167,15 @@ namespace Rogueskiv.MapGeneration
             if (room.Y + room.Height >= mapParams.Height - 2)
                 return false;
 
-            for (var x = room.X - 1; x < room.X + room.Width + 1; x++)
-                if (rooms.Any(r => r.HasTile(x, room.Y + room.Height + 1)))
+            for (
+                var x = room.X - MIN_ROOM_DISTANCE_PLUS_ONE;
+                x <= room.X + room.Width + MIN_ROOM_DISTANCE_PLUS_ONE;
+                x++
+            )
+                if (rooms.Any(r => Enumerable
+                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
+                                    .Any(i => r.HasTile(x, room.Y + room.Height + i))))
                     return false;
-
-            if (room.X > 1 && rooms.Any(r => r.HasTile(room.X - 1, room.Y + room.Height)))
-                return false;
-
-            if (room.X + room.Width > mapParams.Width - 1
-                && rooms.Any(r => r.HasTile(room.X + room.Width, room.Y + room.Height)))
-                return false;
 
             return true;
         }

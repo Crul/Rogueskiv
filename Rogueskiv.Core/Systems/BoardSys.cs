@@ -91,7 +91,7 @@ namespace Rogueskiv.Core.Systems
         }
 
         public static bool IsTile(List<string> board, Point tilePos) =>
-            board[tilePos.Y].Substring(tilePos.X, 1) == TILE_CHAR;
+            board[tilePos.Y].Substring(tilePos.X, 1).ToUpper() == TILE_CHAR;
 
         #endregion
 
