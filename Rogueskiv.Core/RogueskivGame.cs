@@ -66,11 +66,11 @@ namespace Rogueskiv.Core
         {
             var floorFactor = (float)floor / floorCount;
             var mapSize = 32 + (int)(floorFactor * 32);           // 32    ... 64
-            var roomExpandProb = 0.3f - (0.25f * floorFactor);    //  0.3  ...  0.05
+            var roomExpandProb = 0.6f - (0.3f * floorFactor);     //  0.6  ...  0.3
             var corridorTurnProb = 0.05f + (0.15f * floorFactor); //  0.05 ...  0.2
-            var minDensity = 0.12f - (0.06f * floorFactor);       //  0.12 ...  0.06
+            var minDensity = 0.18f - (0.12f * floorFactor);       //  0.18 ...  0.06
             var initialRooms = 15 + (int)(floorFactor * 45);      // 15    ... 60
-            var minRoomSize = 3;                                  //  3
+            var minRoomSize = 2;                                  //  2
 
             return new MapGenerationParams(
                 width: mapSize,
