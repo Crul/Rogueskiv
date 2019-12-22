@@ -70,8 +70,7 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(PointF position)
         {
-            UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - position.X);
-            UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - position.Y);
+            SetUxCenter(UxContext, position);
 
             var screenPosition = GetScreenPosition(position);
 
@@ -97,6 +96,20 @@ namespace Rogueskiv.Ux.Renderers
             });
 
             base.Render(position);
+        }
+
+        public static void SetUxCenter(
+            UxContext uxContext, PointF playerPosition
+        )
+        {
+            var targetCenter = uxContext
+                .ScreenSize.ToPoint().Divide(2)
+                .Substract(playerPosition.ToPoint());
+
+            var cameraMovement = targetCenter
+                .Substract(uxContext.Center);
+
+            uxContext.Center = uxContext.Center.Add(cameraMovement);
         }
 
         protected override void Dispose(bool cleanManagedResources)

@@ -22,7 +22,7 @@ namespace Rogueskiv.Ux.Renderers
 
             var healthComp = entity.GetComponent<HealthComp>();
             var healthBarWidht = (int)(MAX_WIDTH * healthComp.HealthFactor);
-            var yPos = UxContext.ScreenHeight - Y_BOTTOM_POS - HEIGHT;
+            var yPos = UxContext.ScreenSize.Height - Y_BOTTOM_POS - HEIGHT;
 
             RenderRect(yPos, MAX_WIDTH, red: 0x99);
             RenderRect(yPos, healthBarWidht, green: 0x99);

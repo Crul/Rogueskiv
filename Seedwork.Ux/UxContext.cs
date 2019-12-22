@@ -1,21 +1,21 @@
 ﻿using SDL2;
+using Seedwork.Crosscutting;
 using System;
+using System.Drawing;
 
 namespace Seedwork.Ux
 {
     public class UxContext : IDisposable
     {
-        public int ScreenWidth { get; }
-        public int ScreenHeight { get; }
-        public int CenterX { get; set; } = 0;
-        public int CenterY { get; set; } = 0;
+        public Size ScreenSize { get; }
+        public Point Center { get; set; }
         public IntPtr Window { get; }
         public IntPtr WRenderer { get; }
 
-        public UxContext(string windowTitle, int screenWidth, int screenHeight)
+        public UxContext(string windowTitle, Size screenSize)
         {
-            ScreenWidth = screenWidth;
-            ScreenHeight = screenHeight;
+            ScreenSize = screenSize;
+            Center = screenSize.Divide(2).ToPoint();
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             SDL_ttf.TTF_Init();
@@ -24,7 +24,7 @@ namespace Seedwork.Ux
                 windowTitle,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
-                screenWidth, screenHeight,
+                ScreenSize.Width, ScreenSize.Height,
                 0
             );
 
