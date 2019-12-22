@@ -1,11 +1,11 @@
 ﻿using Seedwork.Core.Components;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Position
 {
     public interface IPositionComp : IComponent
     {
-        float X { get; set; }
-        float Y { get; set; }
+        PointF Position { get; }
         bool Visible { get; set; }
     }
 }

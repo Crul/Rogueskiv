@@ -1,14 +1,13 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Seedwork.Crosscutting;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Board
 {
-    public class TileComp : PositionComp, IFOVComp
+    public class TileComp : PositionComp
     {
-        private const int TILE_SIZE = 30; // TODO proper tile size
-
         public bool HasBeenSeen { get; private set; }
         public bool VisibleByPlayer { get; private set; }
-        public float DistanceFromPlayer { get; set; }
 
         public override bool Visible
         {
@@ -20,10 +19,7 @@ namespace Rogueskiv.Core.Components.Board
             }
         }
 
-        public TileComp(int x, int y) : base()
-        {
-            X = TILE_SIZE * x + (TILE_SIZE / 2);
-            Y = TILE_SIZE * y + (TILE_SIZE / 2);
-        }
+        public TileComp(Point tilePos)
+            : base(tilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2)) { }
     }
 }

@@ -9,6 +9,7 @@ using Seedwork.Crosscutting;
 using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.Core.Systems
@@ -23,13 +24,6 @@ namespace Rogueskiv.Core.Systems
         private readonly IGameResult<IEntity> PreviousFloorResult;
         private readonly int EnemyNumber;
 
-        private readonly List<(int x, int y)> NeighbourCoords = new List<(int x, int y)>
-        {
-            (-1, -1), (0, -1), (1, -1),
-            (-1,  0),          (1,  0),
-            (-1,  1), (0,  1), (1,  1),
-        };
-
         public SpawnSys(
             IGameContext gameContext,
             IGameResult<IEntity> previousFloorResult,
@@ -43,39 +37,31 @@ namespace Rogueskiv.Core.Systems
 
         public override bool Init(Game game)
         {
-            var tileCoords = game
+            var boardComp = game
                 .Entities
-                .GetWithComponent<TileComp>()
-                .Select(e => e.GetComponent<TileComp>())
-                .Select(tileComp => (
-                    x: (int)(tileComp.X / BoardComp.TILE_SIZE),
-                    y: (int)(tileComp.Y / BoardComp.TILE_SIZE)
-                ))
-                .ToList();
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
 
-            var playerTile = (x: 0, y: 0);
+            var tilePositions = boardComp.TileIdByTilePos.Keys.ToList();
+
+            var playerTile = new Point();
             do
             {
-                playerTile = tileCoords[Luck.Next(tileCoords.Count)];
-            } while (!IsValidStairs(tileCoords, playerTile));
+                playerTile = tilePositions[Luck.Next(tilePositions.Count)];
+            } while (!IsValidStairs(boardComp, tilePositions, playerTile));
 
             game.AddEntity(CreatePlayer(playerTile));
 
-            var tileCordsAndDistances = tileCoords
-                .Select(tileCoord => (
-                    tileCoord,
-                    // TODO spawn distance taking into account the board
-                    distance: Distance.Get(tileCoord.x - playerTile.x, tileCoord.y - playerTile.y)
-                ))
-                .ToList();
+            var measuredTiles = GetDistancesFrom(boardComp, playerTile);
 
             Enumerable
                 .Range(0, EnemyNumber)
-                .Select(i => CreateEnemy(game, tileCordsAndDistances))
-                .ToList()
-                .ForEach(enemy => game.AddEntity(enemy));
+                    .Select(i => CreateEnemy(measuredTiles))
+                    .ToList()
+                    .ForEach(enemy => game.AddEntity(enemy));
 
-            game.AddEntity(CreateDownStairs(tileCoords, tileCordsAndDistances));
+            game.AddEntity(CreateDownStairs(boardComp, tilePositions, measuredTiles));
 
             var isFirstFloor = PreviousFloorResult == null;
             if (!isFirstFloor)
@@ -87,10 +73,12 @@ namespace Rogueskiv.Core.Systems
         public override void Update(EntityList entities, List<int> controls) =>
             throw new NotImplementedException();
 
-        private List<IComponent> CreatePlayer((int x, int y) playerTile)
+        private List<IComponent> CreatePlayer(Point playerTilePos)
         {
-            var x = (BoardComp.TILE_SIZE / 2) + (playerTile.x * BoardComp.TILE_SIZE);
-            var y = (BoardComp.TILE_SIZE / 2) + (playerTile.y * BoardComp.TILE_SIZE);
+
+            var playerPos = playerTilePos
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
 
             return new List<IComponent> {
                 new PlayerComp(),
@@ -98,12 +86,12 @@ namespace Rogueskiv.Core.Systems
                     MaxHealth = INITIAL_PLAYER_HEALTH,
                     Health = GetPreviousHealth() ?? INITIAL_PLAYER_HEALTH
                 },
-                new CurrentPositionComp() { X = x, Y = y },
-                new LastPositionComp() { X = x, Y = y },
-                new MovementComp(){
-                    FrictionFactor = 1f / 5f,
-                    BounceAmortiguationFactor = 2f / 3f
-                }
+                new CurrentPositionComp(playerPos),
+                new LastPositionComp(playerPos),
+                new MovementComp(
+                    frictionFactor: 1f / 5f,
+                    bounceAmortiguationFactor: 2f / 3f
+                )
             };
         }
 
@@ -123,91 +111,149 @@ namespace Rogueskiv.Core.Systems
             return previousPlayerHealtComp.Health;
         }
 
-        private List<IComponent> CreateEnemy(
-            Game game,
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances
+        private static List<(Point tilePos, int distance)> GetDistancesFrom(
+            BoardComp boardComp, Point initialTile
         )
         {
-            (int x, int y) = GetRandomPosition(tileCoordsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
+            var initialTileEntityId = boardComp.TileIdByTilePos[initialTile];
 
-            x *= BoardComp.TILE_SIZE;
-            y *= BoardComp.TILE_SIZE;
+            var measurePendignTileIds = boardComp
+                .TileIdByTilePos
+                .Values
+                .Where(id => id != initialTileEntityId)
+                .ToList();
+
+            var currentDistance = 0;
+            var measuredTiles = new List<(Point tilePos, int distance)>()
+                { (initialTile, currentDistance) };
+
+            while (measurePendignTileIds.Count > 0)
+            {
+                currentDistance++;
+                var neighbourTileIds = measuredTiles
+                    .SelectMany(tile => boardComp
+                        .TilesNeighbours[tile.tilePos]
+                        .ToList()
+                        .Where(neighbourId => measurePendignTileIds.Contains(neighbourId))
+                    )
+                    .Distinct()
+                    .ToList();
+
+                measuredTiles.AddRange(
+                    neighbourTileIds.Select(neighbourId => (
+                        tilePos: boardComp.TilePositionsByTileId[neighbourId],
+                        distance: currentDistance
+                    ))
+                );
+
+                neighbourTileIds.ForEach(id => measurePendignTileIds.Remove(id));
+            }
+
+            return measuredTiles;
+        }
+
+        private List<IComponent> CreateEnemy(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        )
+        {
+            var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
+            var enemyPos = enemyTilePos.Multiply(BoardComp.TILE_SIZE);
 
             return new List<IComponent>
             {
                 new EnemyComp(),
-                new CurrentPositionComp() { X = x, Y = y },
-                new LastPositionComp() { X = x, Y = y },
-                new MovementComp() {
-                    SpeedX = (50 + Luck.Next(100)) / GameContext.GameFPS,
-                    SpeedY = (50 + Luck.Next(100)) / GameContext.GameFPS,
-                    FrictionFactor = 1,
-                    BounceAmortiguationFactor = 1
-                }
+                new CurrentPositionComp(enemyPos),
+                new LastPositionComp(enemyPos),
+                new MovementComp(
+                    speed: new PointF(
+                        (50 + Luck.Next(100)) / GameContext.GameFPS,
+                        (50 + Luck.Next(100)) / GameContext.GameFPS
+                    ),
+                    frictionFactor: 1,
+                    bounceAmortiguationFactor: 1
+                )
             };
         }
 
-        private IComponent CreateDownStairs(
-            List<(int x, int y)> tileCoords,
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances
+        private static IComponent CreateDownStairs(
+            BoardComp boardComp,
+            List<Point> tilePositions,
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
-            var maxDistance = tileCoordsAndDistances.Max(tcd => tcd.distance);
+            var maxDistance = tilePositionsAndDistances.Max(tcd => tcd.distance);
             var minDistance = (int)(STAIRS_MIN_DISTANCE_FACTOR * maxDistance);
-            (int x, int y) = (0, 0);
-            do
-            {
-                // TODO what if no available ???
-                (x, y) = GetRandomPosition(tileCoordsAndDistances, minDistance);
-            } while (!IsValidStairs(tileCoords, (x, y)));
 
-            x *= BoardComp.TILE_SIZE;
-            y *= BoardComp.TILE_SIZE;
+            var tilePos = GetRandomTilePos(
+                tilePositionsAndDistances,
+                minDistance,
+                isValidTilePos: tilePos => IsValidStairs(boardComp, tilePositions, tilePos)
+            );
 
-            return CreateStairts<DownStairsComp>((x, y));
+            return CreateStairts(tilePos, tilePos => new DownStairsComp(tilePos));
         }
 
-        private IComponent CreateUpStairs((int x, int y) playerTile)
-        {
-            var x = (playerTile.x * BoardComp.TILE_SIZE);
-            var y = (playerTile.y * BoardComp.TILE_SIZE);
+        private static IComponent CreateUpStairs(Point playerTilePos) =>
+            CreateStairts(playerTilePos, tilePos => new UpStairsComp(tilePos));
 
-            return CreateStairts<UpStairsComp>((x, y));
-        }
-
-        private bool IsValidStairs(
-            List<(int x, int y)> tileCoords,
-            (int x, int y) position
-        ) =>
-            NeighbourCoords
+        private static bool IsValidStairs(
+            BoardComp boardComp, List<Point> tilePositions, Point tilePos
+        ) => boardComp
+                .NeighbourTilePositions
                 .All(neighbour =>
-                    tileCoords.Contains(
-                        (
-                            position.x + neighbour.x,
-                            position.y + neighbour.y
+                    tilePositions.Contains(
+                        new Point(
+                            tilePos.X + neighbour.X,
+                            tilePos.Y + neighbour.Y
                         )
                     )
                 );
 
-        private IComponent CreateStairts<T>((int x, int y) position)
-            where T : StairsComp, new() =>
-            new T()
-            {
-                X = (BoardComp.TILE_SIZE / 2) + position.x,
-                Y = (BoardComp.TILE_SIZE / 2) + position.y
-            };
+        private static IComponent CreateStairts<T>(Point tilePos, Func<PointF, T> createStairs)
+            where T : StairsComp
+        {
+            var position = tilePos
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
 
-        private static (int x, int y) GetRandomPosition(
-            List<((int x, int y) tileCoord, float distance)> tileCoordsAndDistances,
-            int minDistance
+            return createStairs(position);
+        }
+
+        private static Point GetRandomTilePos(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            int minDistance,
+            Func<Point, bool> isValidTilePos = null
         )
         {
-            var candidates = tileCoordsAndDistances
-                .Where(tcd => tcd.distance > minDistance)
-                .Select(tcd => tcd.tileCoord)
-                .ToList();
+            if (tilePositionsAndDistances.Count == 0)
+                throw new ArgumentException("SpawnSys.GetRandomPosition: empty tilePositionsAndDistances");
 
-            return candidates[Luck.Next(candidates.Count)];
+            var tilePos = new Point();
+            var candidates = new List<Point>();
+
+            while (true)
+            {
+                while (candidates.Count == 0)
+                {
+                    candidates = tilePositionsAndDistances
+                        .Where(tcd => tcd.distance > minDistance)
+                        .Select(tcd => tcd.tilePos)
+                        .ToList();
+
+                    minDistance--;
+                    if (minDistance < 0)
+                        throw new Exception("SpawnSys.CreateDownStaris: not tile available");
+                }
+
+                while (candidates.Count > 0)
+                {
+                    tilePos = candidates[Luck.Next(candidates.Count)];
+                    candidates.Remove(tilePos);
+
+                    if (isValidTilePos?.Invoke(tilePos) ?? true)
+                        return tilePos;
+                }
+            }
         }
     }
 }

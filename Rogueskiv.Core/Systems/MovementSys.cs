@@ -2,6 +2,7 @@
 using Rogueskiv.Core.Components.Position;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
+using Seedwork.Crosscutting;
 using System.Collections.Generic;
 
 namespace Rogueskiv.Core.Systems
@@ -15,15 +16,12 @@ namespace Rogueskiv.Core.Systems
 
         private void Update(IEntity entity)
         {
-            var lastPosition = entity.GetComponent<LastPositionComp>();
-            var position = entity.GetComponent<CurrentPositionComp>();
-            var movement = entity.GetComponent<MovementComp>();
+            var lastPositionComp = entity.GetComponent<LastPositionComp>();
+            var positionComp = entity.GetComponent<CurrentPositionComp>();
+            var movementComp = entity.GetComponent<MovementComp>();
 
-            lastPosition.X = position.X;
-            lastPosition.Y = position.Y;
-
-            position.X += movement.SpeedX;
-            position.Y += movement.SpeedY;
+            lastPositionComp.Position = positionComp.Position;
+            positionComp.Position = positionComp.Position.Add(movementComp.Speed);
         }
     }
 }

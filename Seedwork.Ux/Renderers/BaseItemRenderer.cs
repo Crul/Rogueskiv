@@ -1,7 +1,9 @@
 ﻿using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Seedwork.Ux.Renderers
 {
@@ -22,6 +24,9 @@ namespace Seedwork.Ux.Renderers
         }
 
         protected abstract void Render(IEntity entity, float interpolation);
+
+        protected Point GetScreenPosition(PointF position) =>
+            position.Add(UxContext.CenterX, UxContext.CenterY).ToPoint();
 
         protected virtual void Dispose(bool disposing) { }
 

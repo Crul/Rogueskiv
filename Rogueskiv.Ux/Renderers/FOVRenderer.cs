@@ -1,58 +1,76 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
-using System;
-using System.IO;
+using Seedwork.Ux.Renderers;
+using System.Drawing;
+using System.Linq;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class FOVRenderer : PositionRenderer<IFOVComp>
+    class FOVRenderer : BaseItemRenderer<FOVComp>
     {
         private const int MAX_BLACK_OPACITY = 0xAA;
-        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = MAX_BLACK_OPACITY - 0x44;
-        private const int TILE_SIZE = 30;    // TODO proper tile size
+        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = MAX_BLACK_OPACITY - 0x11;
         private const int VISUAL_RANGE = 10; // TODO proper visual range
 
-        public FOVRenderer(UxContext uxContext)
-            : base(
-                  uxContext,
-                  Path.Combine("imgs", "tile.png"),  // TODO not needed
-                  new SDL_Rect { x = 0, y = 0, w = 48, h = 48 },
-                  new Tuple<int, int>(30, 30)
-            )
-        { }
+        private readonly FOVComp FOVComp;
+        private readonly BoardComp BoardComp;
+
+        public FOVRenderer(UxContext uxContext, IRenderizable game)
+            : base(uxContext)
+        {
+            BoardComp = game
+                .Entities
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
+
+            FOVComp = game
+                .Entities
+                .GetWithComponent<FOVComp>()
+                .Single()
+                .GetComponent<FOVComp>();
+        }
 
         protected override void Render(IEntity entity, float interpolation)
         {
-            // TODO DRY PositionRenderer / ItemRender
-            var positionComp = entity.GetComponent<TileComp>();
+            for (var x = 0; x < BoardComp.BoardSize.Width; x++)
+                for (var y = 0; y < BoardComp.BoardSize.Height; y++)
+                    RenderTileFOV(new Point(x, y), FOVComp.FOVTiles[x, y]);
+
+            SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, 0);
+        }
+
+        private void RenderTileFOV(Point point, TileFOVInfo tileFOVInfo)
+        {
+            if (!tileFOVInfo.Hidden && !tileFOVInfo.VisibleByPlayer)
+                return;
 
             byte alpha;
-            if (positionComp.Visible && !positionComp.VisibleByPlayer)
+            if (tileFOVInfo.Hidden)
                 alpha = MAX_BLACK_OPACITY;
             else
                 alpha = (byte)(
                     MAX_BLACK_OPACITY_FOR_VISIBLE
-                    * (positionComp.DistanceFromPlayer / (TILE_SIZE * VISUAL_RANGE))
+                    * (tileFOVInfo.DistanceFromPlayer / (BoardComp.TILE_SIZE * VISUAL_RANGE))
                 );
 
-            var (posX, posY) = GetXY(entity, positionComp, interpolation);
+            var screenPosition = GetScreenPosition(point.Multiply(BoardComp.TILE_SIZE));
 
-            var x = GetPositionComponent(posX, UxContext.CenterX);
-            var y = GetPositionComponent(posY, UxContext.CenterY);
             var tRect = new SDL_Rect()
             {
-                x = x - OutputSize.Item1 / 2,
-                y = y - OutputSize.Item2 / 2,
-                w = OutputSize.Item1,
-                h = OutputSize.Item2
+                x = screenPosition.X,
+                y = screenPosition.Y,
+                w = BoardComp.TILE_SIZE,
+                h = BoardComp.TILE_SIZE
             };
 
             SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, alpha);
             SDL_RenderFillRect(UxContext.WRenderer, ref tRect);
-            SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, 0);
         }
     }
 }

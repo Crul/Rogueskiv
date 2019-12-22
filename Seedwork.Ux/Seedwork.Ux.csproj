@@ -51,6 +51,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Seedwork.Core\Seedwork.Core.csproj" />
+    <ProjectReference Include="..\Seedwork.Crosscutting\Seedwork.Crosscutting.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@ using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
+using System.Drawing;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -18,6 +19,14 @@ namespace Rogueskiv.Ux.Renderers
         ) : base(uxContext, imgPath, textureRect, outputSize)
         { }
 
+        public PositionRenderer(
+            UxContext uxContext,
+            IntPtr texture,
+            SDL.SDL_Rect textureRect,
+            Tuple<int, int> outputSize = null
+        ) : base(uxContext, texture, textureRect, outputSize)
+        { }
+
         protected override void Render(IEntity entity, float interpolation)
         {
             if (!entity.HasComponent<T>())
@@ -27,13 +36,13 @@ namespace Rogueskiv.Ux.Renderers
             if (!positionComp.Visible)
                 return;
 
-            var (x, y) = GetXY(entity, positionComp, interpolation);
+            var position = GetXY(entity, positionComp, interpolation);
 
-            Render(x, y);
+            Render(position);
         }
 
-        protected virtual (float x, float y) GetXY
+        protected virtual PointF GetXY
             (IEntity entity, T positionComp, float interpolation) =>
-            (positionComp.X, positionComp.Y);
+            positionComp.Position;
     }
 }

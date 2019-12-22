@@ -22,6 +22,7 @@ Rogueskiv makes use of the following projects:
 - [SDL2-CS](https://github.com/flibitijibibo/SDL2-CS) by [Ethan Lee](http://www.flibitijibibo.com/) ([zlib license](https://github.com/flibitijibibo/SDL2-CS/blob/master/LICENSE))
 - [FOVRecurse](https://github.com/AndyStobirski/RogueLike) by [Andy Stobirski](http://www.evilscience.co.uk/) (no license)
 - [Hack typeface](https://sourcefoundry.org/hack/) by [Christopher Simpkins and contributors](https://github.com/source-foundry/Hack/blob/master/docs/CONTRIBUTORS.md) ([MIT license](https://github.com/source-foundry/Hack/blob/master/LICENSE.md))
+- [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) by [SixLabors](https://sixlabors.com/) ([Apache License 2.0](https://github.com/SixLabors/ImageSharp/blob/master/LICENSE))
 
 ## License (AGPL-3.0)
 

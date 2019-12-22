@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
@@ -7,7 +8,6 @@ namespace Rogueskiv.Core.Components
         // TODO DRY TileComp
         public bool HasBeenSeen { get; private set; }
         public bool VisibleByPlayer { get; private set; }
-        public float DistanceFromPlayer { get; set; }
 
         public override bool Visible
         {
@@ -18,5 +18,8 @@ namespace Rogueskiv.Core.Components
                 HasBeenSeen = HasBeenSeen || value;
             }
         }
+
+        protected StairsComp(PointF position) : base(position)
+        { }
     }
 }

@@ -48,27 +48,32 @@ namespace Rogueskiv.Ux.Renderers
                 return;
 
             var lastPositionComp = entity.GetComponent<LastPositionComp>();
-            var (x, y) = GetXY(entity, positionComp, interpolation);
+            var position = GetXY(entity, positionComp, interpolation);
+
+            var lastMovmement = positionComp
+                .Position
+                .Substract(lastPositionComp.Position)
+                .ToPoint();
+
             BgrTextureRect.x = Maths.Modulo(
-                BgrTextureRect.x - (int)(positionComp.X - lastPositionComp.X),
+                BgrTextureRect.x - lastMovmement.X,
                 NonRepeatingBgrTextureSize
             );
 
             BgrTextureRect.y = Maths.Modulo(
-                BgrTextureRect.y - (int)(positionComp.Y - lastPositionComp.Y),
+                BgrTextureRect.y - lastMovmement.X,
                 NonRepeatingBgrTextureSize
             );
 
-            Render(x, y);
+            Render(position);
         }
 
-        protected override void Render(double posX, double posY)
+        protected override void Render(PointF position)
         {
-            UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - posX);
-            UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - posY);
+            UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - position.X);
+            UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - position.Y);
 
-            var x = GetPositionComponent(posX, UxContext.CenterX);
-            var y = GetPositionComponent(posY, UxContext.CenterY);
+            var screenPosition = GetScreenPosition(position);
 
             BgrMaskTexture.ForEach(maskRect =>
             {
@@ -82,8 +87,8 @@ namespace Rogueskiv.Ux.Renderers
 
                 var outRect = new SDL_Rect()
                 {
-                    x = x + maskRect.X - BgrOutputSize.Item1 / 2,
-                    y = y + maskRect.Y - BgrOutputSize.Item2 / 2,
+                    x = screenPosition.X + maskRect.X - BgrOutputSize.Item1 / 2,
+                    y = screenPosition.Y + maskRect.Y - BgrOutputSize.Item2 / 2,
                     w = maskRect.Width,
                     h = maskRect.Height
                 };
@@ -91,7 +96,7 @@ namespace Rogueskiv.Ux.Renderers
                 SDL_RenderCopy(UxContext.WRenderer, BgrTexture, ref bgrTextureRect, ref outRect);
             });
 
-            base.Render(posX, posY);
+            base.Render(position);
         }
 
         protected override void Dispose(bool cleanManagedResources)

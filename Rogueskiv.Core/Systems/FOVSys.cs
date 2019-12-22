@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
@@ -12,37 +13,48 @@ namespace Rogueskiv.Core.Systems
 {
     class FOVSys : BaseSystem
     {
-        private const int TILE_SIZE = 30;    // TODO proper tile size
-        private const int VISUAL_RANGE = 10; // TODO proper visual range
-        private FOVRecurse FOVRecurse;
+        private Game Game;
         private CurrentPositionComp PlayerPosComp;
+        private FOVComp FOVComp;
+        private BoardComp BoardComp;
         private List<TileComp> TileComps;
 
         public override bool Init(Game game)
         {
-            PlayerPosComp = game
+            Game = game;
+
+            PlayerPosComp = Game
                 .Entities
                 .GetWithComponent<PlayerComp>()
                 .Single()
                 .GetComponent<CurrentPositionComp>();
 
-            TileComps = game
+            FOVComp = Game
+                .Entities
+                .GetWithComponent<FOVComp>()
+                .Single()
+                .GetComponent<FOVComp>();
+
+            TileComps = Game
                 .Entities
                 .GetWithComponent<TileComp>()
                 .Select(e => e.GetComponent<TileComp>())
                 .ToList();
 
-            InitFOV(game);
+            BoardComp = Game
+                .Entities
+                .GetWithComponent<BoardComp>()
+                .Single()
+                .GetComponent<BoardComp>();
 
-            return base.Init(game);
+            FOVComp.Init(BoardComp);
+
+            return base.Init(Game);
         }
 
         public override void Update(EntityList entities, List<int> controls)
         {
-            FOVRecurse.SetPlayerPos(
-                (int)(PlayerPosComp.X / TILE_SIZE),
-                (int)(PlayerPosComp.Y / TILE_SIZE)
-            );
+            FOVComp.SetPlayerPos(PlayerPosComp);
 
             var otherPositions = entities
                 .GetWithComponent<CurrentPositionComp>()
@@ -52,38 +64,65 @@ namespace Rogueskiv.Core.Systems
                 .Select(t => (PositionComp)t)
                 .Concat(otherPositions)
                 .ToList()
-                .ForEach(SetVisibility);
+                .ForEach(comp => comp.Visible = FOVComp.IsVisible(comp));
 
-            TileComps.ForEach(tileComp =>
-                tileComp.DistanceFromPlayer = Distance.Get(
-                    tileComp.X - PlayerPosComp.X,
-                    tileComp.Y - PlayerPosComp.Y
-                ));
+            FOVComp.Reset();
+            TileComps.ForEach(SetFOVInfo);
         }
 
-        private void SetVisibility(PositionComp positionComp)
+        private void SetFOVInfo(TileComp tileComp)
         {
-            var tileX = (int)(positionComp.X / TILE_SIZE);
-            var tileY = (int)(positionComp.Y / TILE_SIZE);
+            (int tileX, int tileY) = (tileComp.TilePos.X, tileComp.TilePos.Y);
 
-            positionComp.Visible = FOVRecurse
-                .VisiblePoints
-                .Any(vp => vp.X == tileX && vp.Y == tileY);
+            var tileFOVInfo = FOVComp.FOVTiles[tileX, tileY];
+            tileFOVInfo.Hidden = tileComp.Visible && !tileComp.VisibleByPlayer;
+            tileFOVInfo.VisibleByPlayer = tileComp.VisibleByPlayer;
+            tileFOVInfo.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position);
+
+            var wallFacingDirections = BoardComp
+                .WallsByTiles[tileComp.TilePos]
+                .Select(wallId => Game.Entities[wallId].GetComponent<IWallComp>().Facing)
+                .ToList();
+
+            var hasWallFacingLeft = wallFacingDirections.Contains(WallFacingDirections.LEFT);
+            var hasWallFacingRight = wallFacingDirections.Contains(WallFacingDirections.RIGHT);
+            var hasWallFacingUp = wallFacingDirections.Contains(WallFacingDirections.UP);
+            var hasWallFacingDown = wallFacingDirections.Contains(WallFacingDirections.DOWN);
+
+            if (hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY);
+
+            if (hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY);
+
+            if (hasWallFacingUp)
+                CopyFOVInfo(tileFOVInfo, tileX, tileY + 1);
+
+            if (hasWallFacingDown)
+                CopyFOVInfo(tileFOVInfo, tileX, tileY - 1);
+
+            if (hasWallFacingDown && hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY - 1);
+
+            if (hasWallFacingDown && hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY - 1);
+
+            if (hasWallFacingUp && hasWallFacingRight)
+                CopyFOVInfo(tileFOVInfo, tileX - 1, tileY + 1);
+
+            if (hasWallFacingUp && hasWallFacingLeft)
+                CopyFOVInfo(tileFOVInfo, tileX + 1, tileY + 1);
         }
 
-        private void InitFOV(Game game)
+        private void CopyFOVInfo(TileFOVInfo tileFOVInfo, int targetTileX, int targetTileY)
         {
-            var boardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
+            var targetTileFOVInfo = FOVComp.FOVTiles[targetTileX, targetTileY];
 
-            (var width, var height) = BoardSys.GetSize(boardComp.Board);
+            targetTileFOVInfo.VisibleByPlayer = tileFOVInfo.VisibleByPlayer || tileFOVInfo.VisibleByPlayer;
+            targetTileFOVInfo.Hidden = targetTileFOVInfo.Hidden || tileFOVInfo.Hidden;
 
-            FOVRecurse = new FOVRecurse(width, height, VISUAL_RANGE);
-            BoardSys.ForAllCells(width, height, (x, y) =>
-                FOVRecurse.Point_Set(x, y, !BoardSys.IsTile(boardComp.Board, x, y) ? 1 : 0));
+            if (tileFOVInfo.DistanceFromPlayer < targetTileFOVInfo.DistanceFromPlayer)
+                targetTileFOVInfo.DistanceFromPlayer = tileFOVInfo.DistanceFromPlayer;
         }
     }
 }
