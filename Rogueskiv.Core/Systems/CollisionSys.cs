@@ -13,7 +13,6 @@ namespace Rogueskiv.Core.Systems
 {
     class CollisionSys : BaseSystem
     {
-        private const int COLLISION_DISTANCE = 14; // calc from entity sizes
         private const int COLLISION_DAMAGE = 10;
 
         private Game Game;
@@ -60,14 +59,16 @@ namespace Rogueskiv.Core.Systems
             BoardComp
                 .GetEntityIdsNear(PlayerId, PlayerPosComp)
                 .Where(id => entities.ContainsKey(id)) // TODO debug corner case
-                .Select(id => (
-                    entityId: id,
-                    positionComp: entities[id].GetComponent<CurrentPositionComp>()
+                .Select(id => entities[id])
+                .Select(entity => (
+                    entityId: entity.Id,
+                    positionComp: entity.GetComponent<CurrentPositionComp>(),
+                    movementComp: entity.GetComponent<MovementComp>()
                 ))
                 .Where(info =>
                 {
                     var distance = Distance.Get(info.positionComp.Position, PlayerPosComp.Position);
-                    return (distance < COLLISION_DISTANCE);
+                    return (distance < PlayerMovementComp.Radius + info.movementComp.Radius);
                 })
                 .Select(info => (
                     info.entityId,

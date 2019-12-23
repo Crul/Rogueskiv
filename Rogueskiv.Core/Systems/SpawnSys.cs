@@ -20,6 +20,8 @@ namespace Rogueskiv.Core.Systems
         private const int MIN_FOOD_SPAWN_DISTANCE = 10;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
         private const int INITIAL_PLAYER_HEALTH = 100;
+        private const int PLAYER_RADIUS = 10;
+        private const int ENEMY_RADIUS = 6;
 
         private readonly IGameContext GameContext;
         private readonly IGameResult<IEntity> PreviousFloorResult;
@@ -100,7 +102,8 @@ namespace Rogueskiv.Core.Systems
                 new LastPositionComp(playerPos),
                 new MovementComp(
                     frictionFactor: 1f / 5f,
-                    bounceAmortiguationFactor: 2f / 3f
+                    bounceAmortiguationFactor: 2f / 3f,
+                    radius: PLAYER_RADIUS
                 )
             };
         }
@@ -183,7 +186,8 @@ namespace Rogueskiv.Core.Systems
                 new MovementComp(
                     speed: GetEnemySpeed(),
                     frictionFactor: 1,
-                    bounceAmortiguationFactor: 1
+                    bounceAmortiguationFactor: 1,
+                    radius: ENEMY_RADIUS
                 )
             };
         }

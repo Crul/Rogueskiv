@@ -9,10 +9,14 @@ namespace Rogueskiv.Core.Components.Walls
     {
         public LeftWallComp(Point tilePos, int height, List<WallTile> tiles)
             : base(tilePos, height, WallFacingDirections.LEFT, tiles)
-            => BounceLimit = FixedPosition + BoardComp.TILE_SIZE - (ENTITY_SIZE / 2);
+            => BounceLimit = FixedPosition + BoardComp.TILE_SIZE;
+
+        protected override float GetCollisionPosition(PositionComp positionComp, MovementComp movementComp)
+            => GetFixedPosition(positionComp) + movementComp.Radius;
 
         protected override bool HasTraversed
-            (CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp) =>
-            (lastPositionComp.Position.X <= BounceLimit && currentPositionComp.Position.X > BounceLimit);
+            (CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp, MovementComp movementComp) =>
+            GetCollisionPosition(lastPositionComp, movementComp) <= BounceLimit
+            && GetCollisionPosition(currentPositionComp, movementComp) > BounceLimit;
     }
 }

@@ -7,8 +7,7 @@ namespace Rogueskiv.Core.Components.Walls
 {
     public abstract class WallComp : PositionComp, IWallComp
     {
-        // TODO ¿move to system?
-        protected const int ENTITY_SIZE = 16; // TODO proper entity size
+        protected const int WALL_THICKNESS = 4;
 
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
         public PositionComp PositionComp => this;
@@ -42,26 +41,30 @@ namespace Rogueskiv.Core.Components.Walls
             // for HorizontalWalls: check if entity.position.x is between wall.minX and wall.maxX
             // for VerticalWalls  : check if entity.position.y is between wall.minY and wall.maxY
             var isInFrontOrBehind = (
-                (entityPos + (ENTITY_SIZE / 2)) > minPosLength
-                && (entityPos - (ENTITY_SIZE / 2)) < maxPosLength
+                (entityPos + movementComp.Radius) > minPosLength
+                && (entityPos - movementComp.Radius) < maxPosLength
             );
 
             // TODO bounces in corners (w/ angle)
-            var bounce = isInFrontOrBehind && HasTraversed(currentPositionComp, lastPositionComp);
+            var bounce = isInFrontOrBehind && HasTraversed(currentPositionComp, lastPositionComp, movementComp);
             if (bounce)
             {
                 ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
-                SetPosition(currentPositionComp, (2 * BounceLimit) - GetFixedPosition(currentPositionComp));
+                var newPosition = GetFixedPosition(currentPositionComp)
+                    + BounceLimit
+                    - GetCollisionPosition(currentPositionComp, movementComp);
+                SetPosition(currentPositionComp, newPosition);
             }
 
             return bounce;
         }
 
+        protected abstract float GetCollisionPosition(PositionComp positionComp, MovementComp movementComp);
+
         protected abstract float GetFixedPosition(PositionComp positionComp);
         protected abstract float GetVariablePosition(PositionComp positionComp);
-
         protected abstract bool HasTraversed(
-            CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp
+            CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp, MovementComp movementComp
         );
 
         protected abstract void ReverseSpeed(MovementComp movementComp, float amortiguationFactor);
