@@ -8,6 +8,7 @@ using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
 using System.Drawing;
+using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -20,16 +21,16 @@ namespace Rogueskiv.Ux.Renderers
         public PopUpRenderer(UxContext uxContext, IRenderizable game, IntPtr font)
             : base(uxContext, font) => Game = game;
 
-        protected override void Render(IEntity entity, float interpolation)
+        protected override void Render(IEntity entity, PopUpComp popUpComp, float interpolation)
         {
             if (!Game.Pause)
                 return;
 
-            base.Render(entity, interpolation);
+            base.Render(entity, popUpComp, interpolation);
         }
 
         protected override SDL.SDL_Color GetColor(PopUpComp component) =>
-            new SDL.SDL_Color() { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF };
+            new SDL_Color() { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF };
 
         protected override Point GetPosition(PopUpComp component) =>
             UxContext.ScreenSize.Divide(2).ToPoint();

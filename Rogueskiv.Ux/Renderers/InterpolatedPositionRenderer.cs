@@ -1,10 +1,9 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
-using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
 using Seedwork.Ux;
-using System;
+using Seedwork.Ux.SpriteProviders;
 using System.Drawing;
 
 namespace Rogueskiv.Ux.Renderers
@@ -12,20 +11,12 @@ namespace Rogueskiv.Ux.Renderers
     class InterpolatedPositionRenderer<T> : PositionRenderer<T>
         where T : IPositionComp
     {
-        public InterpolatedPositionRenderer(
-            UxContext uxContext,
-            string imgPath,
-            SDL.SDL_Rect textureRect,
-            Tuple<int, int> outputSize = null
-        ) : base(uxContext, imgPath, textureRect, outputSize)
-        { }
+        public InterpolatedPositionRenderer(UxContext uxContext, ISpriteProvider<T> spriteProvider)
+            : base(uxContext, spriteProvider) { }
 
-        protected override PointF GetXY
-            (IEntity entity, T positionComp, float interpolation) =>
-            Interpolate(entity, positionComp, interpolation);
-
-        private PointF Interpolate
-            (IEntity entity, T positionComp, float interpolation)
+        protected override PointF GetPosition(
+            IEntity entity, T positionComp, float interpolation
+        )
         {
             // TODO wall bounces ?
             var movementComp = entity.GetComponent<MovementComp>();

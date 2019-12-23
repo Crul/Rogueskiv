@@ -16,11 +16,10 @@ namespace Rogueskiv.Ux.Renderers
         public HealthRenderer(UxContext uxContext)
             : base(uxContext) { }
 
-        protected override void Render(IEntity entity, float interpolation)
+        protected override void Render(IEntity entity, HealthComp healthComp, float interpolation)
         {
             SDL.SDL_GetRenderDrawColor(UxContext.WRenderer, out byte r, out byte g, out byte b, out byte a);
 
-            var healthComp = entity.GetComponent<HealthComp>();
             var healthBarWidht = (int)(MAX_WIDTH * healthComp.HealthFactor);
             var yPos = UxContext.ScreenSize.Height - Y_BOTTOM_POS - HEIGHT;
 

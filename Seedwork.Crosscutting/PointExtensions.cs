@@ -11,11 +11,14 @@ namespace Seedwork.Crosscutting
         public static PointF Add(this PointF pointF1, PointF pointF2)
             => new PointF(pointF1.X + pointF2.X, pointF1.Y + pointF2.Y);
 
-        public static PointF Add(this PointF pointF, float valueX, float valueY)
-            => new PointF(pointF.X + valueX, pointF.Y + valueY);
+        public static PointF Add(this PointF pointF, float x = 0, float y = 0)
+            => new PointF(pointF.X + x, pointF.Y + y);
 
         public static Point Add(this Point point1, Point point2)
             => new Point(point1.X + point2.X, point1.Y + point2.Y);
+
+        public static Point Add(this Point point, int x = 0, int y = 0)
+            => new Point(point.X + x, point.Y + y);
 
         public static PointF Substract(this PointF pointF1, PointF pointF2)
             => new PointF(pointF1.X - pointF2.X, pointF1.Y - pointF2.Y);
@@ -23,14 +26,11 @@ namespace Seedwork.Crosscutting
         public static Point Substract(this Point point1, Point point2)
             => new Point(point1.X - point2.X, point1.Y - point2.Y);
 
-        public static Point Substract(this Point point, int valueX, int valueY)
-            => new Point(point.X - valueX, point.Y - valueY);
-
         public static PointF Multiply(this PointF point, float value)
             => new PointF(point.X * value, point.Y * value);
 
-        public static PointF Multiply(this PointF point, float valueX, float valueY)
-            => new PointF(point.X * valueX, point.Y * valueY);
+        public static PointF Multiply(this PointF point, float x = 1, float y = 1)
+            => new PointF(point.X * x, point.Y * y);
 
         public static PointF Multiply(this Point point, int value)
             => new PointF(point.X * value, point.Y * value);

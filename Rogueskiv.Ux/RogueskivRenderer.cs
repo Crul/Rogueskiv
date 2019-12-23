@@ -1,7 +1,6 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
-using Rogueskiv.Core.Components.Walls;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
 using Seedwork.Core;
@@ -34,10 +33,9 @@ namespace Rogueskiv.Ux
             );
 
             Renderers[typeof(TileComp)] = new TileRenderer(uxContext, BoardTexture);
-            Renderers[typeof(IWallComp)] = new WallRenderer(uxContext, game, BoardTexture);
             Renderers[typeof(DownStairsComp)] = new DownStairsRenderer(uxContext, BoardTexture);
             Renderers[typeof(UpStairsComp)] = new UpStairsRenderer(uxContext, BoardTexture);
-            Renderers[typeof(FoodComp)] = new FoodRenderer(uxContext);
+            Renderers[typeof(FoodComp)] = new FoodRenderer(uxContext, BoardTexture);
             Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
             Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext, game);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);

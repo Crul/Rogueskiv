@@ -16,21 +16,17 @@ namespace Rogueskiv.Ux.Renderers
         private const int MAX_BLACK_OPACITY_FOR_VISIBLE = MAX_BLACK_OPACITY - 0x11;
         private const int VISUAL_RANGE = 10; // TODO proper visual range
 
-        private readonly FOVComp FOVComp;
         private readonly BoardComp BoardComp;
 
         public FOVRenderer(UxContext uxContext, IRenderizable game)
-            : base(uxContext)
-        {
+            : base(uxContext) =>
             BoardComp = game.Entities.GetSingleComponent<BoardComp>();
-            FOVComp = game.Entities.GetSingleComponent<FOVComp>();
-        }
 
-        protected override void Render(IEntity entity, float interpolation)
+        protected override void Render(IEntity entity, FOVComp fovComp, float interpolation)
         {
             for (var x = 0; x < BoardComp.BoardSize.Width; x++)
                 for (var y = 0; y < BoardComp.BoardSize.Height; y++)
-                    RenderTileFOV(new Point(x, y), FOVComp.GetTileFOVInfo(x, y));
+                    RenderTileFOV(new Point(x, y), fovComp.GetTileFOVInfo(x, y));
 
             SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, 0);
         }

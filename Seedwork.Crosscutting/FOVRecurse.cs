@@ -38,10 +38,7 @@ namespace Seedwork.Crosscutting
         private Point player;
         public Point Player { get { return player; } set { player = value; } }
 
-        /// <summary>
-        /// The octants which a player can see
-        /// </summary>
-        List<int> VisibleOctants = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
+        private const double HACK = 0.0001;
 
         public FOVRecurse(int width, int height, int visualRange)
         {
@@ -124,8 +121,27 @@ namespace Seedwork.Crosscutting
         public void GetVisibleCells()
         {
             VisiblePoints = new List<Point> { new Point(player.X, player.Y) };
-            foreach (int o in VisibleOctants)
-                ScanOctant(1, o, 1.0, 0.0);
+
+            if (player.Y > 0 && Map[player.X, player.Y - 1] == 0)
+            {
+                ScanOctant(1, 1, 1.0, 0.0);
+                ScanOctant(1, 2, 1.0, 0.0);
+            }
+            if (player.X < MapSize.Width - 1 && Map[player.X + 1, player.Y] == 0)
+            {
+                ScanOctant(1, 3, 1.0, 0.0);
+                ScanOctant(1, 4, 1.0, 0.0);
+            }
+            if (player.Y < MapSize.Height - 1 && Map[player.X, player.Y + 1] == 0)
+            {
+                ScanOctant(1, 5, 1.0, 0.0);
+                ScanOctant(1, 6, 1.0, 0.0);
+            }
+            if (player.X > 0 && Map[player.X - 1, player.Y] == 0)
+            {
+                ScanOctant(1, 7, 1.0, 0.0);
+                ScanOctant(1, 8, 1.0, 0.0);
+            }
 
             VisiblePoints = VisiblePoints.Distinct().ToList();
 
@@ -152,7 +168,7 @@ namespace Seedwork.Crosscutting
                     y = player.Y - pDepth;
                     if (y < 0) return;
 
-                    x = player.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    x = player.X - (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (x < 0) x = 0;
 
                     while (GetSlope(x, y, player.X, player.Y, false) >= pEndSlope)
@@ -170,7 +186,7 @@ namespace Seedwork.Crosscutting
 
                                 if (x - 1 >= 0 && Map[x - 1, y] == 1) //prior cell within range AND open...
                                                                       //..adjust the startslope
-                                    pStartSlope = GetSlope(x - 0.5, y - 0.5, player.X, player.Y, false);
+                                    pStartSlope = GetSlope(x - 0.5 + HACK, y - 0.5, player.X, player.Y, false);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -185,7 +201,7 @@ namespace Seedwork.Crosscutting
                     y = player.Y - pDepth;
                     if (y < 0) return;
 
-                    x = player.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    x = player.X + (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (x >= Map.GetLength(0)) x = Map.GetLength(0) - 1;
 
                     while (GetSlope(x, y, player.X, player.Y, false) <= pEndSlope)
@@ -200,7 +216,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 1)
-                                    pStartSlope = -GetSlope(x + 0.5, y - 0.5, player.X, player.Y, false);
+                                    pStartSlope = -GetSlope(x + 0.5 - HACK, y - 0.5, player.X, player.Y, false);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -215,7 +231,7 @@ namespace Seedwork.Crosscutting
                     x = player.X + pDepth;
                     if (x >= Map.GetLength(0)) return;
 
-                    y = player.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    y = player.Y - (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (y < 0) y = 0;
 
                     while (GetSlope(x, y, player.X, player.Y, true) <= pEndSlope)
@@ -232,7 +248,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
-                                    pStartSlope = -GetSlope(x + 0.5, y - 0.5, player.X, player.Y, true);
+                                    pStartSlope = -GetSlope(x + 0.5, y - 0.5 + HACK, player.X, player.Y, true);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -247,7 +263,7 @@ namespace Seedwork.Crosscutting
                     x = player.X + pDepth;
                     if (x >= Map.GetLength(0)) return;
 
-                    y = player.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    y = player.Y + (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (y >= Map.GetLength(1)) y = Map.GetLength(1) - 1;
 
                     while (GetSlope(x, y, player.X, player.Y, true) >= pEndSlope)
@@ -264,7 +280,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
-                                    pStartSlope = GetSlope(x + 0.5, y + 0.5, player.X, player.Y, true);
+                                    pStartSlope = GetSlope(x + 0.5, y + 0.5 - HACK, player.X, player.Y, true);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -279,7 +295,7 @@ namespace Seedwork.Crosscutting
                     y = player.Y + pDepth;
                     if (y >= Map.GetLength(1)) return;
 
-                    x = player.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    x = player.X + (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (x >= Map.GetLength(0)) x = Map.GetLength(0) - 1;
 
                     while (GetSlope(x, y, player.X, player.Y, false) >= pEndSlope)
@@ -296,7 +312,7 @@ namespace Seedwork.Crosscutting
                             {
                                 if (x + 1 < Map.GetLength(0)
                                         && Map[x + 1, y] == 1)
-                                    pStartSlope = GetSlope(x + 0.5, y + 0.5, player.X, player.Y, false);
+                                    pStartSlope = GetSlope(x + 0.5 - HACK, y + 0.5, player.X, player.Y, false);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -311,7 +327,7 @@ namespace Seedwork.Crosscutting
                     y = player.Y + pDepth;
                     if (y >= Map.GetLength(1)) return;
 
-                    x = player.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    x = player.X - (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (x < 0) x = 0;
 
                     while (GetSlope(x, y, player.X, player.Y, false) <= pEndSlope)
@@ -328,7 +344,7 @@ namespace Seedwork.Crosscutting
                             {
                                 if (x - 1 >= 0
                                         && Map[x - 1, y] == 1)
-                                    pStartSlope = -GetSlope(x - 0.5, y + 0.5, player.X, player.Y, false);
+                                    pStartSlope = -GetSlope(x - 0.5 + HACK, y + 0.5, player.X, player.Y, false);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -343,7 +359,7 @@ namespace Seedwork.Crosscutting
                     x = player.X - pDepth;
                     if (x < 0) return;
 
-                    y = player.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    y = player.Y + (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (y >= Map.GetLength(1)) y = Map.GetLength(1) - 1;
 
                     while (GetSlope(x, y, player.X, player.Y, true) <= pEndSlope)
@@ -360,7 +376,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
-                                    pStartSlope = -GetSlope(x - 0.5, y + 0.5, player.X, player.Y, true);
+                                    pStartSlope = -GetSlope(x - 0.5, y + 0.5 - HACK, player.X, player.Y, true);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }
@@ -375,7 +391,7 @@ namespace Seedwork.Crosscutting
                     x = player.X - pDepth;
                     if (x < 0) return;
 
-                    y = player.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)));
+                    y = player.Y - (int)((pStartSlope * Convert.ToDouble(pDepth)));
                     if (y < 0) y = 0;
 
                     while (GetSlope(x, y, player.X, player.Y, true) >= pEndSlope)
@@ -393,7 +409,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
-                                    pStartSlope = GetSlope(x - 0.5, y - 0.5, player.X, player.Y, true);
+                                    pStartSlope = GetSlope(x - 0.5, y - 0.5 + HACK, player.X, player.Y, true);
 
                                 VisiblePoints.Add(new Point(x, y));
                             }

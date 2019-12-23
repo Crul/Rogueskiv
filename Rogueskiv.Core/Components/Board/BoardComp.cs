@@ -12,8 +12,7 @@ namespace Rogueskiv.Core.Components.Board
     public class BoardComp : IComponent
     {
         public const int TILE_SIZE = 32;
-
-        public List<Point> NeighbourTilePositions { get; } = new List<Point>
+        public static List<Point> NeighbourTilePositions { get; } = new List<Point>
         {
             new Point(-1, -1), new Point(0, -1), new Point(1, -1),
             new Point(-1,  0),                   new Point(1,  0),
@@ -95,6 +94,10 @@ namespace Rogueskiv.Core.Components.Board
 
                 for (var x = init; x < init + size; x++)
                     WallsByTiles[new Point(x, y)].Add(wall.Id);
+
+                // because convexe corners and diagonal movement
+                AddWallSafe(init - 1, y, wall.Id);
+                AddWallSafe(init + size, y, wall.Id);
             }
             else
             {
@@ -103,7 +106,18 @@ namespace Rogueskiv.Core.Components.Board
 
                 for (var y = init; y < init + size; y++)
                     WallsByTiles[new Point(x, y)].Add(wall.Id);
+
+                // because convexe corners and diagonal movement
+                AddWallSafe(x, init - 1, wall.Id);
+                AddWallSafe(x, init + size, wall.Id);
             }
+        }
+
+        private void AddWallSafe(int tileX, int tileY, EntityId wallId)
+        {
+            var tilePos = new Point(tileX, tileY);
+            if (WallsByTiles.ContainsKey(tilePos))
+                WallsByTiles[tilePos].Add(wallId);
         }
 
         public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp positionComp) =>
