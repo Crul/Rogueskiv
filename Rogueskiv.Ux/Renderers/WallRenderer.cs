@@ -59,12 +59,7 @@ namespace Rogueskiv.Ux.Renderers
             : base(uxContext)
         {
             Game = game;
-            BoardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
-
+            BoardComp = game.Entities.GetSingleComponent<BoardComp>();
             Texture = boardTexture;
         }
 

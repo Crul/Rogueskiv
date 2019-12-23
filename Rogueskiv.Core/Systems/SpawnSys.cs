@@ -51,14 +51,8 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            var boardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
-
+            var boardComp = game.Entities.GetSingleComponent<BoardComp>();
             var tilePositions = boardComp.TileIdByTilePos.Keys.ToList();
-
             var playerTile = new Point();
             do
             {
@@ -116,12 +110,12 @@ namespace Rogueskiv.Core.Systems
             if (PreviousFloorResult == null)
                 return null;
 
-            var previousPlayerComp = PreviousFloorResult
+            var previousPlayer = PreviousFloorResult
                 .Data
                 .GetWithComponent<PlayerComp>()
                 .Single();
 
-            var previousPlayerHealtComp = previousPlayerComp
+            var previousPlayerHealtComp = previousPlayer
                 .GetComponent<HealthComp>();
 
             return previousPlayerHealtComp.Health;

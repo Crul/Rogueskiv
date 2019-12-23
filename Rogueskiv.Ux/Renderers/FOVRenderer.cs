@@ -6,7 +6,6 @@ using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System.Drawing;
-using System.Linq;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
@@ -23,17 +22,8 @@ namespace Rogueskiv.Ux.Renderers
         public FOVRenderer(UxContext uxContext, IRenderizable game)
             : base(uxContext)
         {
-            BoardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
-
-            FOVComp = game
-                .Entities
-                .GetWithComponent<FOVComp>()
-                .Single()
-                .GetComponent<FOVComp>();
+            BoardComp = game.Entities.GetSingleComponent<BoardComp>();
+            FOVComp = game.Entities.GetSingleComponent<FOVComp>();
         }
 
         protected override void Render(IEntity entity, float interpolation)

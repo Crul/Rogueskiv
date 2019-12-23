@@ -27,12 +27,7 @@ namespace Rogueskiv.Core.Systems
         {
             Game = game;
 
-            BoardComp = Game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
-
+            BoardComp = Game.Entities.GetSingleComponent<BoardComp>();
 
             var player = Game
                 .Entities

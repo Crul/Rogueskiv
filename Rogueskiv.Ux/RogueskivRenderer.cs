@@ -9,7 +9,6 @@ using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using System;
 using System.IO;
-using System.Linq;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux
@@ -26,14 +25,9 @@ namespace Rogueskiv.Ux
             : base(uxContext, game)
         {
             UxContext = uxContext;
-            PlayerPositionComp = game
-                .Entities
-                .GetWithComponent<PlayerComp>()
-                .Single()
-                .GetComponent<CurrentPositionComp>();
+            PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
             Font = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
-
             BoardTexture = SDL_image.IMG_LoadTexture(
                 uxContext.WRenderer,
                 Path.Combine("imgs", "board.png")

@@ -37,11 +37,7 @@ namespace Rogueskiv.Core.Systems
                 Console.WriteLine(BoardData);
             }
 
-            BoardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
+            BoardComp = game.Entities.GetSingleComponent<BoardComp>();
 
             BoardComp.Board = BoardData
                 .Split(Environment.NewLine)

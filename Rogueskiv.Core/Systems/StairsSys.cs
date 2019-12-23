@@ -25,11 +25,7 @@ namespace Rogueskiv.Core.Systems
         {
             Game = game;
 
-            var stairsComps = game
-                .Entities
-                .GetWithComponent<StairsComp>()
-                .Select(s => s.GetComponent<StairsComp>());
-
+            var stairsComps = game.Entities.GetComponents<StairsComp>();
             UpStairsComp = (UpStairsComp)stairsComps.FirstOrDefault(s => s is UpStairsComp);
             DownStairsComp = (DownStairsComp)stairsComps.Single(s => s is DownStairsComp);
 

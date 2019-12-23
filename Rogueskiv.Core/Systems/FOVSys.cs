@@ -25,27 +25,11 @@ namespace Rogueskiv.Core.Systems
 
             PlayerPosComp = Game
                 .Entities
-                .GetWithComponent<PlayerComp>()
-                .Single()
-                .GetComponent<CurrentPositionComp>();
+                .GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
-            FOVComp = Game
-                .Entities
-                .GetWithComponent<FOVComp>()
-                .Single()
-                .GetComponent<FOVComp>();
-
-            TileComps = Game
-                .Entities
-                .GetWithComponent<TileComp>()
-                .Select(e => e.GetComponent<TileComp>())
-                .ToList();
-
-            BoardComp = Game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
+            FOVComp = Game.Entities.GetSingleComponent<FOVComp>();
+            TileComps = Game.Entities.GetComponents<TileComp>();
+            BoardComp = Game.Entities.GetSingleComponent<BoardComp>();
 
             FOVComp.Init(BoardComp);
         }
@@ -54,9 +38,7 @@ namespace Rogueskiv.Core.Systems
         {
             FOVComp.SetPlayerPos(PlayerPosComp);
 
-            var otherPositions = entities
-                .GetWithComponent<CurrentPositionComp>()
-                .Select(e => e.GetComponent<CurrentPositionComp>());
+            var otherPositions = entities.GetComponents<CurrentPositionComp>();
 
             TileComps
                 .Select(t => (PositionComp)t)

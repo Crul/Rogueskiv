@@ -8,7 +8,6 @@ using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,11 +57,7 @@ namespace Rogueskiv.Core
             )
         {
             Pause = true;
-
-            BoardComp = Entities
-                    .GetWithComponent<BoardComp>()
-                    .Single()
-                    .GetComponent<BoardComp>();
+            BoardComp = Entities.GetSingleComponent<BoardComp>();
         }
 
         private static string GetStartText(int floor) =>
@@ -94,10 +89,7 @@ namespace Rogueskiv.Core
         {
             base.Restart(previousFloorResult);
 
-            var playerComp = Entities
-                .GetWithComponent<PlayerComp>()
-                .Single();
-
+            var playerComp = Entities.GetWithComponent<PlayerComp>().Single();
             var playerMovementComp = playerComp.GetComponent<MovementComp>();
             playerMovementComp.Stop();
 
@@ -118,11 +110,7 @@ namespace Rogueskiv.Core
             {
                 Pause = false;
                 HasStarted = true;
-                Entities
-                    .GetWithComponent<PopUpComp>()
-                    .Single()
-                    .GetComponent<PopUpComp>()
-                    .Text = "PAUSE";
+                Entities.GetSingleComponent<PopUpComp>().Text = "PAUSE";
             }
 
             base.Update();

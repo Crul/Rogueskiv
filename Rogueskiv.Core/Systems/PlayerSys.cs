@@ -36,11 +36,7 @@ namespace Rogueskiv.Core.Systems
         }
 
         public override void Init(Game game) =>
-            PlayerMovementComp = game
-                .Entities
-                .GetWithComponent<PlayerComp>()
-                .Single()
-                .GetComponent<MovementComp>();
+            PlayerMovementComp = game.Entities.GetSingleComponent<PlayerComp, MovementComp>();
 
         public override void Update(EntityList entities, List<int> controls)
         {

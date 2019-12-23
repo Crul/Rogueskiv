@@ -15,11 +15,7 @@ namespace Rogueskiv.Core.Systems
         private BoardComp BoardComp;
 
         public override void Init(Game game) =>
-            BoardComp = game
-                .Entities
-                .GetWithComponent<BoardComp>()
-                .Single()
-                .GetComponent<BoardComp>();
+            BoardComp = game.Entities.GetSingleComponent<BoardComp>();
 
         public override void Update(EntityList entities, List<int> controls) =>
             entities
