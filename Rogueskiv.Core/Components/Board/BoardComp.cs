@@ -90,16 +90,16 @@ namespace Rogueskiv.Core.Components.Board
             var size = (wallComp.Size / TILE_SIZE);
             if (wallComp is HorizontalWallComp)
             {
-                var init = (int)(wallComp.PositionComp.Position.X / TILE_SIZE);
-                var y = (int)(wallComp.PositionComp.Position.Y / TILE_SIZE);
+                var init = wallComp.PositionComp.TilePos.X;
+                var y = wallComp.PositionComp.TilePos.Y;
 
                 for (var x = init; x < init + size; x++)
                     WallsByTiles[new Point(x, y)].Add(wall.Id);
             }
             else
             {
-                var init = (int)(wallComp.PositionComp.Position.Y / TILE_SIZE);
-                var x = (int)(wallComp.PositionComp.Position.X / TILE_SIZE);
+                var init = wallComp.PositionComp.TilePos.Y;
+                var x = wallComp.PositionComp.TilePos.X;
 
                 for (var y = init; y < init + size; y++)
                     WallsByTiles[new Point(x, y)].Add(wall.Id);
