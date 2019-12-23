@@ -12,7 +12,7 @@ namespace Rogueskiv.Core.Components.Walls
             => BounceLimit = FixedPosition + BoardComp.TILE_SIZE - (ENTITY_SIZE / 2);
 
         protected override bool HasTraversed
-            (PositionComp positionComp, PositionComp oldPositionComp) =>
-            (oldPositionComp.Position.Y <= BounceLimit && positionComp.Position.Y > BounceLimit);
+            (CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp) =>
+            (lastPositionComp.Position.Y <= BounceLimit && currentPositionComp.Position.Y > BounceLimit);
     }
 }

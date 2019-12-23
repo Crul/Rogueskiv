@@ -11,7 +11,7 @@ namespace Rogueskiv.Core.Components.Walls
             => BounceLimit = FixedPosition + (ENTITY_SIZE / 2);
 
         protected override bool HasTraversed
-            (PositionComp positionComp, PositionComp oldPositionComp) =>
-            (oldPositionComp.Position.X >= BounceLimit && positionComp.Position.X < BounceLimit);
+            (CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp) =>
+            (lastPositionComp.Position.X >= BounceLimit && currentPositionComp.Position.X < BounceLimit);
     }
 }

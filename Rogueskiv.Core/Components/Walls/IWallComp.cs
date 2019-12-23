@@ -12,9 +12,9 @@ namespace Rogueskiv.Core.Components.Walls
         List<WallTile> Tiles { get; }
 
         bool CheckBounce(
-            MovementComp movement,
-            PositionComp position,
-            PositionComp oldPosition
+            MovementComp movementComp,
+            CurrentPositionComp currentPositionComp,
+            LastPositionComp lastPositionComp
         );
     }
 }

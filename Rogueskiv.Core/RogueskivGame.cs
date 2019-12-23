@@ -130,8 +130,8 @@ namespace Rogueskiv.Core
 
         public override void RemoveEntity(EntityId id)
         {
-            var position = Entities[id].GetComponent<CurrentPositionComp>();
-            BoardComp.RemoveEntity(id, position);
+            var currentPositionComp = Entities[id].GetComponent<CurrentPositionComp>();
+            BoardComp.RemoveEntity(id, currentPositionComp);
             base.RemoveEntity(id);
         }
     }

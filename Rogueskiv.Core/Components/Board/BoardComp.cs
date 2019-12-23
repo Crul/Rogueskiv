@@ -70,8 +70,8 @@ namespace Rogueskiv.Core.Components.Board
         public void RemoveEntity(EntityId entityId, PositionComp positionComp) =>
             EntitiesByTiles[positionComp.TilePos].Remove(entityId);
 
-        public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp position) =>
-            GetIdsNear(EntitiesByTiles, entityId, position);
+        public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp positionComp) =>
+            GetIdsNear(EntitiesByTiles, entityId, positionComp);
 
         public void AddTile(Point tilePos, EntityId tileId)
         {
@@ -106,8 +106,8 @@ namespace Rogueskiv.Core.Components.Board
             }
         }
 
-        public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp position) =>
-            GetIdsNear(WallsByTiles, entityId, position);
+        public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp positionComp) =>
+            GetIdsNear(WallsByTiles, entityId, positionComp);
 
         private List<EntityId> GetIdsNear(
             IDictionary<Point, List<EntityId>> EntityIdsByTilePos,
