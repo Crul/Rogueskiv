@@ -7,7 +7,7 @@ namespace Seedwork.Ux
 {
     public class UxContext : IDisposable
     {
-        public Size ScreenSize { get; }
+        public Size ScreenSize { get; private set; }
         public Point Center { get; set; }
         public IntPtr Window { get; }
         public IntPtr WRenderer { get; }
@@ -25,12 +25,20 @@ namespace Seedwork.Ux
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 ScreenSize.Width, ScreenSize.Height,
-                0
+                SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
+                | SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED
             );
 
             WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
             SDL.SDL_SetRenderDrawColor(WRenderer, 0, 0, 0, 0);
             SDL.SDL_SetRenderDrawBlendMode(WRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            // SDL.SDL_RenderSetLogicalSize(WRenderer, screenSize.Width, screenSize.Height);
+        }
+
+        public void OnWindowResize(int width, int height)
+        {
+            ScreenSize = new Size(width, height);
+            Center = ScreenSize.Divide(2).ToPoint();
         }
 
         public void Dispose()
