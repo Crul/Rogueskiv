@@ -11,8 +11,7 @@ namespace Seedwork.Core
     public class Game : IGame<IEntity>, IControlable, IRenderizable
     {
         public EntityList Entities { get; }
-
-        private List<ISystem> Systems;
+        private List<ISystem> Systems { get; }
         public List<int> Controls { get; set; }
         public GameStageCode StageCode { get; protected set; } = default;
         public IGameResult<IEntity> Result { get; protected set; }

@@ -17,11 +17,11 @@ namespace Rogueskiv.Core.Systems
     {
         private const string TILE_CHAR = "T";
 
-        private MapGenerationParams MapGenerationParams;
+        private readonly MapGenerationParams MapGenerationParams;
         private string BoardData;
         private BoardComp BoardComp;
 
-        public BoardSys(string boardData) =>
+        public BoardSys(string boardData = "") =>
              BoardData = boardData;
 
         public BoardSys(MapGenerationParams mapGenerationParams) =>

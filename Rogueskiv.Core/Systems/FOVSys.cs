@@ -72,7 +72,7 @@ namespace Rogueskiv.Core.Systems
         {
             (int tileX, int tileY) = (tileComp.TilePos.X, tileComp.TilePos.Y);
 
-            var tileFOVInfo = FOVComp.FOVTiles[tileX, tileY];
+            var tileFOVInfo = FOVComp.GetTileFOVInfo(tileX, tileY);
             tileFOVInfo.Hidden = tileComp.Visible && !tileComp.VisibleByPlayer;
             tileFOVInfo.VisibleByPlayer = tileComp.VisibleByPlayer;
             tileFOVInfo.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position);
@@ -114,7 +114,7 @@ namespace Rogueskiv.Core.Systems
 
         private void CopyFOVInfo(TileFOVInfo tileFOVInfo, int targetTileX, int targetTileY)
         {
-            var targetTileFOVInfo = FOVComp.FOVTiles[targetTileX, targetTileY];
+            var targetTileFOVInfo = FOVComp.GetTileFOVInfo(targetTileX, targetTileY);
 
             targetTileFOVInfo.VisibleByPlayer = tileFOVInfo.VisibleByPlayer || tileFOVInfo.VisibleByPlayer;
             targetTileFOVInfo.Hidden = targetTileFOVInfo.Hidden || tileFOVInfo.Hidden;

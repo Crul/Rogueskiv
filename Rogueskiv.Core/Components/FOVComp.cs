@@ -15,8 +15,7 @@ namespace Rogueskiv.Core.Components
 
         private FOVRecurse FOVRecurse;
         private Size BoardSize;
-
-        public TileFOVInfo[,] FOVTiles { get; private set; }
+        private TileFOVInfo[,] FOVTiles;
 
         public void Init(BoardComp boardComp)
         {
@@ -31,6 +30,8 @@ namespace Rogueskiv.Core.Components
                 FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));
         }
 
+        public TileFOVInfo GetTileFOVInfo(int x, int y) => FOVTiles[x, y];
+
         public void SetPlayerPos(PositionComp positionComp) =>
             FOVRecurse.SetPlayerPos(positionComp.TilePos.X, positionComp.TilePos.Y);
 
@@ -40,7 +41,7 @@ namespace Rogueskiv.Core.Components
         public void Reset() =>
             ForAllTiles((x, y) => Reset(FOVTiles[x, y]));
 
-        private void Reset(TileFOVInfo tileFOVInfo)
+        private static void Reset(TileFOVInfo tileFOVInfo)
         {
             tileFOVInfo.Hidden = false;
             tileFOVInfo.VisibleByPlayer = false;

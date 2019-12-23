@@ -21,7 +21,7 @@ namespace Seedwork.Ux
                 Center = ScreenSize.Divide(2).ToPoint();
             }
             else
-                sdlWindowFlags = sdlWindowFlags | SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED;
+                sdlWindowFlags |= SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED;
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             SDL_ttf.TTF_Init();

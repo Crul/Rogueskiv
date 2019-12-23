@@ -40,7 +40,7 @@ namespace Rogueskiv.Ux.Renderers
         {
             for (var x = 0; x < BoardComp.BoardSize.Width; x++)
                 for (var y = 0; y < BoardComp.BoardSize.Height; y++)
-                    RenderTileFOV(new Point(x, y), FOVComp.FOVTiles[x, y]);
+                    RenderTileFOV(new Point(x, y), FOVComp.GetTileFOVInfo(x, y));
 
             SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, 0);
         }
