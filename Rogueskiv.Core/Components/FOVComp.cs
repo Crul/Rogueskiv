@@ -15,6 +15,8 @@ namespace Rogueskiv.Core.Components
         private Size BoardSize;
         private TileFOVInfo[,] FOVTiles;
 
+        public bool HasMapBeenRevealed { get; set; } = false;
+
         public void Init(BoardComp boardComp, PlayerComp playerComp)
         {
             BoardSize = boardComp.BoardSize;

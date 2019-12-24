@@ -12,6 +12,7 @@ namespace Rogueskiv.Ux.Renderers
 {
     class FOVRenderer : BaseItemRenderer<FOVComp>
     {
+        private const int MAX_BLACK_OPACITY_FOR_REVEALED_BY_MAP = 0xDD;
         private const int MAX_BLACK_OPACITY = 0xAA;
         private const int MAX_BLACK_OPACITY_FOR_VISIBLE = MAX_BLACK_OPACITY - 0x11;
 
@@ -40,7 +41,9 @@ namespace Rogueskiv.Ux.Renderers
                 return;
 
             byte alpha;
-            if (tileFOVInfo.Hidden)
+            if (tileFOVInfo.RevealedByMap)
+                alpha = MAX_BLACK_OPACITY_FOR_REVEALED_BY_MAP;
+            else if (tileFOVInfo.Hidden)
                 alpha = MAX_BLACK_OPACITY;
             else
                 alpha = (byte)(

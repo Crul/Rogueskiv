@@ -28,8 +28,8 @@ namespace Rogueskiv.Core.Systems
             base.StartPicking(pickedMaps);
             if (pickedMaps.Any())
             {
-                TileComps.ForEach(tileComp => tileComp.HasBeenSeen = true);
-                StairsComps.ForEach(stairsComp => stairsComp.HasBeenSeen = true);
+                TileComps.ForEach(tileComp => tileComp.RevealedByMap = true);
+                StairsComps.ForEach(stairsComp => stairsComp.RevealedByMap = true);
             }
         }
     }

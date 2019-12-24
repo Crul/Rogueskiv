@@ -26,6 +26,17 @@ namespace Rogueskiv.Core.Components.Board
         public TileWallFlags WallFlags { get; private set; }
         public bool IsWall { get => WallFlags != TileWallFlags.None; }
 
+        private bool revealedByMap;
+        public bool RevealedByMap
+        {
+            get => revealedByMap;
+            set
+            {
+                revealedByMap = value && !HasBeenSeen;
+                HasBeenSeen = HasBeenSeen || value;
+            }
+        }
+
         public override bool Visible
         {
             get => HasBeenSeen;
@@ -33,6 +44,7 @@ namespace Rogueskiv.Core.Components.Board
             {
                 VisibleByPlayer = value;
                 HasBeenSeen = HasBeenSeen || value;
+                revealedByMap = revealedByMap && !value;
             }
         }
 
