@@ -6,7 +6,7 @@ namespace Rogueskiv.Core.Components
     public abstract class StairsComp : CurrentPositionComp
     {
         // TODO DRY TileComp
-        public bool HasBeenSeen { get; private set; }
+        public bool HasBeenSeen { get; set; }
         public bool VisibleByPlayer { get; private set; }
 
         public override bool Visible

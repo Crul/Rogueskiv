@@ -48,6 +48,7 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new FoodSys(),
                     new TorchSys(),
+                    new MapSys(),
                     new CollisionSys(),
                     new FOVSys(),
                     new StairsSys(floorCount == floor),

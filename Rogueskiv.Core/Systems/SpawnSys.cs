@@ -17,8 +17,9 @@ namespace Rogueskiv.Core.Systems
     class SpawnSys : BaseSystem
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
-        private const int MIN_FOOD_SPAWN_DISTANCE = 10;
+        private const int MIN_FOOD_SPAWN_DISTANCE = 20;
         private const int MIN_TORCH_SPAWN_DISTANCE = 10;
+        private const int MIN_MAP_SPAWN_DISTANCE = 30;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
         private const int ENEMY_RADIUS = 6;
 
@@ -79,8 +80,8 @@ namespace Rogueskiv.Core.Systems
                     .ForEach(enemy => game.AddEntity(enemy));
 
             game.AddEntity(CreateFood(measuredTiles));
-
             game.AddEntity(CreateTorch(measuredTiles));
+            game.AddEntity(CreateMap(measuredTiles));
 
             game.AddEntity(CreateDownStairs(measuredTiles, tilesPosWithSpaceAround));
 
@@ -241,6 +242,17 @@ namespace Rogueskiv.Core.Systems
                 .Add(BoardComp.TILE_SIZE / 2);
 
             return new TorchComp(torchTilePos);
+        }
+
+        private static IComponent CreateMap(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        )
+        {
+            var mapTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_MAP_SPAWN_DISTANCE)
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
+
+            return new MapComp(mapTilePos);
         }
 
         private static IComponent CreateDownStairs(

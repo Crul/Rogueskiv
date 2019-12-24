@@ -21,7 +21,7 @@ namespace Rogueskiv.Core.Components.Board
 
     public class TileComp : PositionComp
     {
-        public bool HasBeenSeen { get; private set; }
+        public bool HasBeenSeen { get; set; }
         public bool VisibleByPlayer { get; private set; }
         public TileWallFlags WallFlags { get; private set; }
         public bool IsWall { get => WallFlags != TileWallFlags.None; }
