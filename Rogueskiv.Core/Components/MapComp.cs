@@ -1,9 +1,8 @@
-﻿using Rogueskiv.Core.Components.Position;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    public class MapComp : CurrentPositionComp
+    public class MapComp : PickableComp
     {
         public MapComp(PointF position) : base(position)
         { }

@@ -16,6 +16,7 @@ namespace Rogueskiv.Core.Systems
         private static float MAX_POS_SPEED;
         private static float MAX_NEG_SPEED;
         private static float STOP_ABS_SPEED;
+        private PlayerComp PlayerComp;
         private MovementComp PlayerMovementComp;
 
         public PlayerSys(IGameContext gameContext)
@@ -35,12 +36,22 @@ namespace Rogueskiv.Core.Systems
             STOP_ABS_SPEED = 1f / fps;
         }
 
-        public override void Init(Game game) =>
-            PlayerMovementComp = game.Entities.GetSingleComponent<PlayerComp, MovementComp>();
+        public override void Init(Game game)
+        {
+            var playerEntity = game.Entities.GetWithComponent<PlayerComp>().Single();
+            PlayerComp = playerEntity.GetComponent<PlayerComp>();
+            PlayerMovementComp = playerEntity.GetComponent<MovementComp>();
+        }
 
         public override void Update(EntityList entities, List<int> controls)
         {
             // TODO proper inertia (using angle)
+
+            if (PlayerComp.PickingComps.Any())
+            {
+                PlayerMovementComp.Stop();
+                return;
+            }
 
             float speedX = 0, speedY = 0;
             if (controls.Any(c => c == (int)Controls.UP)) speedY = -ACCELERATION;

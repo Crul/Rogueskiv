@@ -1,52 +1,26 @@
-﻿
-using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
-using Seedwork.Core.Systems;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rogueskiv.Core.Systems
 {
-    class TorchSys : BaseSystem
+    class TorchSys : PickingSys<TorchComp>
     {
-        private Game Game;
-        private PositionComp PlayerPositionComp;
         private PlayerComp PlayerComp;
+
+        public TorchSys() : base(isSingleCompPerFloor: true) { }
 
         public override void Init(Game game)
         {
-            Game = game;
+            base.Init(game);
 
-            var playerEntity = game
+            PlayerComp = game
                 .Entities
-                .GetWithComponent<PlayerComp>()
-                .Single();
-
-            PlayerPositionComp = playerEntity.GetComponent<CurrentPositionComp>();
-            PlayerComp = playerEntity.GetComponent<PlayerComp>();
+                .GetSingleComponent<PlayerComp>();
         }
 
-        public override void Update(EntityList entities, List<int> controls)
-        {
-            // TODO DRY FoodSys
-
-            var pickedTorchs = entities
-                .GetWithComponent<TorchComp>()
-                .Select(e => (
-                    torchEntityId: e.Id,
-                    torchComp: e.GetComponent<TorchComp>()
-                ))
-                .Where(torch => torch.torchComp.TilePos == PlayerPositionComp.TilePos)
-                .ToList();
-
-            if (pickedTorchs.Any())
-            {
-                PlayerComp.VisualRange += TorchComp.VISUAL_RANGE_INCREASE * pickedTorchs.Count;
-                pickedTorchs.ForEach(torch => entities.Remove(torch.torchEntityId));
-                Game.RemoveSystem(this);  // only one torch per floor
-            }
-        }
+        protected override void OnPicked(List<TorchComp> pickedTorchs) =>
+            PlayerComp.VisualRange += TorchComp.VISUAL_RANGE_INCREASE * pickedTorchs.Count;
     }
 }

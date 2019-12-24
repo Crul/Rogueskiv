@@ -1,27 +1,28 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Seedwork.Engine;
 using Seedwork.Ux;
-using Seedwork.Ux.SpriteProviders;
 using System;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class FoodRenderer : PositionRenderer<FoodComp>
+    class FoodRenderer : PickableRenderer<FoodComp>
     {
-        public FoodRenderer(UxContext uxContext, IntPtr boardTexture)
+        public FoodRenderer(
+            IGameRenderer gameRenderer, UxContext uxContext, IntPtr boardTexture
+        )
             : base(
+                gameRenderer,
                 uxContext,
-                new SingleSpriteProvider<FoodComp>(
-                    boardTexture,
-                    new SDL_Rect
-                    {
-                        x = 5 * BoardComp.TILE_SIZE,
-                        y = BoardComp.TILE_SIZE,
-                        w = BoardComp.TILE_SIZE,
-                        h = BoardComp.TILE_SIZE
-                    }
-                )
+                boardTexture,
+                new SDL_Rect
+                {
+                    x = 5 * BoardComp.TILE_SIZE,
+                    y = BoardComp.TILE_SIZE,
+                    w = BoardComp.TILE_SIZE,
+                    h = BoardComp.TILE_SIZE
+                }
             )
         { }
     }

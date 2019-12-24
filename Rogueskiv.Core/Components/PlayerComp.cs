@@ -1,4 +1,5 @@
 ﻿using Seedwork.Core.Components;
+using System.Collections.Generic;
 
 namespace Rogueskiv.Core.Components
 {
@@ -9,5 +10,6 @@ namespace Rogueskiv.Core.Components
         public const int INITIAL_VISUAL_RANGE = 5;
 
         public int VisualRange { get; set; }
+        public List<PickableComp> PickingComps { get; } = new List<PickableComp>();
     }
 }

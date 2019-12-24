@@ -35,6 +35,9 @@ namespace Seedwork.Crosscutting
         public static PointF Multiply(this Point point, int value)
             => new PointF(point.X * value, point.Y * value);
 
+        public static Size Multiply(this Size size, float value)
+            => new Size((int)(size.Width * value), (int)(size.Height * value));
+
         public static Point Divide(this PointF pointF, int value)
             => new Point((int)Math.Floor(pointF.X / value), (int)Math.Floor(pointF.Y / value));
 

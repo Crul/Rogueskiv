@@ -1,27 +1,26 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Seedwork.Engine;
 using Seedwork.Ux;
-using Seedwork.Ux.SpriteProviders;
 using System;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class TorchRenderer : PositionRenderer<TorchComp>
+    class TorchRenderer : PickableRenderer<TorchComp>
     {
-        public TorchRenderer(UxContext uxContext, IntPtr boardTexture)
+        public TorchRenderer(IGameRenderer gameRendeerer, UxContext uxContext, IntPtr boardTexture)
             : base(
+                gameRendeerer,
                 uxContext,
-                new SingleSpriteProvider<TorchComp>(
-                    boardTexture,
-                    new SDL_Rect
-                    {
-                        x = 5 * BoardComp.TILE_SIZE,
-                        y = 2 * BoardComp.TILE_SIZE,
-                        w = BoardComp.TILE_SIZE,
-                        h = BoardComp.TILE_SIZE
-                    }
-                )
+                boardTexture,
+                new SDL_Rect
+                {
+                    x = 5 * BoardComp.TILE_SIZE,
+                    y = 2 * BoardComp.TILE_SIZE,
+                    w = BoardComp.TILE_SIZE,
+                    h = BoardComp.TILE_SIZE
+                }
             )
         { }
     }
