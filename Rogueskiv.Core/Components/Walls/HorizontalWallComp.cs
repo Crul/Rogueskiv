@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Seedwork.Crosscutting;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
@@ -11,15 +12,21 @@ namespace Rogueskiv.Core.Components.Walls
         protected override float FixedPosition => Position.Y;
         protected override float VariablePosition => Position.X;
 
-        protected override float GetFixedPosition(PositionComp positionComp) =>
-            positionComp.Position.Y;
-        protected override float GetVariablePosition(PositionComp positionComp) =>
-            positionComp.Position.X;
+        protected override PointF GetStartPosition(MovementComp movementComp) =>
+            new PointF(x: Position.X - WALL_THICKNESS, y: BounceLimit);
 
-        protected override void ReverseSpeed(MovementComp movementComp, float amortiguationFactor) =>
-            movementComp.MultiplySpeed(factorY: amortiguationFactor);
+        protected override PointF GetEndPosition(MovementComp movement) =>
+            GetStartPosition(movement).Add(x: Size + 2 * WALL_THICKNESS);
+
+        protected override float GetFixedPosition(PointF position) => position.Y;
+        protected override float GetVariablePosition(PointF position) => position.X;
 
         protected override void SetFixedPosition(PositionComp positionComp, float value) =>
             positionComp.SetPosition(y: value);
+        protected override void SetVariablePosition(PositionComp positionComp, float value) =>
+            positionComp.SetPosition(x: value);
+
+        protected override void ReverseSpeed(MovementComp movementComp, float amortiguationFactor) =>
+            movementComp.MultiplySpeed(factorY: amortiguationFactor);
     }
 }

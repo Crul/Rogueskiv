@@ -129,7 +129,8 @@ namespace Rogueskiv.Core.Systems
                 new MovementComp(
                     frictionFactor: 1f / 5f,
                     bounceAmortiguationFactor: 2f / 3f,
-                    radius: PlayerComp.PLAYER_RADIUS
+                    radius: PlayerComp.PLAYER_RADIUS,
+                    simpleBounce: false
                 )
             };
         }
@@ -207,7 +208,8 @@ namespace Rogueskiv.Core.Systems
                     speed: GetEnemySpeed(),
                     frictionFactor: 1,
                     bounceAmortiguationFactor: 1,
-                    radius: ENEMY_RADIUS
+                    radius: ENEMY_RADIUS,
+                    simpleBounce: true
                 )
             };
         }

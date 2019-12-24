@@ -13,9 +13,6 @@ namespace Rogueskiv.Core.Systems
     public class PlayerSys : BaseSystem
     {
         private static float ACCELERATION;
-        private static float MAX_POS_SPEED;
-        private static float MAX_NEG_SPEED;
-        private static float STOP_ABS_SPEED;
         private PlayerComp PlayerComp;
         private MovementComp PlayerMovementComp;
 
@@ -31,9 +28,9 @@ namespace Rogueskiv.Core.Systems
 
             var fps = gameContext.GameFPS;
             ACCELERATION = (float)Math.Pow(2d, 25d / fps);
-            MAX_POS_SPEED = 200f / fps;
-            MAX_NEG_SPEED = -MAX_POS_SPEED;
-            STOP_ABS_SPEED = 1f / fps;
+            MovementComp.MAX_POS_SPEED = 200f / fps;
+            MovementComp.MAX_NEG_SPEED = -MovementComp.MAX_POS_SPEED;
+            MovementComp.STOP_ABS_SPEED = 1f / fps;
         }
 
         public override void Init(Game game)
@@ -69,16 +66,6 @@ namespace Rogueskiv.Core.Systems
         }
 
         public static void AddSped(MovementComp movementComp, float speedX, float speedY) =>
-            movementComp.Speed = movementComp
-                .Speed
-                .Add(speedX, speedY)
-                .Map(BoundSpeed);
-
-        private static float BoundSpeed(float speed)
-        {
-            var boundedSpeed = Math.Max(MAX_NEG_SPEED, Math.Min(MAX_POS_SPEED, speed));
-
-            return (Math.Abs(boundedSpeed) < STOP_ABS_SPEED ? 0 : boundedSpeed);
-        }
+            movementComp.Speed = movementComp.Speed.Add(speedX, speedY);
     }
 }

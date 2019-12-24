@@ -13,7 +13,7 @@ namespace Rogueskiv.Core.Components.Walls
 
         protected override bool HasTraversed
             (CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp, MovementComp movementComp) =>
-            GetFixedPosition(lastPositionComp) + GetFixedMargin(movementComp) >= BounceLimit
-            && GetFixedPosition(currentPositionComp) + GetFixedMargin(movementComp) < BounceLimit;
+            GetFixedPosition(lastPositionComp.Position) + GetFixedMargin(movementComp) >= BounceLimit
+            && GetFixedPosition(currentPositionComp.Position) + GetFixedMargin(movementComp) < BounceLimit;
     }
 }
