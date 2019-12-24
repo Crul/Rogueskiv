@@ -1,6 +1,5 @@
-﻿
-using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Board;
+﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using System.Collections.Generic;
@@ -10,27 +9,22 @@ namespace Rogueskiv.Core.Systems
 {
     class MapSys : PickingSys<MapComp>
     {
-        private List<TileComp> TileComps;
-        private List<StairsComp> StairsComps;
+        private List<RevealableByMapPositionComp> RevealableByMapPositionComps;
 
         public MapSys() : base(isSingleCompPerFloor: true) { }
 
         public override void Init(Game game)
         {
             base.Init(game);
-
-            TileComps = game.Entities.GetComponents<TileComp>();
-            StairsComps = game.Entities.GetComponents<StairsComp>();
+            RevealableByMapPositionComps = game.Entities.GetComponents<RevealableByMapPositionComp>();
         }
 
         protected override void StartPicking(List<MapComp> pickedMaps)
         {
             base.StartPicking(pickedMaps);
             if (pickedMaps.Any())
-            {
-                TileComps.ForEach(tileComp => tileComp.RevealedByMap = true);
-                StairsComps.ForEach(stairsComp => stairsComp.RevealedByMap = true);
-            }
+                RevealableByMapPositionComps
+                    .ForEach(revealableComp => revealableComp.RevealedByMap = true);
         }
     }
 }

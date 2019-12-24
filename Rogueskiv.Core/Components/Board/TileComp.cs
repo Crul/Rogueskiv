@@ -19,34 +19,10 @@ namespace Rogueskiv.Core.Components.Board
         CornerDownLeft = 128,
     };
 
-    public class TileComp : PositionComp
+    public class TileComp : RevealableByMapPositionComp
     {
-        public bool HasBeenSeen { get; set; }
-        public bool VisibleByPlayer { get; private set; }
         public TileWallFlags WallFlags { get; private set; }
         public bool IsWall { get => WallFlags != TileWallFlags.None; }
-
-        private bool revealedByMap;
-        public bool RevealedByMap
-        {
-            get => revealedByMap;
-            set
-            {
-                revealedByMap = value && !HasBeenSeen;
-                HasBeenSeen = HasBeenSeen || value;
-            }
-        }
-
-        public override bool Visible
-        {
-            get => HasBeenSeen;
-            set
-            {
-                VisibleByPlayer = value;
-                HasBeenSeen = HasBeenSeen || value;
-                revealedByMap = revealedByMap && !value;
-            }
-        }
 
         public TileComp(Point tilePos)
             : base(tilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2)) { }
