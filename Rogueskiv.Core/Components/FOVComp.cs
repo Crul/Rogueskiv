@@ -43,7 +43,7 @@ namespace Rogueskiv.Core.Components
 
         private static void Reset(TileFOVInfo tileFOVInfo)
         {
-            tileFOVInfo.Hidden = false;
+            tileFOVInfo.CoveredByFOV = false;
             tileFOVInfo.VisibleByPlayer = false;
             tileFOVInfo.DistanceFromPlayer = 0;
         }

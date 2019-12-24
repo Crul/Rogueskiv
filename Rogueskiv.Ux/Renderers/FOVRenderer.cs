@@ -12,9 +12,9 @@ namespace Rogueskiv.Ux.Renderers
 {
     class FOVRenderer : BaseItemRenderer<FOVComp>
     {
-        private const int MAX_BLACK_OPACITY_FOR_REVEALED_BY_MAP = 0xDD;
-        private const int MAX_BLACK_OPACITY = 0xAA;
-        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = MAX_BLACK_OPACITY - 0x11;
+        private const int BLACK_OPACITY_FOR_REVEALED_BY_MAP = 0xDD;
+        private const int BLACK_OPACITY_FOR_COVERED_BY_FOV = 0xAA;
+        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = BLACK_OPACITY_FOR_COVERED_BY_FOV - 0x11;
 
         private readonly BoardComp BoardComp;
         private readonly PlayerComp PlayerComp;
@@ -37,14 +37,14 @@ namespace Rogueskiv.Ux.Renderers
 
         private void RenderTileFOV(Point point, TileFOVInfo tileFOVInfo)
         {
-            if (!tileFOVInfo.Hidden && !tileFOVInfo.VisibleByPlayer)
+            if (!tileFOVInfo.CoveredByFOV && !tileFOVInfo.VisibleByPlayer)
                 return;
 
             byte alpha;
             if (tileFOVInfo.RevealedByMap)
-                alpha = MAX_BLACK_OPACITY_FOR_REVEALED_BY_MAP;
-            else if (tileFOVInfo.Hidden)
-                alpha = MAX_BLACK_OPACITY;
+                alpha = BLACK_OPACITY_FOR_REVEALED_BY_MAP;
+            else if (tileFOVInfo.CoveredByFOV)
+                alpha = BLACK_OPACITY_FOR_COVERED_BY_FOV;
             else
                 alpha = (byte)(
                     MAX_BLACK_OPACITY_FOR_VISIBLE

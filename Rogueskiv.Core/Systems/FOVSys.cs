@@ -58,7 +58,7 @@ namespace Rogueskiv.Core.Systems
             (int tileX, int tileY) = (tileComp.TilePos.X, tileComp.TilePos.Y);
 
             var tileFOVInfo = FOVComp.GetTileFOVInfo(tileX, tileY);
-            tileFOVInfo.Hidden = tileComp.Visible && !tileComp.VisibleByPlayer;
+            tileFOVInfo.CoveredByFOV = tileComp.Visible && !tileComp.VisibleByPlayer;
             tileFOVInfo.RevealedByMap = tileComp.RevealedByMap;
             tileFOVInfo.VisibleByPlayer = tileComp.VisibleByPlayer;
             tileFOVInfo.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position);
