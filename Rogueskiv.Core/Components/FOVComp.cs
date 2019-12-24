@@ -11,20 +11,18 @@ namespace Rogueskiv.Core.Components
 {
     public class FOVComp : IComponent
     {
-        private const int VISUAL_RANGE = 10; // TODO proper visual range
-
         private FOVRecurse FOVRecurse;
         private Size BoardSize;
         private TileFOVInfo[,] FOVTiles;
 
-        public void Init(BoardComp boardComp)
+        public void Init(BoardComp boardComp, PlayerComp playerComp)
         {
             BoardSize = boardComp.BoardSize;
 
             FOVTiles = new TileFOVInfo[BoardSize.Width, BoardSize.Height];
             ForAllTiles((x, y) => FOVTiles[x, y] = new TileFOVInfo());
 
-            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height, VISUAL_RANGE);
+            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height, playerComp.VisualRange);
 
             BoardSys.ForAllTiles(BoardSize, tilePos =>
                 FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));

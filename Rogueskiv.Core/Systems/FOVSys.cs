@@ -22,15 +22,19 @@ namespace Rogueskiv.Core.Systems
         {
             Game = game;
 
-            PlayerPosComp = Game
+            var playerEntity = Game
                 .Entities
-                .GetSingleComponent<PlayerComp, CurrentPositionComp>();
+                .GetWithComponent<PlayerComp>()
+                .Single();
+
+            PlayerPosComp = playerEntity.GetComponent<CurrentPositionComp>();
 
             FOVComp = Game.Entities.GetSingleComponent<FOVComp>();
             TileComps = Game.Entities.GetComponents<TileComp>();
             BoardComp = Game.Entities.GetSingleComponent<BoardComp>();
 
-            FOVComp.Init(BoardComp);
+            var playerComp = playerEntity.GetComponent<PlayerComp>();
+            FOVComp.Init(BoardComp, playerComp);
         }
 
         public override void Update(EntityList entities, List<int> controls)
