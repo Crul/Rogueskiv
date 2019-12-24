@@ -17,9 +17,6 @@ namespace Rogueskiv.Core.Systems
         private IEntity PlayerEntity;
         private PositionComp PlayerPositionComp;
         private bool HasExitedStairs = false;
-        private readonly bool IsLastFloor;
-
-        public StairsSys(bool isLastFloor) => IsLastFloor = isLastFloor;
 
         public override void Init(Game game)
         {
@@ -27,7 +24,7 @@ namespace Rogueskiv.Core.Systems
 
             var stairsComps = game.Entities.GetComponents<StairsComp>();
             UpStairsComp = (UpStairsComp)stairsComps.FirstOrDefault(s => s is UpStairsComp);
-            DownStairsComp = (DownStairsComp)stairsComps.Single(s => s is DownStairsComp);
+            DownStairsComp = (DownStairsComp)stairsComps.FirstOrDefault(s => s is DownStairsComp);
 
             PlayerEntity = game
                 .Entities
@@ -42,15 +39,11 @@ namespace Rogueskiv.Core.Systems
             var isInDownStairs = IsInStairs(DownStairsComp);
             if (isInDownStairs && HasExitedStairs)
             {
-                if (IsLastFloor)
-                    EndGame(RogueskivGameResults.WinResult, DownStairsComp, pauseBeforeQuit: true);
-                else
-                    EndGame(RogueskivGameResults.FloorDown, DownStairsComp);
-
+                EndGame(RogueskivGameResults.FloorDown, DownStairsComp);
                 return;
             }
 
-            var isInUpStairs = UpStairsComp == null ? false : IsInStairs(UpStairsComp);
+            var isInUpStairs = IsInStairs(UpStairsComp);
             if (isInUpStairs && HasExitedStairs)
             {
                 EndGame(RogueskivGameResults.FloorUp, UpStairsComp);
@@ -76,6 +69,6 @@ namespace Rogueskiv.Core.Systems
         }
 
         private bool IsInStairs(StairsComp stairsComp) =>
-            PlayerPositionComp.TilePos == stairsComp.TilePos;
+            stairsComp != null && PlayerPositionComp.TilePos == stairsComp.TilePos;
     }
 }

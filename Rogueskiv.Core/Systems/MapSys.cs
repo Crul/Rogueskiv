@@ -23,9 +23,10 @@ namespace Rogueskiv.Core.Systems
             StairsComps = game.Entities.GetComponents<StairsComp>();
         }
 
-        protected override void OnPicked(List<MapComp> pickedItems)
+        protected override void StartPicking(List<MapComp> pickedMaps)
         {
-            if (pickedItems.Any())
+            base.StartPicking(pickedMaps);
+            if (pickedMaps.Any())
             {
                 TileComps.ForEach(tileComp => tileComp.HasBeenSeen = true);
                 StairsComps.ForEach(stairsComp => stairsComp.HasBeenSeen = true);

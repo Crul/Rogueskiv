@@ -22,7 +22,10 @@ namespace Rogueskiv.Core.Systems
 
         protected override bool CanIPick() => !PlayerHealthComp.Full;
 
-        protected override void OnPicked(List<FoodComp> pickedFoods) =>
+        protected override void StartPicking(List<FoodComp> pickedFoods)
+        {
+            base.StartPicking(pickedFoods);
             PlayerHealthComp.Health += FoodComp.HEALTH_INCREASE * pickedFoods.Count;
+        }
     }
 }

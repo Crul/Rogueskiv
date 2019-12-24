@@ -12,7 +12,7 @@ namespace Rogueskiv.Run
 {
     class RogueskivApp
     {
-        private const int FLOOR_COUNT = 10 - 1; // 0 index
+        private const int FLOOR_COUNT = 10;
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
         private readonly Size ScrrenSize = new Size(640, 480);
 
@@ -85,7 +85,7 @@ namespace Rogueskiv.Run
         {
             // var boardData = File.ReadAllText(Path.Combine("data", "board.txt"));
 
-            CurrentFloor = FloorEngines.Count;
+            CurrentFloor = FloorEngines.Count + 1;
 
             var gameContext = new GameContext();
             var game = new RogueskivGame(
@@ -106,7 +106,7 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> CreateMenuStage(UxContext uxContext)
         {
-            CurrentFloor = 0;
+            CurrentFloor = 1;
             FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
             FloorEngines.Clear();
 

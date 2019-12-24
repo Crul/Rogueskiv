@@ -49,9 +49,10 @@ namespace Rogueskiv.Core
                     new FoodSys(),
                     new TorchSys(),
                     new MapSys(),
+                    new AmuletSys(),
                     new CollisionSys(),
                     new FOVSys(),
-                    new StairsSys(floorCount == floor),
+                    new StairsSys(),
                     new DeathSys()
                 },
                 pauseControl: (int)Core.Controls.PAUSE,
@@ -63,7 +64,7 @@ namespace Rogueskiv.Core
         }
 
         private static string GetStartText(int floor) =>
-            $"FLOOR {floor + 1} - Press any arrow to " + (floor == 0 ? "start" : "continue");
+            $"FLOOR {floor} - Press any arrow to " + (floor == 1 ? "start" : "continue");
 
         private static MapGenerationParams GetMapGenerationParams
             (int floorCount, int floor)

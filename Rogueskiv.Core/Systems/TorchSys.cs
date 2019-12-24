@@ -20,7 +20,10 @@ namespace Rogueskiv.Core.Systems
                 .GetSingleComponent<PlayerComp>();
         }
 
-        protected override void OnPicked(List<TorchComp> pickedTorchs) =>
+        protected override void StartPicking(List<TorchComp> pickedTorchs)
+        {
+            base.StartPicking(pickedTorchs);
             PlayerComp.VisualRange += TorchComp.VISUAL_RANGE_INCREASE * pickedTorchs.Count;
+        }
     }
 }

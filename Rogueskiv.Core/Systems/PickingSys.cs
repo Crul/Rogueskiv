@@ -11,7 +11,8 @@ namespace Rogueskiv.Core.Systems
     abstract class PickingSys<T> : BaseSystem
         where T : PickableComp
     {
-        private Game Game;
+        protected Game Game { get; private set; }
+
         private PlayerComp PlayerComp;
         private PositionComp PlayerPositionComp;
         private readonly bool IsSingleCompPerFloor;
@@ -52,9 +53,8 @@ namespace Rogueskiv.Core.Systems
                 .Select(picked => picked.pickableComp)
                 .ToList();
 
-            pickedComponents.ForEach(StartPicking);
-
-            OnPicked(pickedComponents);
+            if (pickedComponents.Count > 0)
+                StartPicking(pickedComponents);
         }
 
         private void CheckBeingPicked(
@@ -74,26 +74,34 @@ namespace Rogueskiv.Core.Systems
                 .Where(pickable => pickable.pickableComp.PickingTime < 0)
                 .ToList();
 
-            finallyPickedEntities.ForEach(picked => EndPicking(entities, picked.entityId, picked.pickableComp));
+            if (finallyPickedEntities.Count > 0)
+            {
+                EndPicking(entities, finallyPickedEntities);
 
-            if (IsSingleCompPerFloor && finallyPickedEntities.Count > 0)
-                Game.RemoveSystem(this);
+                if (IsSingleCompPerFloor)
+                    Game.RemoveSystem(this);
+            }
         }
 
         protected virtual bool CanIPick() => true;
 
-        protected abstract void OnPicked(List<T> pickedItems);
+        protected virtual void StartPicking(List<T> pickedComponents) =>
+            pickedComponents.ForEach(pickedComp =>
+            {
+                pickedComp.StartPicking();
+                PlayerComp.PickingComps.Add(pickedComp);
+            });
 
-        private void StartPicking(T pickedComp)
+        protected virtual void EndPicking(
+            EntityList entities,
+            List<(EntityId entityId, T pickableComp)> pickedEntities
+        )
         {
-            pickedComp.StartPicking();
-            PlayerComp.PickingComps.Add(pickedComp);
-        }
-
-        private void EndPicking(EntityList entities, EntityId pickedEntityId, T pickedComp)
-        {
-            PlayerComp.PickingComps.Remove(pickedComp);
-            entities.Remove(pickedEntityId);
+            pickedEntities.ForEach(picked =>
+            {
+                PlayerComp.PickingComps.Remove(picked.pickableComp);
+                entities.Remove(picked.entityId);
+            });
         }
     }
 }

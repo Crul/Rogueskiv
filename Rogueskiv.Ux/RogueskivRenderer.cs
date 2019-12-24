@@ -38,6 +38,7 @@ namespace Rogueskiv.Ux
             Renderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, BoardTexture);
             Renderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, BoardTexture);
             Renderers[typeof(MapComp)] = new MapRenderer(this, uxContext, BoardTexture);
+            Renderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, BoardTexture);
             Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
             Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext, game);
             Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
