@@ -47,6 +47,7 @@ namespace Rogueskiv.Core
                     new MovementSys(),
                     new WallSys(),
                     new FoodSys(),
+                    new TorchSys(),
                     new CollisionSys(),
                     new FOVSys(),
                     new StairsSys(floorCount == floor),
@@ -89,18 +90,21 @@ namespace Rogueskiv.Core
         {
             base.Restart(previousFloorResult);
 
-            var playerComp = Entities.GetWithComponent<PlayerComp>().Single();
-            var playerMovementComp = playerComp.GetComponent<MovementComp>();
-            playerMovementComp.Stop();
-
-            var previousPlayerComp = previousFloorResult
+            var playerEntity = Entities.GetWithComponent<PlayerComp>().Single();
+            var previousPlayerEntity = previousFloorResult
                 .Data
                 .GetWithComponent<PlayerComp>()
                 .Single();
 
-            var previousPlayerHealtComp = previousPlayerComp.GetComponent<HealthComp>();
-            var playerHealthComp = playerComp.GetComponent<HealthComp>();
+            var playerMovementComp = playerEntity.GetComponent<MovementComp>();
+            playerMovementComp.Stop();
 
+            var playerComp = playerEntity.GetComponent<PlayerComp>();
+            var previousPlayerComp = previousPlayerEntity.GetComponent<PlayerComp>();
+            playerComp.VisualRange = previousPlayerComp.VisualRange;
+
+            var previousPlayerHealtComp = previousPlayerEntity.GetComponent<HealthComp>();
+            var playerHealthComp = playerEntity.GetComponent<HealthComp>();
             playerHealthComp.Health = previousPlayerHealtComp.Health;
         }
 
