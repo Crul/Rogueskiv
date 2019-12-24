@@ -12,15 +12,13 @@ namespace Seedwork.Ux
         public IntPtr Window { get; }
         public IntPtr WRenderer { get; }
 
-        public UxContext(string windowTitle, Size? screenSize = null)
+        public UxContext(string windowTitle, Size? screenSize = null, bool maximized = true)
         {
-            var sdlWindowFlags = SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE;
             if (screenSize.HasValue)
-            {
-                ScreenSize = screenSize.Value;
-                Center = ScreenSize.Divide(2).ToPoint();
-            }
-            else
+                OnWindowResize(screenSize.Value);
+
+            var sdlWindowFlags = SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE;
+            if (maximized)
                 sdlWindowFlags |= SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED;
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
@@ -40,9 +38,12 @@ namespace Seedwork.Ux
             // SDL.SDL_RenderSetLogicalSize(WRenderer, screenSize.Width, screenSize.Height);
         }
 
-        public void OnWindowResize(int width, int height)
+        public void OnWindowResize(int width, int height) =>
+            OnWindowResize(new Size(width, height));
+
+        private void OnWindowResize(Size screenSize)
         {
-            ScreenSize = new Size(width, height);
+            ScreenSize = screenSize;
             Center = ScreenSize.Divide(2).ToPoint();
         }
 
