@@ -16,23 +16,14 @@ namespace Rogueskiv.MapGeneration
         public bool HasTile(Point tile) =>
             Intersects(tile, new Size(1, 1));
 
-        public bool Intersects(Room room) =>
-            Intersects(room.TilePos, room.Size);
+        public bool Intersects(Room room, int margin = 0) =>
+            Intersects(room.TilePos, room.Size, margin);
 
-        public bool Intersects(Point tilePos, Size size) =>
-            TilePos.X < (tilePos.X + size.Width)
-                && (TilePos.X + Size.Width) > tilePos.X
-                && TilePos.Y < (tilePos.Y + size.Height)
-                && (TilePos.Y + Size.Height) > tilePos.Y;
-
-        public bool IntersectsOrAdjacent(Room room) =>
-            IntersectsOrAdjacent(room.TilePos, room.Size);
-
-        public bool IntersectsOrAdjacent(Point tilePos, Size size) =>
-            TilePos.X <= (tilePos.X + size.Width)
-                && (TilePos.X + Size.Width) >= tilePos.X
-                && TilePos.Y <= (tilePos.Y + size.Height)
-                && (TilePos.Y + Size.Height) >= tilePos.Y;
+        public bool Intersects(Point tilePos, Size size, int margin = 0) =>
+            TilePos.X < (tilePos.X + size.Width) + margin
+                && (TilePos.X + Size.Width) > tilePos.X - margin
+                && TilePos.Y < (tilePos.Y + size.Height) + margin
+                && (TilePos.Y + Size.Height) > tilePos.Y - margin;
 
         public bool HasMinSize(int minRoomSize) =>
             Size.Width >= minRoomSize && Size.Height >= minRoomSize;

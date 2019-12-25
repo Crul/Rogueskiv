@@ -7,6 +7,7 @@ namespace Rogueskiv.MapGeneration
 {
     class RoomGenerator
     {
+        private const int MIN_ROOM_SEPARATION = 2;
         private const int INITIAL_ROOMS_MAX_LOOPS = 150;
 
         public static List<Room> GenerateRooms(MapGenerationParams mapParams)
@@ -59,7 +60,7 @@ namespace Rogueskiv.MapGeneration
             };
 
             var isNotAdjacentToOtherRooms = rooms
-                .All(room => !room.IntersectsOrAdjacent(newRoom));
+                .All(room => !room.Intersects(newRoom, MIN_ROOM_SEPARATION));
 
             if (isNotAdjacentToOtherRooms)
                 rooms.Add(newRoom);
@@ -145,9 +146,10 @@ namespace Rogueskiv.MapGeneration
 
             return rooms
                 .Where(r => r != room)
-                .All(r => !r.IntersectsOrAdjacent(
+                .All(r => !r.Intersects(
                     new Point(targetX, fromY),
-                    new Size(1, toY - fromY)
+                    new Size(1, toY - fromY),
+                    MIN_ROOM_SEPARATION
                 ));
         }
 
@@ -160,9 +162,10 @@ namespace Rogueskiv.MapGeneration
 
             return rooms
                 .Where(r => r != room)
-                .All(r => !r.IntersectsOrAdjacent(
+                .All(r => !r.Intersects(
                     new Point(fromX, targetY),
-                    new Size(toX - fromX, 1)
+                    new Size(toX - fromX, 1),
+                    MIN_ROOM_SEPARATION
                 ));
         }
     }
