@@ -1,4 +1,6 @@
-﻿namespace Rogueskiv.MapGeneration
+﻿using Seedwork.Crosscutting;
+
+namespace Rogueskiv.MapGeneration
 {
     public class MapGenerationParams
     {
@@ -28,5 +30,7 @@
             InitialRooms = initialRooms;
             MinRoomSize = minRoomSize;
         }
+
+        public bool RoomExpandCheck() => Luck.NextDouble() < RoomExpandProbability;
     }
 }

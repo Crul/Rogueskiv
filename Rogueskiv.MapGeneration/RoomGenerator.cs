@@ -1,5 +1,6 @@
 ﻿using Seedwork.Crosscutting;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.MapGeneration
@@ -7,12 +8,11 @@ namespace Rogueskiv.MapGeneration
     class RoomGenerator
     {
         private const int INITIAL_ROOMS_MAX_LOOPS = 150;
-        private const int MIN_ROOM_DISTANCE = 1;
-        private const int MIN_ROOM_DISTANCE_PLUS_ONE = 1 + MIN_ROOM_DISTANCE;
 
         public static List<Room> GenerateRooms(MapGenerationParams mapParams)
         {
             var rooms = new List<Room>();
+
             var area = mapParams.Width * mapParams.Height;
             var density = 0f;
 
@@ -26,155 +26,144 @@ namespace Rogueskiv.MapGeneration
                 if (whileLoops > INITIAL_ROOMS_MAX_LOOPS)
                     throw new InvalidMapException("Creating initial rooms");
 
-                rooms.ForEach(room => TryToExpand(mapParams, rooms, room));
-                var expaned = rooms.Any(room => room.Expanded);
-                if (!expaned)
-                    continue;
+                foreach (var room in rooms)
+                {
+                    var expanded = TryToExpand(mapParams, rooms, room);
+                    if (expanded)
+                    {
+                        var roomArea = (float)rooms
+                            .Where(room => room.HasMinSize(mapParams.MinRoomSize))
+                            .Sum(room => room.Area);
 
-                var roomArea = (float)rooms
-                    .Where(room => room.HasMinSize(mapParams.MinRoomSize))
-                    .Sum(room => room.Width * room.Height);
-
-                density = roomArea / area;
-                if (density >= mapParams.MinDensity)
-                    break;
+                        density = roomArea / area;
+                        if (density >= mapParams.MinDensity)
+                        {
+                            return rooms
+                                .Where(room => room.HasMinSize(mapParams.MinRoomSize))
+                                .ToList(); ;
+                        }
+                    }
+                }
             }
-
-            return rooms
-                .Where(room => room.HasMinSize(mapParams.MinRoomSize))
-                .ToList(); ;
         }
 
         private static void AddNewRoom(MapGenerationParams mapParams, List<Room> rooms)
         {
             var newRoom = new Room()
             {
-                X = Luck.Next(1, mapParams.Width - 1),  // external wall border required
-                Y = Luck.Next(1, mapParams.Height - 1), // external wall border required
-                Width = 1,
-                Height = 1,
-                Expanded = false
+                TilePos = new Point(
+                    x: Luck.Next(1, mapParams.Width - 1),  // external wall border required
+                    y: Luck.Next(1, mapParams.Height - 1)  // external wall border required
+                ),
+                Size = new Size(1, 1)
             };
 
-            var isAdjacentToOtherRoom = rooms.Any(room =>
-                newRoom.X >= (room.X - MIN_ROOM_DISTANCE)
-                && newRoom.X <= (room.X + room.Width + MIN_ROOM_DISTANCE)
-                && newRoom.Y >= (room.Y - MIN_ROOM_DISTANCE)
-                && newRoom.Y <= (room.Y + room.Height + MIN_ROOM_DISTANCE)
-            );
+            var isNotAdjacentToOtherRooms = rooms
+                .All(room => !room.IntersectsOrAdjacent(newRoom));
 
-            if (!isAdjacentToOtherRoom)
+            if (isNotAdjacentToOtherRooms)
                 rooms.Add(newRoom);
         }
 
-        private static void TryToExpand(
+        private static bool TryToExpand(
             MapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
-            room.Expanded = false;
+            var expanded = false;
+            if (mapParams.RoomExpandCheck() && CanExpandLeft(rooms, room))
+            {
+                room.TilePos = room.TilePos.Substract(x: 1);
+                room.Size = room.Size.Add(width: 1);
+                expanded = true;
+            }
+            if (mapParams.RoomExpandCheck() && CanExpandRight(mapParams, rooms, room))
+            {
+                room.Size = room.Size.Add(width: 1);
+                expanded = true;
+            }
+            if (mapParams.RoomExpandCheck() && CanExpandUp(rooms, room))
+            {
+                room.TilePos = room.TilePos.Substract(y: 1);
+                room.Size = room.Size.Add(height: 1);
+                expanded = true;
+            }
+            if (mapParams.RoomExpandCheck() && CanExpandDown(mapParams, rooms, room))
+            {
+                room.Size = room.Size.Add(height: 1);
+                expanded = true;
+            }
 
-            if (Luck.NextDouble() < mapParams.RoomExpandProbability
-                && CanExpandLeft(rooms, room))
-            {
-                room.X -= 1;
-                room.Width += 1;
-                room.Expanded = true;
-            }
-            if (Luck.NextDouble() < mapParams.RoomExpandProbability
-                && CanExpandRight(mapParams, rooms, room))
-            {
-                room.Width += 1;
-                room.Expanded = true;
-            }
-            if (Luck.NextDouble() < mapParams.RoomExpandProbability
-                && CanExpandUp(rooms, room))
-            {
-                room.Y -= 1;
-                room.Height += 1;
-                room.Expanded = true;
-            }
-            if (Luck.NextDouble() < mapParams.RoomExpandProbability
-                && CanExpandDown(mapParams, rooms, room))
-            {
-                room.Height += 1;
-                room.Expanded = true;
-            }
+            return expanded;
         }
 
         private static bool CanExpandLeft(List<Room> rooms, Room room)
         {
-            if (room.X <= 1)
+            var targetX = room.TilePos.X - 1;
+            if (targetX <= 0)
                 return false;
 
-            for (
-                var y = room.Y - MIN_ROOM_DISTANCE_PLUS_ONE;
-                y <= room.Y + room.Height + MIN_ROOM_DISTANCE;
-                y++
-            )
-                if (rooms.Any(r => Enumerable
-                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
-                                    .Any(i => r.HasTile(room.X - i, y))))
-                    return false;
-
-            return true;
+            return CanExpandHorizontally(rooms, room, targetX);
         }
 
         private static bool CanExpandRight(
             MapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
-            if (room.X + room.Width >= mapParams.Width - 1)
+            var targetX = room.TilePos.X + room.Size.Width;
+            if (targetX >= mapParams.Width - 1)
                 return false;
 
-            for (
-                var y = room.Y - MIN_ROOM_DISTANCE_PLUS_ONE;
-                y <= room.Y + room.Height + MIN_ROOM_DISTANCE;
-                y++
-            )
-                if (rooms.Any(r => Enumerable
-                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
-                                    .Any(i => r.HasTile(room.X + room.Width + i, y))))
-                    return false;
-
-            return true;
+            return CanExpandHorizontally(rooms, room, targetX);
         }
 
         private static bool CanExpandUp(List<Room> rooms, Room room)
         {
-            if (room.Y <= 1)
+            var targetY = room.TilePos.Y - 1;
+            if (targetY <= 0)
                 return false;
 
-            for (
-                var x = room.X - MIN_ROOM_DISTANCE_PLUS_ONE;
-                x <= room.X + room.Width + MIN_ROOM_DISTANCE;
-                x++
-            )
-                if (rooms.Any(r => Enumerable
-                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
-                                    .Any(i => r.HasTile(x, room.Y - i))))
-                    return false;
-
-            return true;
+            return CanExpandVertically(rooms, room, targetY);
         }
 
         private static bool CanExpandDown(
             MapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
-            if (room.Y + room.Height >= mapParams.Height - 1)
+            var targetY = room.TilePos.Y + room.Size.Height;
+            if (targetY >= mapParams.Height - 1)
                 return false;
 
-            for (
-                var x = room.X - MIN_ROOM_DISTANCE_PLUS_ONE;
-                x <= room.X + room.Width + MIN_ROOM_DISTANCE;
-                x++
-            )
-                if (rooms.Any(r => Enumerable
-                                    .Range(1, MIN_ROOM_DISTANCE_PLUS_ONE)
-                                    .Any(i => r.HasTile(x, room.Y + room.Height + i))))
-                    return false;
+            return CanExpandVertically(rooms, room, targetY);
+        }
 
-            return true;
+        private static bool CanExpandHorizontally(
+            List<Room> rooms, Room room, int targetX
+        )
+        {
+            var fromY = room.TilePos.Y;
+            var toY = room.TilePos.Y + room.Size.Height;
+
+            return rooms
+                .Where(r => r != room)
+                .All(r => !r.IntersectsOrAdjacent(
+                    new Point(targetX, fromY),
+                    new Size(1, toY - fromY)
+                ));
+        }
+
+        private static bool CanExpandVertically(
+            List<Room> rooms, Room room, int targetY
+        )
+        {
+            var fromX = room.TilePos.X;
+            var toX = room.TilePos.X + room.Size.Width;
+
+            return rooms
+                .Where(r => r != room)
+                .All(r => !r.IntersectsOrAdjacent(
+                    new Point(fromX, targetY),
+                    new Size(toX - fromX, 1)
+                ));
         }
     }
 }

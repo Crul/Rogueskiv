@@ -25,33 +25,33 @@ namespace Rogueskiv.MapGeneration
                 var room = rooms.OrderBy(r => r.Corridors.Count).First();
 
                 var availableTiles = new List<((int x, int y) tile, Direction direction)>();
-                for (var x = room.X + 1; x < room.X + room.Width - 1; x++)
+                for (var x = room.TilePos.X + 1; x < room.TilePos.X + room.Size.Width - 1; x++)
                 {
-                    if (room.Y > 1)
+                    if (room.TilePos.Y > 1)
                     {
-                        var tileAbove = (tile: (x, room.Y - 1), dir: Direction.UP);
+                        var tileAbove = (tile: (x, room.TilePos.Y - 1), dir: Direction.UP);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileAbove.tile)))
                             availableTiles.Add(tileAbove);
                     }
-                    if (room.Y + room.Height < mapParams.Height)
+                    if (room.TilePos.Y + room.Size.Height < mapParams.Height)
                     {
-                        var tileBelow = (tile: (x, room.Y + room.Height), Direction.DOWN);
+                        var tileBelow = (tile: (x, room.TilePos.Y + room.Size.Height), Direction.DOWN);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileBelow.tile)))
                             availableTiles.Add(tileBelow);
                     }
                 }
 
-                for (var y = room.Y; y < room.Y + room.Height; y++)
+                for (var y = room.TilePos.Y; y < room.TilePos.Y + room.Size.Height; y++)
                 {
-                    if (room.X > 1)
+                    if (room.TilePos.X > 1)
                     {
-                        var tileLeft = (tile: (room.X - 1, y), dir: Direction.LEFT);
+                        var tileLeft = (tile: (room.TilePos.X - 1, y), dir: Direction.LEFT);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileLeft.tile)))
                             availableTiles.Add(tileLeft);
                     }
-                    if (room.X + room.Width < mapParams.Width)
+                    if (room.TilePos.X + room.Size.Width < mapParams.Width)
                     {
-                        var tileRight = (tile: (room.X + room.Width, y), dir: Direction.RIGHT);
+                        var tileRight = (tile: (room.TilePos.X + room.Size.Width, y), dir: Direction.RIGHT);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileRight.tile)))
                             availableTiles.Add(tileRight);
                     }
