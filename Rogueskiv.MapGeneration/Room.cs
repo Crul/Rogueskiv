@@ -13,8 +13,8 @@ namespace Rogueskiv.MapGeneration
 
         public Room() => Corridors = new List<Corridor>();
 
-        public bool HasTile(int tileX, int tileY) =>
-            Intersects(new Point(tileX, tileY), new Size(1, 1));
+        public bool HasTile(Point tile) =>
+            Intersects(tile, new Size(1, 1));
 
         public bool Intersects(Room room) =>
             Intersects(room.TilePos, room.Size);

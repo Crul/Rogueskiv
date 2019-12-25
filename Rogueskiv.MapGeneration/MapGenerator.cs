@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.MapGeneration
@@ -46,8 +47,11 @@ namespace Rogueskiv.MapGeneration
             {
                 var boardRow = "";
                 for (var x = 0; x < mapParams.Width; x++)
-                    boardRow += rooms.Any(room => room.HasTile(x, y))
-                        ? "TT" : corridors.Any(c => c.Tiles.Contains((x, y))) ? "tt" : "..";
+                {
+                    var tile = new Point(x, y);
+                    boardRow += rooms.Any(room => room.HasTile(tile))
+                        ? "TT" : corridors.Any(c => c.Tiles.Contains(tile)) ? "tt" : "..";
+                }
 
                 board += boardRow + Environment.NewLine;
                 board += boardRow + Environment.NewLine;

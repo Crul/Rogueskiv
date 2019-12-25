@@ -1,6 +1,7 @@
 ﻿using Seedwork.Crosscutting;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.MapGeneration
@@ -24,18 +25,18 @@ namespace Rogueskiv.MapGeneration
 
                 var room = rooms.OrderBy(r => r.Corridors.Count).First();
 
-                var availableTiles = new List<((int x, int y) tile, Direction direction)>();
+                var availableTiles = new List<(Point tile, Direction direction)>();
                 for (var x = room.TilePos.X + 1; x < room.TilePos.X + room.Size.Width - 1; x++)
                 {
                     if (room.TilePos.Y > 1)
                     {
-                        var tileAbove = (tile: (x, room.TilePos.Y - 1), dir: Direction.UP);
+                        var tileAbove = (tile: new Point(x, room.TilePos.Y - 1), dir: Direction.UP);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileAbove.tile)))
                             availableTiles.Add(tileAbove);
                     }
                     if (room.TilePos.Y + room.Size.Height < mapParams.Height)
                     {
-                        var tileBelow = (tile: (x, room.TilePos.Y + room.Size.Height), Direction.DOWN);
+                        var tileBelow = (tile: new Point(x, room.TilePos.Y + room.Size.Height), Direction.DOWN);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileBelow.tile)))
                             availableTiles.Add(tileBelow);
                     }
@@ -45,13 +46,13 @@ namespace Rogueskiv.MapGeneration
                 {
                     if (room.TilePos.X > 1)
                     {
-                        var tileLeft = (tile: (room.TilePos.X - 1, y), dir: Direction.LEFT);
+                        var tileLeft = (tile: new Point(room.TilePos.X - 1, y), dir: Direction.LEFT);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileLeft.tile)))
                             availableTiles.Add(tileLeft);
                     }
                     if (room.TilePos.X + room.Size.Width < mapParams.Width)
                     {
-                        var tileRight = (tile: (room.TilePos.X + room.Size.Width, y), dir: Direction.RIGHT);
+                        var tileRight = (tile: new Point(room.TilePos.X + room.Size.Width, y), dir: Direction.RIGHT);
                         if (!room.Corridors.Any(c => c.Tiles.Contains(tileRight.tile)))
                             availableTiles.Add(tileRight);
                     }
@@ -65,8 +66,7 @@ namespace Rogueskiv.MapGeneration
                 var (tile, direction) = availableTiles[Luck.Next(availableTiles.Count)];
 
                 newCorridor.StartRoom = room;
-                newCorridor.StartX = tile.x;
-                newCorridor.StartY = tile.y;
+                newCorridor.StartTile = tile;
 
                 ExpandCorridor(
                     mapParams, corridors, newCorridor, direction, rooms
@@ -94,7 +94,7 @@ namespace Rogueskiv.MapGeneration
             List<Room> rooms
         )
         {
-            var currentTile = (x: newCorridor.StartX, y: newCorridor.StartY);
+            var currentTile = newCorridor.StartTile;
             var whileLoops = 0;
             while (true)
             {
@@ -102,10 +102,10 @@ namespace Rogueskiv.MapGeneration
                 if (whileLoops > EXPAND_CORRIDOR_MAX_LOOPS)
                     throw new InvalidMapException("Expanding corridor");
 
-                if (currentTile.x < 1
-                    || currentTile.x > mapParams.Width - 2
-                    || currentTile.y < 1
-                    || currentTile.y > mapParams.Height - 2)
+                if (currentTile.X < 1
+                    || currentTile.X > mapParams.Width - 2
+                    || currentTile.Y < 1
+                    || currentTile.Y > mapParams.Height - 2)
                     break;
 
                 if (newCorridor.Tiles.Contains(currentTile)
@@ -114,7 +114,7 @@ namespace Rogueskiv.MapGeneration
 
                 newCorridor.Tiles.Add(currentTile);
 
-                var endRooms = rooms.Where(room => room.HasTile(currentTile.x, currentTile.y)).ToList();
+                var endRooms = rooms.Where(room => room.HasTile(currentTile)).ToList();
                 if (endRooms.Count > 0)
                 {
                     if (endRooms.Count > 1)
@@ -122,24 +122,23 @@ namespace Rogueskiv.MapGeneration
 
                     var endRoom = endRooms.Single();
                     newCorridor.EndRoom = endRoom;
-                    newCorridor.EndX = newCorridor.Tiles.Last().x;
-                    newCorridor.EndY = newCorridor.Tiles.Last().y;
+                    newCorridor.EndTile = newCorridor.Tiles.Last();
                     break;
                 }
 
                 switch (direction)
                 {
                     case Direction.UP:
-                        currentTile.y -= 1;
+                        currentTile = currentTile.Substract(y: 1);
                         break;
                     case Direction.RIGHT:
-                        currentTile.x += 1;
+                        currentTile = currentTile.Add(x: 1);
                         break;
                     case Direction.DOWN:
-                        currentTile.y += 1;
+                        currentTile = currentTile.Add(y: 1);
                         break;
                     case Direction.LEFT:
-                        currentTile.x -= 1;
+                        currentTile = currentTile.Substract(x: 1);
                         break;
                 }
 
