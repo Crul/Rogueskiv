@@ -44,7 +44,7 @@ namespace Rogueskiv.Core.Systems
             IsLastFloor = floorFactor == 1;
 
             // TODO magic numbers
-            EnemyNumber = (int)Math.Pow(8 + (15f * floorFactor), 1.33f); //  15 ... 64
+            EnemyNumber = (int)(8 + (22f * floorFactor));                //   8 ... 30
             MinEnemySpeed = (int)(75f + (floorFactor * 25f));            //  75 ... 100
             MaxEnemySpeed = (int)(150f + (floorFactor * 100f));          // 200 ... 300
             NumAnglesProbWeights = new List<(int numAngles, float weight)> {
@@ -75,7 +75,7 @@ namespace Rogueskiv.Core.Systems
 
             Enumerable
                 .Range(0, EnemyNumber)
-                    .Select(i => CreateEnemy(measuredTiles))
+                    .Select(i => CreateEnemy(game, boardComp, measuredTiles))
                     .ToList()
                     .ForEach(enemy => game.AddEntity(enemy));
 
@@ -180,6 +180,8 @@ namespace Rogueskiv.Core.Systems
         }
 
         private List<IComponent> CreateEnemy(
+            Game game,
+            BoardComp boardComp,
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
@@ -191,7 +193,7 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(enemyTilePos),
                 new LastPositionComp(enemyTilePos),
                 new MovementComp(
-                    speed: GetEnemySpeed(),
+                    speed: GetEnemySpeed(game, boardComp, enemyTilePos),
                     frictionFactor: 1,
                     bounceAmortiguationFactor: 1,
                     radius: ENEMY_RADIUS,
@@ -200,7 +202,7 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private PointF GetEnemySpeed()
+        private PointF GetEnemySpeed(Game game, BoardComp boardComp, Point enemyTilePos)
         {
             var numAngles = NumAnglesProbWeights
                 .OrderByDescending(napb => napb.weight * Luck.NextDouble())
@@ -208,15 +210,62 @@ namespace Rogueskiv.Core.Systems
                 .numAngles;
 
             var speed = (MinEnemySpeed + Luck.Next(MaxEnemySpeed - MinEnemySpeed)) / GameContext.GameFPS;
-
             var angles = Enumerable.Range(1, numAngles).Select(i => (float)i * 2 * Math.PI / numAngles).ToList();
-            var angle = angles[Luck.Next(angles.Count)];
 
-            var speedX = (float)(speed * Math.Cos(angle));
-            var speedY = (float)(speed * Math.Sin(angle));
+            var randomizedAngles = angles.OrderBy(a => Luck.NextDouble()).ToList();
+            while (randomizedAngles.Any())
+            {
+                var angle = randomizedAngles.First();
+                randomizedAngles.Remove(angle);
 
-            return new PointF(speedX, speedY);
+                if (numAngles == 4 && !IsValidAngle(game, boardComp, enemyTilePos, angle))
+                    continue;
+
+                var speedX = (float)(speed * Math.Cos(angle));
+                var speedY = (float)(speed * Math.Sin(angle));
+
+                return new PointF(speedX, speedY);
+            }
+
+            throw new Exception("GetEnemySpeed: not angles valid");
         }
+
+        private static bool IsValidAngle(Game game, BoardComp boardComp, Point enemyTilePos, double angle)
+        {
+            var tilePositionsListOflists = new List<List<Point>>();
+            var forbiddenWallFlags = TileWallFlags.None;
+
+            if (angle == Math.PI * 2 || angle == Math.PI) // RIGHT or LEFT
+            {
+                forbiddenWallFlags = TileWallFlags.Left | TileWallFlags.Right;
+                for (var y = -1; y <= 1; y++)
+                    tilePositionsListOflists.Add(
+                        new List<Point>() {
+                            enemyTilePos.Add(x: 1, y: y),
+                            enemyTilePos.Substract(x: 1, y: y)
+                        });
+            }
+            else // UP or DOWN
+            {
+                forbiddenWallFlags = TileWallFlags.Up | TileWallFlags.Down;
+                for (var x = -1; x <= 1; x++)
+                    tilePositionsListOflists.Add(
+                        new List<Point>() {
+                            enemyTilePos.Add(x: x, y: 1),
+                            enemyTilePos.Substract(x: x, y: 1)
+                        });
+            }
+
+            var isAngleValid = !tilePositionsListOflists
+                .Any(tilePositionList => tilePositionList
+                    .Select(tilePos => boardComp.TileIdByTilePos[tilePos])
+                    .Select(tileId => game.Entities[tileId].GetComponent<TileComp>().WallFlags)
+                    .All(tileWallFlags => (tileWallFlags & forbiddenWallFlags) != TileWallFlags.None)
+                );
+
+            return isAngleValid;
+        }
+
 
         private static IComponent CreateFood(
             List<(Point tilePos, int distance)> tilePositionsAndDistances
