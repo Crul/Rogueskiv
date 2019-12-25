@@ -60,8 +60,8 @@ namespace Rogueskiv.Core.Components.Walls
             var maxVarPos = VariablePosition + WALL_THICKNESS + Size;
 
             var isInFrontOrBehind = (
-                (variablePosCrossingWall + movementComp.Radius) > minVarPos
-                && (variablePosCrossingWall - movementComp.Radius) < maxVarPos
+                (variablePosCrossingWall + movementComp.Radius) >= minVarPos
+                && (variablePosCrossingWall - movementComp.Radius) <= maxVarPos
             );
             if (!isInFrontOrBehind)
                 return false;
