@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace Rogueskiv.Core.Systems
 {
-    class MapSys : PickingSys<MapComp>
+    class RevealMapSys : PickingSys<MapRevealerComp>
     {
         private FOVComp FOVComp;
 
-        public MapSys() : base(isSingleCompPerFloor: true) { }
+        public RevealMapSys() : base(isSingleCompPerFloor: true) { }
 
         public override void Init(Game game)
         {
@@ -18,7 +18,7 @@ namespace Rogueskiv.Core.Systems
             FOVComp = game.Entities.GetSingleComponent<FOVComp>();
         }
 
-        protected override void StartPicking(List<MapComp> pickedMaps)
+        protected override void StartPicking(List<MapRevealerComp> pickedMaps)
         {
             base.StartPicking(pickedMaps);
             if (pickedMaps.Any())

@@ -8,9 +8,9 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class MapRenderer : PickableRenderer<MapComp>
+    class MapRevealerRenderer : PickableRenderer<MapRevealerComp>
     {
-        public MapRenderer(
+        public MapRevealerRenderer(
             IGameRenderer gameRenderer,
             UxContext uxContext,
             IRenderizable game,

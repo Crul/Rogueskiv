@@ -86,7 +86,7 @@ namespace Rogueskiv.Core.Systems
 
             game.AddEntity(CreateFood(measuredTiles));
             game.AddEntity(CreateTorch(measuredTiles));
-            game.AddEntity(CreateMap(measuredTiles));
+            game.AddEntity(CreateMapRevealer(measuredTiles));
 
             if (IsLastFloor)
                 game.AddEntity(CreateAmulet(measuredTiles, tilesPosWithSpaceAround));
@@ -254,15 +254,15 @@ namespace Rogueskiv.Core.Systems
             return new TorchComp(torchTilePos);
         }
 
-        private static IComponent CreateMap(
+        private static IComponent CreateMapRevealer(
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
-            var mapTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_MAP_SPAWN_DISTANCE)
+            var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_MAP_SPAWN_DISTANCE)
                 .Multiply(BoardComp.TILE_SIZE)
                 .Add(BoardComp.TILE_SIZE / 2);
 
-            return new MapComp(mapTilePos);
+            return new MapRevealerComp(mapRevealerTilePos);
         }
 
         private static IComponent CreateAmulet(

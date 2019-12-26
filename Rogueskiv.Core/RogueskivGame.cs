@@ -48,7 +48,7 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new FoodSys(),
                     new TorchSys(),
-                    new MapSys(),
+                    new RevealMapSys(),
                     new AmuletSys(),
                     new CollisionSys(),
                     new FOVSys(),
