@@ -13,7 +13,7 @@ namespace Rogueskiv.Core.Components.Position
             set
             {
                 position = value;
-                TilePos = position.Divide(BoardComp.TILE_SIZE);
+                TilePos = position.Divide(BoardComp.TILE_SIZE).ToPoint();
             }
         }
 

@@ -34,8 +34,8 @@ namespace Rogueskiv.Ux.Renderers
             {
                 x = (int)tileFOVInfo.Position.X,
                 y = (int)tileFOVInfo.Position.Y,
-                w = BoardComp.TILE_SIZE,
-                h = BoardComp.TILE_SIZE
+                w = BoardComp.TILE_SIZE / 2,
+                h = BoardComp.TILE_SIZE / 2
             };
 
             var screenPos = GetScreenPosition(tileFOVInfo.Position);

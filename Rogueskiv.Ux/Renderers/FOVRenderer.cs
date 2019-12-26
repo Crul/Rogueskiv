@@ -39,8 +39,8 @@ namespace Rogueskiv.Ux.Renderers
             {
                 x = screenPosition.X,
                 y = screenPosition.Y,
-                w = BoardComp.TILE_SIZE,
-                h = BoardComp.TILE_SIZE
+                w = BoardComp.TILE_SIZE / 2,
+                h = BoardComp.TILE_SIZE / 2
             };
 
             SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, alpha);

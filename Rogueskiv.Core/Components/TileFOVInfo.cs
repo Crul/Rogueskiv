@@ -1,10 +1,13 @@
-﻿using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
+using Seedwork.Crosscutting;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
     public class TileFOVInfo : PositionComp // TODO is this a comp ?
     {
+        public Point TileFOVPos { get; set; }
         public bool VisibleByPlayer { get; set; }
 
         public float DistanceFactor { get; set; }
@@ -38,7 +41,9 @@ namespace Rogueskiv.Core.Components
             }
         }
 
-        public TileFOVInfo(int x, int y) : base(new Point(x, y)) { }
+        public TileFOVInfo(int x, int y)
+            : base(new Point(x, y).Multiply(BoardComp.TILE_SIZE).Divide(2))
+            => TileFOVPos = new Point(x, y);
 
         public void Reveal() => RevealedByMap = true;
     }
