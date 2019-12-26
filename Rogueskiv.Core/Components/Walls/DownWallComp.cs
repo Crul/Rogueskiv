@@ -6,7 +6,7 @@ namespace Rogueskiv.Core.Components.Walls
     class DownWallComp : HorizontalWallComp
     {
         public DownWallComp(Point tilePos, int height) : base(tilePos, height)
-            => BounceLimit = FixedPosition + WALL_THICKNESS;
+            => BounceLimit = FixedPosition;
 
         protected override float GetFixedMargin(MovementComp movementComp)
             => -movementComp.Radius;

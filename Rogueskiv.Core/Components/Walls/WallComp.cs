@@ -7,8 +7,6 @@ namespace Rogueskiv.Core.Components.Walls
 {
     public abstract class WallComp : PositionComp, IWallComp
     {
-        protected const int WALL_THICKNESS = 20;
-
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
         public PositionComp PositionComp => this;
 
@@ -56,8 +54,8 @@ namespace Rogueskiv.Core.Components.Walls
             var fromLastToWallFixedPos = (BounceLimit - GetFixedMargin(movementComp) - lastFixedPos);
             var variablePosCrossingWall = lastVarPos + deltaVar * (fromLastToWallFixedPos / deltaFixed);
 
-            var minVarPos = VariablePosition - WALL_THICKNESS;
-            var maxVarPos = VariablePosition + WALL_THICKNESS + Size;
+            var minVarPos = VariablePosition;
+            var maxVarPos = VariablePosition + Size;
 
             var isInFrontOrBehind = (
                 (variablePosCrossingWall + movementComp.Radius) >= minVarPos
@@ -100,8 +98,8 @@ namespace Rogueskiv.Core.Components.Walls
             var fromLastToWallFixedPos = BounceLimit - fixedMargin - lastFixedPos;
             var variablePosCrossingWall = lastVarPos + deltaVar * (fromLastToWallFixedPos / deltaFixed);
 
-            var minVarPos = VariablePosition - WALL_THICKNESS;
-            var maxVarPos = VariablePosition + WALL_THICKNESS + Size;
+            var minVarPos = VariablePosition;
+            var maxVarPos = VariablePosition + Size;
 
             var isInFrontOrBehind = (
                 variablePosCrossingWall > minVarPos

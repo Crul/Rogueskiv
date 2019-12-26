@@ -7,7 +7,7 @@ namespace Rogueskiv.Core.Components.Walls
     class LeftWallComp : VerticalWallComp
     {
         public LeftWallComp(Point tilePos, int height) : base(tilePos, height)
-            => BounceLimit = FixedPosition - WALL_THICKNESS + BoardComp.TILE_SIZE;
+            => BounceLimit = FixedPosition + BoardComp.TILE_SIZE;
 
         protected override float GetFixedMargin(MovementComp movementComp)
             => movementComp.Radius;

@@ -13,10 +13,10 @@ namespace Rogueskiv.Core.Components.Walls
         protected override float VariablePosition => Position.Y;
 
         protected override PointF GetStartPosition(MovementComp movementComp) =>
-            new PointF(x: BounceLimit, y: Position.Y - WALL_THICKNESS);
+            new PointF(x: BounceLimit, y: Position.Y);
 
         protected override PointF GetEndPosition(MovementComp movement) =>
-            GetStartPosition(movement).Add(y: Size + 2 * WALL_THICKNESS);
+            GetStartPosition(movement).Add(y: Size + 2);
 
         protected override float GetFixedPosition(PointF position) => position.X;
         protected override float GetVariablePosition(PointF position) => position.Y;
