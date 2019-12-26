@@ -30,10 +30,7 @@ namespace Seedwork.Crosscutting
         /// </summary>
         public int VisualRange { get; set; }
 
-        /// <summary>
-        /// List of points visible to the player
-        /// </summary>
-        public List<Point> VisiblePoints { get; private set; }  // Cells the player can see
+        private bool[,] pointsVisibility;
 
         private Point player;
         public Point Player { get { return player; } set { player = value; } }
@@ -48,8 +45,9 @@ namespace Seedwork.Crosscutting
             MapSize = new Size(width, height);
             Map = new int[MapSize.Width, MapSize.Height];
             VisualRange = visualRange;
-            VisiblePoints = new List<Point>();
         }
+
+        public bool IsPointVisible(Point point) => pointsVisibility[point.X, point.Y];
 
 
         /// <summary>
@@ -124,7 +122,8 @@ namespace Seedwork.Crosscutting
         /// </summary>
         public void GetVisibleCells()
         {
-            VisiblePoints = new List<Point>();
+            pointsVisibility = new bool[MapSize.Width * 2, MapSize.Height * 2];
+
             AddFullFOVTile(player.X, player.Y);
 
             if (player.Y > 0 && Map[player.X, player.Y - 1] == 0)
@@ -147,9 +146,6 @@ namespace Seedwork.Crosscutting
                 ScanOctant(1, 7, 1.0, 0.0);
                 ScanOctant(1, 8, 1.0, 0.0);
             }
-
-            VisiblePoints = VisiblePoints.Distinct().ToList();
-
         }
 
         /// <summary>
@@ -445,8 +441,7 @@ namespace Seedwork.Crosscutting
 
         }
 
-        private void AddFullFOVTile(int x, int y) =>
-            VisiblePoints.AddRange(GetFOVPoints(x, y));
+        private void AddFullFOVTile(int x, int y) => ShowPoints(GetFOVPoints(x, y));
 
         //  Octant data
         //
@@ -501,13 +496,16 @@ namespace Seedwork.Crosscutting
             }
 
             var excludePoints = excludeCoords.Select(coords => new Point((2 * x) + coords.x, (2 * y) + coords.y));
-            var partialIndexList = GetFOVPoints(x, y).Where(point => !excludePoints.Contains(point));
+            var partialIndexList = GetFOVPoints(x, y).Where(point => !excludePoints.Contains(point)).ToList();
 
-            VisiblePoints.AddRange(partialIndexList);
+            ShowPoints(partialIndexList);
         }
 
-        private IEnumerable<Point> GetFOVPoints(int x, int y) =>
-            indexList.Select(idx => new Point((2 * x) + idx.x, (2 * y) + idx.y));
+        private void ShowPoints(List<Point> points) =>
+            points.ForEach(point => pointsVisibility[point.X, point.Y] = true);
+
+        private List<Point> GetFOVPoints(int x, int y) =>
+            indexList.Select(idx => new Point((2 * x) + idx.x, (2 * y) + idx.y)).ToList();
 
         /// <summary>
         /// Get the gradient of the slope formed by the two points

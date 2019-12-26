@@ -43,7 +43,7 @@ namespace Rogueskiv.Core.Components
             FOVRecurse.SetPlayerPos(playerPosComp.TilePos.X, playerPosComp.TilePos.Y);
             ForAllTiles(tileFOVInfo =>
             {
-                tileFOVInfo.Visible = FOVRecurse.VisiblePoints.Contains(tileFOVInfo.TileFOVPos);
+                tileFOVInfo.Visible = FOVRecurse.IsPointVisible(tileFOVInfo.TileFOVPos);
                 tileFOVInfo.DistanceFactor =
                     Distance.Get(tileFOVInfo.Position, playerPosComp.Position)
                     / (BoardComp.TILE_SIZE * playerComp.VisualRange);
