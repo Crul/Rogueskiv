@@ -40,7 +40,7 @@ namespace Seedwork.Crosscutting
 
         private const double HACK = 0.0001;
 
-        public FOVRecurse(int width, int height, int visualRange)
+        public FOVRecurse(int width, int height, int visualRange = 0)
         {
             MapSize = new Size(width, height);
             Map = new int[MapSize.Width, MapSize.Height];

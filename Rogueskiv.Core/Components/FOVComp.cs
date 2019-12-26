@@ -25,11 +25,15 @@ namespace Rogueskiv.Core.Components
             TileFOVInfos = new TileFOVInfo[BoardSize.Width, BoardSize.Height];
             ForAllTiles((x, y) => TileFOVInfos[x, y] = new TileFOVInfo(x, y));
 
-            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height, playerComp.VisualRange);
+            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height);
+            SetVisualRange(playerComp);
 
             BoardSys.ForAllTiles(BoardSize, tilePos =>
                 FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos.Divide(2)) ? 1 : 0));
         }
+
+        public void SetVisualRange(PlayerComp playerComp)
+            => FOVRecurse.VisualRange = playerComp.VisualRange * 2;
 
         public void RevealAll() =>
             ForAllTiles((x, y) => TileFOVInfos[x, y].Reveal());
