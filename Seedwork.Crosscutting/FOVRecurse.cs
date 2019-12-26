@@ -38,7 +38,7 @@ namespace Seedwork.Crosscutting
         private Point player;
         public Point Player { get { return player; } set { player = value; } }
 
-        private const double HACK = 0.0001;
+        private const double HACK_TO_AVOID_DIAGONALS = 0.0001;
 
         private readonly List<(int x, int y)> indexList =
             new List<(int, int)> { (0, 0), (0, 1), (1, 0), (1, 1) };
@@ -191,7 +191,7 @@ namespace Seedwork.Crosscutting
                             {
                                 if (x - 1 >= 0 && Map[x - 1, y] == 1) //prior cell within range AND open...
                                                                       //..adjust the startslope
-                                    pStartSlope = GetSlope(x - 0.5 + HACK, y - 0.5, player.X, player.Y, false);
+                                    pStartSlope = GetSlope(x - 0.5 + HACK_TO_AVOID_DIAGONALS, y - 0.5, player.X, player.Y, false);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -223,7 +223,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 1)
-                                    pStartSlope = -GetSlope(x + 0.5 - HACK, y - 0.5, player.X, player.Y, false);
+                                    pStartSlope = -GetSlope(x + 0.5 - HACK_TO_AVOID_DIAGONALS, y - 0.5, player.X, player.Y, false);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -255,7 +255,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
-                                    pStartSlope = -GetSlope(x + 0.5, y - 0.5 + HACK, player.X, player.Y, true);
+                                    pStartSlope = -GetSlope(x + 0.5, y - 0.5 + HACK_TO_AVOID_DIAGONALS, player.X, player.Y, true);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -287,7 +287,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
-                                    pStartSlope = GetSlope(x + 0.5, y + 0.5 - HACK, player.X, player.Y, true);
+                                    pStartSlope = GetSlope(x + 0.5, y + 0.5 - HACK_TO_AVOID_DIAGONALS, player.X, player.Y, true);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -320,7 +320,7 @@ namespace Seedwork.Crosscutting
                             {
                                 if (x + 1 < Map.GetLength(0)
                                         && Map[x + 1, y] == 1)
-                                    pStartSlope = GetSlope(x + 0.5 - HACK, y + 0.5, player.X, player.Y, false);
+                                    pStartSlope = GetSlope(x + 0.5 - HACK_TO_AVOID_DIAGONALS, y + 0.5, player.X, player.Y, false);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -353,7 +353,7 @@ namespace Seedwork.Crosscutting
                             {
                                 if (x - 1 >= 0
                                         && Map[x - 1, y] == 1)
-                                    pStartSlope = -GetSlope(x - 0.5 + HACK, y + 0.5, player.X, player.Y, false);
+                                    pStartSlope = -GetSlope(x - 0.5 + HACK_TO_AVOID_DIAGONALS, y + 0.5, player.X, player.Y, false);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -385,7 +385,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
-                                    pStartSlope = -GetSlope(x - 0.5, y + 0.5 - HACK, player.X, player.Y, true);
+                                    pStartSlope = -GetSlope(x - 0.5, y + 0.5 - HACK_TO_AVOID_DIAGONALS, player.X, player.Y, true);
 
                                 AddFullFOVTile(x, y);
                             }
@@ -418,7 +418,7 @@ namespace Seedwork.Crosscutting
                             else
                             {
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
-                                    pStartSlope = GetSlope(x - 0.5, y - 0.5 + HACK, player.X, player.Y, true);
+                                    pStartSlope = GetSlope(x - 0.5, y - 0.5 + HACK_TO_AVOID_DIAGONALS, player.X, player.Y, true);
 
                                 AddFullFOVTile(x, y);
                             }
