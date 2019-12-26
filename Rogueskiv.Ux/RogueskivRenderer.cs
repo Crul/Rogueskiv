@@ -12,7 +12,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux
 {
-    public class RogueskivRenderer : GameRenderer
+    public class RogueskivRenderer : BufferedGameRenderer
     {
         private const int FONT_SIZE = 18;
         private readonly UxContext UxContext;

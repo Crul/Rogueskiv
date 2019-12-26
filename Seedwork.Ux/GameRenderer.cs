@@ -46,6 +46,8 @@ namespace Seedwork.Ux
         public void AddRenderOnEnd(Action renderOnEnd) =>
             RenderOnEndActions.Add(renderOnEnd);
 
+        public virtual void OnWindowResize() { }
+
         public void Dispose()
         {
             Dispose(true);

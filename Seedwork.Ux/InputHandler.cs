@@ -13,6 +13,8 @@ namespace Seedwork.Ux
 
         private readonly T Game;
 
+        private readonly IGameRenderer GameRenderer;
+
         private readonly int QuitKey;
 
         private readonly IDictionary<int, int> KeyControls;
@@ -22,12 +24,14 @@ namespace Seedwork.Ux
         public InputHandler(
             UxContext uxContext,
             T game,
+            IGameRenderer gameRenderer,
             IDictionary<int, int> keyControls,
             int quitKey
         )
         {
             UxContext = uxContext;
             Game = game;
+            GameRenderer = gameRenderer;
             KeyControls = keyControls;
             KeyPressStates = KeyControls
                 .ToDictionary(kc => kc.Key, _ => false);
@@ -51,7 +55,7 @@ namespace Seedwork.Ux
             {
                 case SDL_EventType.SDL_WINDOWEVENT:
                     if (ev.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
-                        UxContext.OnWindowResize(width: ev.window.data1, height: ev.window.data2);
+                        OnWindowResize(width: ev.window.data1, height: ev.window.data2);
 
                     return;
 
@@ -74,6 +78,12 @@ namespace Seedwork.Ux
             var intKey = (int)key;
             if (KeyPressStates.ContainsKey(intKey))
                 KeyPressStates[intKey] = pressed;
+        }
+
+        protected virtual void OnWindowResize(int width, int height)
+        {
+            UxContext.OnWindowResize(width, height);
+            GameRenderer.OnWindowResize();
         }
 
         public void Reset() =>

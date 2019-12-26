@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core;
+using Seedwork.Engine;
 using Seedwork.Ux;
 using System.Collections.Generic;
 using static SDL2.SDL;
@@ -9,10 +10,13 @@ namespace Rogueskiv.Ux
     {
         private const int QUIT_KEY = (int)SDL_Keycode.SDLK_q;
 
-        public RogueskivInputHandler(UxContext uxContext, RogueskivGame game)
+        public RogueskivInputHandler(
+            UxContext uxContext, RogueskivGame game, IGameRenderer gameRenderer
+        )
             : base(
                 uxContext,
                 game,
+                gameRenderer,
                 keyControls: new Dictionary<int, int>
                 {
                     { (int)QUIT_KEY,               (int)Controls.QUIT },
