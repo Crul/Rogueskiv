@@ -11,7 +11,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PickableRenderer<T> : PositionRenderer<T>
+    class PickableRenderer<T> : HideablePositionRenderer<T>
         where T : PickableComp
     {
         private readonly IGameRenderer GameRenderer;

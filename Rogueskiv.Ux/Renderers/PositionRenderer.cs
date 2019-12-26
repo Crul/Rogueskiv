@@ -23,11 +23,5 @@ namespace Rogueskiv.Ux.Renderers
         protected override PointF GetPosition(
             IEntity entity, T positionComp, float interpolation
         ) => positionComp.Position;
-
-        protected override void Render(IEntity entity, T positionComp, float interpolation)
-        {
-            if (FOVComp.IsVisible(positionComp))
-                base.Render(entity, positionComp, interpolation);
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        private readonly IRenderizable Game;
+        protected readonly IRenderizable Game;
         private readonly List<Action> RenderOnEndActions;
 
         protected IntPtr WRenderer { get; }

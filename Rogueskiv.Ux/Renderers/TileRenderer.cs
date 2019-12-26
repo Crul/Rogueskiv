@@ -6,7 +6,7 @@ using System;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class TileRenderer : PositionRenderer<TileComp>
+    class TileRenderer : FixedPositionRenderer<TileComp>
     {
         public TileRenderer(UxContext uxContext, IRenderizable game, IntPtr boardTexture)
             : base(

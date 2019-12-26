@@ -19,6 +19,11 @@ namespace Rogueskiv.Ux
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
+#pragma warning disable IDE0069 // Disposable fields should be disposed
+#pragma warning disable CA2213 // Disposable fields should be disposed
+        private readonly BoardRenderer BoardRenderer;
+#pragma warning restore CA2213 // Disposable fields should be disposed
+#pragma warning restore IDE0069 // Disposable fields should be disposed
 
         public RogueskivRenderer(UxContext uxContext, IRenderizable game, string fontFile)
             : base(uxContext, game)
@@ -32,9 +37,8 @@ namespace Rogueskiv.Ux
                 Path.Combine("imgs", "board.png")
             );
 
-            Renderers[typeof(TileComp)] = new TileRenderer(uxContext, game, BoardTexture);
-            Renderers[typeof(DownStairsComp)] = new DownStairsRenderer(uxContext, game, BoardTexture);
-            Renderers[typeof(UpStairsComp)] = new UpStairsRenderer(uxContext, game, BoardTexture);
+            BoardRenderer = new BoardRenderer(uxContext, game, BoardTexture);
+            Renderers[typeof(BoardComp)] = BoardRenderer;
             Renderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
             Renderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, game, BoardTexture);
             Renderers[typeof(MapComp)] = new MapRenderer(this, uxContext, game, BoardTexture);
@@ -53,6 +57,12 @@ namespace Rogueskiv.Ux
         {
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, PlayerRenderer.CAMERA_MOVEMENT_FRICTION);
             base.RenderGame(interpolation);
+        }
+
+        public override void OnWindowResize()
+        {
+            base.OnWindowResize();
+            BoardRenderer.RecreateBuffer(Game, BoardTexture);  // TODO why is this needed ?
         }
 
         protected override void Dispose(bool cleanManagedResources)

@@ -8,7 +8,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class DownStairsRenderer : PositionRenderer<StairsComp>
+    class DownStairsRenderer : FixedPositionRenderer<StairsComp>
     {
         public DownStairsRenderer(UxContext uxContext, IRenderizable game, IntPtr boardTexture)
             : base(
