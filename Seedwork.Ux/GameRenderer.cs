@@ -11,10 +11,10 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        private readonly IntPtr WRenderer;
         private readonly IRenderizable Game;
         private readonly List<Action> RenderOnEndActions;
 
+        protected IntPtr WRenderer { get; }
         protected IDictionary<Type, IItemRenderer> Renderers { get; }
 
         public GameRenderer(UxContext uxContext, IRenderizable game)
@@ -29,7 +29,6 @@ namespace Seedwork.Ux
 
         public void Render(float interpolation)
         {
-            SDL.SDL_RenderClear(WRenderer);
             RenderGame(interpolation);
             SDL.SDL_RenderPresent(WRenderer);
         }
