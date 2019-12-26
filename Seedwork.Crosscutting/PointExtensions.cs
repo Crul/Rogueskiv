@@ -26,6 +26,9 @@ namespace Seedwork.Crosscutting
         public static Point Substract(this Point point1, Point point2)
             => new Point(point1.X - point2.X, point1.Y - point2.Y);
 
+        public static Size Substract(this Size size1, Size size2)
+            => new Size(size1.Width - size2.Width, size1.Height - size2.Height);
+
         public static PointF Multiply(this PointF point, float value)
             => new PointF(point.X * value, point.Y * value);
 
