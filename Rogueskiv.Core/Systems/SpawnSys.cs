@@ -150,38 +150,38 @@ namespace Rogueskiv.Core.Systems
             BoardComp boardComp, Point initialTile
         )
         {
-            var initialTileEntityId = boardComp.TileIdByTilePos[initialTile];
-
-            var measurePendingTileIds = boardComp
-                .TileIdByTilePos
-                .Values
-                .Where(id => id != initialTileEntityId)
-                .ToList();
-
             var currentDistance = 0;
+            var visitingTiles = new List<Point> { initialTile };
             var measuredTiles = new List<(Point tilePos, int distance)>()
                 { (initialTile, currentDistance) };
 
-            while (measurePendingTileIds.Count > 0)
+            var pendingTiles = boardComp
+                .TileIdByTilePos
+                .Keys
+                .Where(tilePos => tilePos != initialTile)
+                .ToList();
+
+            while (pendingTiles.Count > 0)
             {
                 currentDistance++;
-                var neighbourTileIds = measuredTiles
-                    .SelectMany(tile => boardComp
-                        .TilesNeighbours[tile.tilePos]
-                        .ToList()
-                        .Where(neighbourId => measurePendingTileIds.Contains(neighbourId))
+
+                visitingTiles = visitingTiles
+                    .SelectMany(tilePos => BoardComp
+                        .NeighbourTilePositions
+                        .Select(neighbour => tilePos.Add(neighbour))
                     )
                     .Distinct()
+                    .Where(neighbourId => pendingTiles.Contains(neighbourId))
                     .ToList();
 
                 measuredTiles.AddRange(
-                    neighbourTileIds.Select(neighbourId => (
-                        tilePos: boardComp.TilePositionsByTileId[neighbourId],
+                    visitingTiles.Select(neighbourTilePos => (
+                        tilePos: neighbourTilePos,
                         distance: currentDistance
                     ))
                 );
 
-                neighbourTileIds.ForEach(id => measurePendingTileIds.Remove(id));
+                visitingTiles.ForEach(tilePos => pendingTiles.Remove(tilePos));
             }
 
             return measuredTiles;
