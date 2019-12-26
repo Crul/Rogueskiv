@@ -40,6 +40,9 @@ namespace Seedwork.Crosscutting
 
         private const double HACK = 0.0001;
 
+        private readonly List<(int x, int y)> indexList =
+            new List<(int, int)> { (0, 0), (0, 1), (1, 0), (1, 1) };
+
         public FOVRecurse(int width, int height, int visualRange = 0)
         {
             MapSize = new Size(width, height);
@@ -121,7 +124,8 @@ namespace Seedwork.Crosscutting
         /// </summary>
         public void GetVisibleCells()
         {
-            VisiblePoints = new List<Point> { new Point(player.X, player.Y) };
+            VisiblePoints = new List<Point>();
+            AddFullFOVTile(player.X, player.Y);
 
             if (player.Y > 0 && Map[player.X, player.Y - 1] == 0)
             {
@@ -164,7 +168,6 @@ namespace Seedwork.Crosscutting
 
             switch (pOctant)
             {
-
                 case 1: //nnw
                     y = player.Y - pDepth;
                     if (y < 0) return;
@@ -178,18 +181,19 @@ namespace Seedwork.Crosscutting
                         {
                             if (Map[x, y] == 1) //current cell blocked
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (x - 1 >= 0 && Map[x - 1, y] == 0) //prior cell within range AND open...
                                                                       //...incremenet the depth, adjust the endslope and recurse
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, player.X, player.Y, false));
                             }
                             else
                             {
-
                                 if (x - 1 >= 0 && Map[x - 1, y] == 1) //prior cell within range AND open...
                                                                       //..adjust the startslope
                                     pStartSlope = GetSlope(x - 0.5 + HACK, y - 0.5, player.X, player.Y, false);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         x++;
@@ -211,6 +215,8 @@ namespace Seedwork.Crosscutting
                         {
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, player.X, player.Y, false));
                             }
@@ -219,7 +225,7 @@ namespace Seedwork.Crosscutting
                                 if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 1)
                                     pStartSlope = -GetSlope(x + 0.5 - HACK, y - 0.5, player.X, player.Y, false);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         x--;
@@ -237,12 +243,12 @@ namespace Seedwork.Crosscutting
 
                     while (GetSlope(x, y, player.X, player.Y, true) <= pEndSlope)
                     {
-
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (y - 1 >= 0 && Map[x, y - 1] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, player.X, player.Y, true));
                             }
@@ -251,7 +257,7 @@ namespace Seedwork.Crosscutting
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
                                     pStartSlope = -GetSlope(x + 0.5, y - 0.5 + HACK, player.X, player.Y, true);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         y++;
@@ -269,12 +275,12 @@ namespace Seedwork.Crosscutting
 
                     while (GetSlope(x, y, player.X, player.Y, true) >= pEndSlope)
                     {
-
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, player.X, player.Y, true));
                             }
@@ -283,7 +289,7 @@ namespace Seedwork.Crosscutting
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
                                     pStartSlope = GetSlope(x + 0.5, y + 0.5 - HACK, player.X, player.Y, true);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         y--;
@@ -303,9 +309,10 @@ namespace Seedwork.Crosscutting
                     {
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (x + 1 < Map.GetLength(0) && Map[x + 1, y] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, player.X, player.Y, false));
                             }
@@ -315,7 +322,7 @@ namespace Seedwork.Crosscutting
                                         && Map[x + 1, y] == 1)
                                     pStartSlope = GetSlope(x + 0.5 - HACK, y + 0.5, player.X, player.Y, false);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         x--;
@@ -335,9 +342,10 @@ namespace Seedwork.Crosscutting
                     {
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (x - 1 >= 0 && Map[x - 1, y] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, player.X, player.Y, false));
                             }
@@ -347,7 +355,7 @@ namespace Seedwork.Crosscutting
                                         && Map[x - 1, y] == 1)
                                     pStartSlope = -GetSlope(x - 0.5 + HACK, y + 0.5, player.X, player.Y, false);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         x++;
@@ -365,12 +373,12 @@ namespace Seedwork.Crosscutting
 
                     while (GetSlope(x, y, player.X, player.Y, true) <= pEndSlope)
                     {
-
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, player.X, player.Y, true));
                             }
@@ -379,7 +387,7 @@ namespace Seedwork.Crosscutting
                                 if (y + 1 < Map.GetLength(1) && Map[x, y + 1] == 1)
                                     pStartSlope = -GetSlope(x - 0.5, y + 0.5 - HACK, player.X, player.Y, true);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         y--;
@@ -397,12 +405,12 @@ namespace Seedwork.Crosscutting
 
                     while (GetSlope(x, y, player.X, player.Y, true) >= pEndSlope)
                     {
-
                         if (GetVisDistance(x, y, player.X, player.Y) <= visrange2)
                         {
-
                             if (Map[x, y] == 1)
                             {
+                                AddPartialFOVTile(x, y, pOctant);
+
                                 if (y - 1 >= 0 && Map[x, y - 1] == 0)
                                     ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, player.X, player.Y, true));
 
@@ -412,7 +420,7 @@ namespace Seedwork.Crosscutting
                                 if (y - 1 >= 0 && Map[x, y - 1] == 1)
                                     pStartSlope = GetSlope(x - 0.5, y - 0.5 + HACK, player.X, player.Y, true);
 
-                                VisiblePoints.Add(new Point(x, y));
+                                AddFullFOVTile(x, y);
                             }
                         }
                         y++;
@@ -436,6 +444,70 @@ namespace Seedwork.Crosscutting
                 ScanOctant(pDepth + 1, pOctant, pStartSlope, pEndSlope);
 
         }
+
+        private void AddFullFOVTile(int x, int y) =>
+            VisiblePoints.AddRange(GetFOVPoints(x, y));
+
+        //  Octant data
+        //
+        //    \ 1 | 2 /
+        //   8 \  |  / 3
+        //   -----+-----
+        //   7 /  |  \ 4
+        //    / 6 | 5 \
+        //
+        //  1 = NNW, 2 =NNE, 3=ENE, 4=ESE, 5=SSE, 6=SSW, 7=WSW, 8 = WNW
+
+        private void AddPartialFOVTile(int x, int y, int octant)
+        {
+            var excludeCoords = new List<(int x, int y)>();
+            switch (octant)
+            {
+                case 1: excludeCoords.Add((0, 0)); break;
+                case 2: excludeCoords.Add((1, 0)); break;
+                case 3: excludeCoords.Add((1, 0)); break;
+                case 4: excludeCoords.Add((1, 1)); break;
+                case 5: excludeCoords.Add((1, 1)); break;
+                case 6: excludeCoords.Add((0, 1)); break;
+                case 7: excludeCoords.Add((0, 1)); break;
+                case 8: excludeCoords.Add((1, 0)); break;
+            }
+
+            if (player.X == x)
+            {
+                if (octant == 1 || octant == 2)
+                {
+                    excludeCoords.Add((0, 0));
+                    excludeCoords.Add((1, 0));
+                }
+                else
+                { // octants 5 || 6
+                    excludeCoords.Add((0, 1));
+                    excludeCoords.Add((1, 1));
+                }
+            }
+            if (player.Y == y)
+            {
+                if (octant == 3 || octant == 4)
+                {
+                    excludeCoords.Add((1, 0));
+                    excludeCoords.Add((1, 1));
+                }
+                else
+                { // octants 7 || 8
+                    excludeCoords.Add((0, 0));
+                    excludeCoords.Add((0, 1));
+                }
+            }
+
+            var excludePoints = excludeCoords.Select(coords => new Point((2 * x) + coords.x, (2 * y) + coords.y));
+            var partialIndexList = GetFOVPoints(x, y).Where(point => !excludePoints.Contains(point));
+
+            VisiblePoints.AddRange(partialIndexList);
+        }
+
+        private IEnumerable<Point> GetFOVPoints(int x, int y) =>
+            indexList.Select(idx => new Point((2 * x) + idx.x, (2 * y) + idx.y));
 
         /// <summary>
         /// Get the gradient of the slope formed by the two points

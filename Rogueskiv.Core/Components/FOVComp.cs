@@ -13,27 +13,25 @@ namespace Rogueskiv.Core.Components
     public class FOVComp : IComponent
     {
         private FOVRecurse FOVRecurse;
-        private Size BoardSize;
+        private Size DoubleBoardSize;
         private TileFOVInfo[,] TileFOVInfos;
         private readonly List<(int x, int y)> indexList =
             new List<(int, int)> { (0, 0), (0, 1), (1, 0), (1, 1) };
 
         public void Init(BoardComp boardComp, PlayerComp playerComp)
         {
-            BoardSize = boardComp.BoardSize.Multiply(2);
-
-            TileFOVInfos = new TileFOVInfo[BoardSize.Width, BoardSize.Height];
+            DoubleBoardSize = boardComp.BoardSize.Multiply(2);
+            TileFOVInfos = new TileFOVInfo[DoubleBoardSize.Width, DoubleBoardSize.Height];
             ForAllTiles((x, y) => TileFOVInfos[x, y] = new TileFOVInfo(x, y));
 
-            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height);
+            FOVRecurse = new FOVRecurse(boardComp.BoardSize.Width, boardComp.BoardSize.Height);
             SetVisualRange(playerComp);
-
-            BoardSys.ForAllTiles(BoardSize, tilePos =>
-                FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos.Divide(2)) ? 1 : 0));
+            BoardSys.ForAllTiles(boardComp.BoardSize, tilePos => // TODO move ForAllTiles & IsTile to BoardComp ?
+                FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));
         }
 
         public void SetVisualRange(PlayerComp playerComp)
-            => FOVRecurse.VisualRange = playerComp.VisualRange * 2;
+            => FOVRecurse.VisualRange = playerComp.VisualRange;
 
         public void RevealAll() =>
             ForAllTiles((x, y) => TileFOVInfos[x, y].Reveal());
@@ -41,9 +39,8 @@ namespace Rogueskiv.Core.Components
         public void SetPlayerPos(PlayerComp playerComp, IPositionComp playerPosComp)
         {
             Reset();
-            var playerFOVPos = playerPosComp.Position.Divide(BoardComp.TILE_SIZE / 2).ToPoint();
 
-            FOVRecurse.SetPlayerPos(playerFOVPos.X, playerFOVPos.Y);
+            FOVRecurse.SetPlayerPos(playerPosComp.TilePos.X, playerPosComp.TilePos.Y);
             ForAllTiles(tileFOVInfo =>
             {
                 tileFOVInfo.Visible = FOVRecurse.VisiblePoints.Contains(tileFOVInfo.TileFOVPos);
@@ -75,8 +72,8 @@ namespace Rogueskiv.Core.Components
 
         private void ForAllTiles(Action<int, int> action)
         {
-            for (var x = 0; x < BoardSize.Width; x++)
-                for (var y = 0; y < BoardSize.Height; y++)
+            for (var x = 0; x < DoubleBoardSize.Width; x++)
+                for (var y = 0; y < DoubleBoardSize.Height; y++)
                     action(x, y);
         }
 
