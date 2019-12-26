@@ -75,7 +75,7 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> GetRestartFloorEngine(int floor, IGameResult<IEntity> result)
         {
-            var donwFloorEngine = FloorEngines[floor];
+            var donwFloorEngine = FloorEngines[floor - 1];
             donwFloorEngine.Game.Restart(result);
 
             return donwFloorEngine;
