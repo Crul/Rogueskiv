@@ -58,8 +58,11 @@ namespace Rogueskiv.Ux
         protected override void Dispose(bool cleanManagedResources)
         {
             base.Dispose(cleanManagedResources);
-            SDL_ttf.TTF_CloseFont(Font);
-            SDL_DestroyTexture(BoardTexture);
+            if (cleanManagedResources)
+            {
+                SDL_ttf.TTF_CloseFont(Font);
+                SDL_DestroyTexture(BoardTexture);
+            }
         }
     }
 }
