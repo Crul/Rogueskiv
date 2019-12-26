@@ -1,4 +1,6 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Seedwork.Core;
+using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
 using System.IO;
@@ -8,9 +10,10 @@ namespace Rogueskiv.Ux.Renderers
 {
     class EnemyRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
-        public EnemyRenderer(UxContext uxContext)
+        public EnemyRenderer(UxContext uxContext, IRenderizable game)
             : base(
                 uxContext,
+                game,
                 new SingleSpriteProvider<CurrentPositionComp>(
                     uxContext,
                     Path.Combine("imgs", "enemy.png"),
@@ -18,5 +21,11 @@ namespace Rogueskiv.Ux.Renderers
                 )
             )
         { }
+
+        protected override void Render(IEntity entity, CurrentPositionComp positionComp, float interpolation)
+        {
+            if (FOVComp.IsVisibleByPlayer(positionComp))
+                base.Render(entity, positionComp, interpolation);
+        }
     }
 }

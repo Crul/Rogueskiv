@@ -19,7 +19,7 @@ namespace Rogueskiv.Core.Components.Board
         CornerDownLeft = 128,
     };
 
-    public class TileComp : RevealableByMapPositionComp
+    public class TileComp : CurrentPositionComp
     {
         public TileWallFlags WallFlags { get; private set; }
         public bool IsWall { get => WallFlags != TileWallFlags.None; }

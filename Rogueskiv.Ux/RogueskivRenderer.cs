@@ -32,16 +32,16 @@ namespace Rogueskiv.Ux
                 Path.Combine("imgs", "board.png")
             );
 
-            Renderers[typeof(TileComp)] = new TileRenderer(uxContext, BoardTexture);
-            Renderers[typeof(DownStairsComp)] = new DownStairsRenderer(uxContext, BoardTexture);
-            Renderers[typeof(UpStairsComp)] = new UpStairsRenderer(uxContext, BoardTexture);
-            Renderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, BoardTexture);
-            Renderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, BoardTexture);
-            Renderers[typeof(MapComp)] = new MapRenderer(this, uxContext, BoardTexture);
-            Renderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, BoardTexture);
-            Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext);
-            Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext, game);
-            Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext);
+            Renderers[typeof(TileComp)] = new TileRenderer(uxContext, game, BoardTexture);
+            Renderers[typeof(DownStairsComp)] = new DownStairsRenderer(uxContext, game, BoardTexture);
+            Renderers[typeof(UpStairsComp)] = new UpStairsRenderer(uxContext, game, BoardTexture);
+            Renderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
+            Renderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, game, BoardTexture);
+            Renderers[typeof(MapComp)] = new MapRenderer(this, uxContext, game, BoardTexture);
+            Renderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, game, BoardTexture);
+            Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext, game);
+            Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
+            Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game);
             Renderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
             Renderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }

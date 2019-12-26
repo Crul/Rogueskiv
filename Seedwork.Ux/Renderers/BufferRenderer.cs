@@ -15,12 +15,6 @@ namespace Seedwork.Ux.Renderers
             SetBufferTexture();
         }
 
-        public void ResetBufferTexture()
-        {
-            Dispose(true);
-            SetBufferTexture();
-        }
-
         private void SetBufferTexture() =>
             BufferTexture = SDL_CreateTexture(
                 UxContext.WRenderer,
@@ -40,6 +34,12 @@ namespace Seedwork.Ux.Renderers
         {
             SDL_SetRenderTarget(UxContext.WRenderer, IntPtr.Zero);
             SDL_RenderCopy(UxContext.WRenderer, BufferTexture, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        public void OnWindowResize()
+        {
+            Dispose(true);
+            SetBufferTexture();
         }
 
         protected virtual void Dispose(bool cleanManagedResources)

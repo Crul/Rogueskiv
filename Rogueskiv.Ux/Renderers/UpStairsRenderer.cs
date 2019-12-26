@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Seedwork.Core;
 using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
 using System;
@@ -9,9 +10,10 @@ namespace Rogueskiv.Ux.Renderers
 {
     class UpStairsRenderer : PositionRenderer<StairsComp>
     {
-        public UpStairsRenderer(UxContext uxContext, IntPtr boardTexture)
+        public UpStairsRenderer(UxContext uxContext, IRenderizable game, IntPtr boardTexture)
             : base(
                 uxContext,
+                game,
                 new SingleSpriteProvider<StairsComp>(
                     boardTexture,
                     new SDL_Rect

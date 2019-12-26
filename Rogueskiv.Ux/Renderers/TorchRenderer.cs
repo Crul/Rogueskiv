@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Seedwork.Core;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
@@ -9,10 +10,16 @@ namespace Rogueskiv.Ux.Renderers
 {
     class TorchRenderer : PickableRenderer<TorchComp>
     {
-        public TorchRenderer(IGameRenderer gameRendeerer, UxContext uxContext, IntPtr boardTexture)
+        public TorchRenderer(
+            IGameRenderer gameRendeerer,
+            UxContext uxContext,
+            IRenderizable game,
+            IntPtr boardTexture
+        )
             : base(
                 gameRendeerer,
                 uxContext,
+                game,
                 boardTexture,
                 new SDL_Rect
                 {

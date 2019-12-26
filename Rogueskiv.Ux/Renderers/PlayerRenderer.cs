@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Ux.SoriteProviders;
+using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
 using Seedwork.Ux;
@@ -16,9 +17,10 @@ namespace Rogueskiv.Ux.Renderers
 
         private readonly PlayerAnimationProvider AnimationProvider;
 
-        public PlayerRenderer(UxContext uxContext)
+        public PlayerRenderer(UxContext uxContext, IRenderizable game)
             : base(
                 uxContext,
+                game,
                 new SingleSpriteProvider<CurrentPositionComp>(
                     uxContext,
                     Path.Combine("imgs", "player.png"),

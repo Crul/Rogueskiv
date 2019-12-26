@@ -45,6 +45,7 @@ namespace Seedwork.Crosscutting
             MapSize = new Size(width, height);
             Map = new int[MapSize.Width, MapSize.Height];
             VisualRange = visualRange;
+            VisiblePoints = new List<Point>();
         }
 
 

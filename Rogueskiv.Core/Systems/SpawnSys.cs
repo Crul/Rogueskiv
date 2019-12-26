@@ -202,7 +202,7 @@ namespace Rogueskiv.Core.Systems
             return new List<IComponent>
             {
                 new EnemyComp(),
-                new HidenPositionComp(enemyPos),
+                new CurrentPositionComp(enemyPos),
                 new LastPositionComp(enemyPos),
                 new MovementComp(
                     speed: GetEnemySpeed(),
