@@ -22,20 +22,10 @@ namespace Rogueskiv.MapGeneration
 
         private static string TryGenerateMap(MapGenerationParams mapParams)
         {
-            var halfSizeMapParams = new MapGenerationParams(
-                mapParams.Width / 2,
-                mapParams.Height / 2,
-                mapParams.RoomExpandProbability,
-                mapParams.CorridorTurnProbability,
-                mapParams.MinDensity,
-                mapParams.InitialRooms,
-                mapParams.MinRoomSize
-            );
+            var rooms = RoomGenerator.GenerateRooms(mapParams);
+            var corridors = CorridorGenerator.ConnectRooms(mapParams, rooms);
 
-            var rooms = RoomGenerator.GenerateRooms(halfSizeMapParams);
-            var corridors = CorridorGenerator.ConnectRooms(halfSizeMapParams, rooms);
-
-            return PrintBoard(halfSizeMapParams, rooms, corridors);
+            return PrintBoard(mapParams, rooms, corridors);
         }
 
         private static string PrintBoard(
@@ -50,10 +40,10 @@ namespace Rogueskiv.MapGeneration
                 {
                     var tile = new Point(x, y);
                     boardRow += rooms.Any(room => room.HasTile(tile))
-                        ? "TT" : corridors.Any(c => c.Tiles.Contains(tile)) ? "tt" : "..";
+                        ? "T"
+                        : corridors.Any(c => c.Tiles.Contains(tile)) ? "t" : ".";
                 }
 
-                board += boardRow + Environment.NewLine;
                 board += boardRow + Environment.NewLine;
             }
 

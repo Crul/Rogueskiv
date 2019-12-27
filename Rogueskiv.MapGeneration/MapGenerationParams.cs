@@ -1,4 +1,5 @@
 ﻿using Seedwork.Crosscutting;
+using System.Drawing;
 
 namespace Rogueskiv.MapGeneration
 {
@@ -6,11 +7,12 @@ namespace Rogueskiv.MapGeneration
     {
         public int Width { get; }
         public int Height { get; }
-        public float RoomExpandProbability { get; }
-        public float CorridorTurnProbability { get; }
         public float MinDensity { get; }
         public int InitialRooms { get; }
         public int MinRoomSize { get; }
+
+        private readonly float RoomExpandProbability;
+        private readonly float CorridorTurnProbability;
 
         public MapGenerationParams(
             int width,
@@ -32,5 +34,13 @@ namespace Rogueskiv.MapGeneration
         }
 
         public bool RoomExpandCheck() => Luck.NextDouble() < RoomExpandProbability;
+
+        public bool CorridorTurnCheck() => Luck.NextDouble() < CorridorTurnProbability;
+
+        public bool IsTileInBounds(Point tile) =>
+            tile.X > 0
+            && tile.X < Width - 1
+            && tile.Y > 0
+            && tile.Y < Height - 1;
     }
 }

@@ -13,9 +13,7 @@ namespace Rogueskiv.MapGeneration
         public static List<Room> GenerateRooms(MapGenerationParams mapParams)
         {
             var rooms = new List<Room>();
-
             var area = mapParams.Width * mapParams.Height;
-            var density = 0f;
 
             while (rooms.Count < mapParams.InitialRooms)
                 AddNewRoom(mapParams, rooms);
@@ -32,17 +30,14 @@ namespace Rogueskiv.MapGeneration
                     var expanded = TryToExpand(mapParams, rooms, room);
                     if (expanded)
                     {
-                        var roomArea = (float)rooms
+                        var roomsWithMinSize = rooms
                             .Where(room => room.HasMinSize(mapParams.MinRoomSize))
-                            .Sum(room => room.Area);
+                            .ToList();
 
-                        density = roomArea / area;
+                        var roomArea = (float)roomsWithMinSize.Sum(room => room.Area);
+                        var density = roomArea / area;
                         if (density >= mapParams.MinDensity)
-                        {
-                            return rooms
-                                .Where(room => room.HasMinSize(mapParams.MinRoomSize))
-                                .ToList(); ;
-                        }
+                            return roomsWithMinSize;
                     }
                 }
             }
