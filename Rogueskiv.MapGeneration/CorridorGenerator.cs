@@ -10,16 +10,6 @@ namespace Rogueskiv.MapGeneration
     {
         private const int CONNECT_ROOMS_MAX_LOOPS = 250;
 
-        // TODO refactor XxxxxProbWeights
-        private static readonly List<(int width, float weight)> CorridorWidthProbWeights =
-            new List<(int width, float weight)>
-            {
-                ( width: 1, weight: 0.5f ),
-                ( width: 2, weight: 3 ),
-                ( width: 3, weight: 8 ),
-                ( width: 4, weight: 1 )
-            };
-
         private readonly static IDictionary<Direction, Func<Point, Point>> NextTileFn =
             new Dictionary<Direction, Func<Point, Point>>
             {
@@ -62,11 +52,7 @@ namespace Rogueskiv.MapGeneration
             MapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
         )
         {
-            var corridorWidth = CorridorWidthProbWeights
-                .OrderByDescending(cwpw => cwpw.weight * Luck.NextDouble())
-                .First()
-                .width;
-
+            var corridorWidth = mapParams.GetRandomCorridorWidth();
             var wideIndexList = Enumerable.Range(0, corridorWidth).ToList();
 
             var (startRoom, startTiles, direction) =

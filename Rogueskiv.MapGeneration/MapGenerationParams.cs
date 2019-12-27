@@ -1,5 +1,7 @@
 ﻿using Seedwork.Crosscutting;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Rogueskiv.MapGeneration
 {
@@ -13,6 +15,8 @@ namespace Rogueskiv.MapGeneration
 
         private readonly float RoomExpandProbability;
         private readonly float CorridorTurnProbability;
+        // TODO refactor XxxxxProbWeights
+        private readonly List<(int width, float weight)> CorridorWidthProbWeights;
 
         public MapGenerationParams(
             int width,
@@ -21,7 +25,8 @@ namespace Rogueskiv.MapGeneration
             float corridorTurnProbability,
             float minDensity,
             int initialRooms,
-            int minRoomSize
+            int minRoomSize,
+            List<(int width, float weight)> corridorWidthProbWeights
         )
         {
             Width = width;
@@ -31,6 +36,7 @@ namespace Rogueskiv.MapGeneration
             MinDensity = minDensity;
             InitialRooms = initialRooms;
             MinRoomSize = minRoomSize;
+            CorridorWidthProbWeights = corridorWidthProbWeights;
         }
 
         public bool RoomExpandCheck() => Luck.NextDouble() < RoomExpandProbability;
@@ -42,5 +48,11 @@ namespace Rogueskiv.MapGeneration
             && tile.X < Width - 1
             && tile.Y > 0
             && tile.Y < Height - 1;
+
+        public int GetRandomCorridorWidth() =>
+            CorridorWidthProbWeights
+                .OrderByDescending(cwpw => cwpw.weight * Luck.NextDouble())
+                .First()
+                .width;
     }
 }
