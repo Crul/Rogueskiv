@@ -34,6 +34,13 @@ namespace Rogueskiv.Core.Systems
         private readonly int MaxEnemySpeed;
         private readonly List<(int numAngles, float weight)> NumAnglesProbWeights;
 
+        public static List<Point> NeighbourTilePositions { get; } = new List<Point>
+        {
+                               new Point(0, -1),
+            new Point(-1,  0),                   new Point(1,  0),
+                               new Point(0,  1),
+        };
+
         public SpawnSys(
             IGameContext gameContext,
             float floorFactor,
@@ -164,8 +171,7 @@ namespace Rogueskiv.Core.Systems
                 currentDistance++;
 
                 visitingTiles = visitingTiles
-                    .SelectMany(tilePos => BoardComp
-                        .NeighbourTilePositions
+                    .SelectMany(tilePos => NeighbourTilePositions
                         .Select(neighbour => tilePos.Add(neighbour))
                     )
                     .Distinct()
