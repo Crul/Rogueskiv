@@ -1,16 +1,22 @@
-﻿using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
 using Seedwork.Crosscutting;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Rogueskiv.Core.Components.Walls
 {
     abstract class HorizontalWallComp : WallComp
     {
+        protected override float FixedPosition => Position.Y;
+        protected override float VariablePosition => Position.X;
+
         protected HorizontalWallComp(Point tilePos, int width)
             : base(tilePos, width) { }
 
-        protected override float FixedPosition => Position.Y;
-        protected override float VariablePosition => Position.X;
+        public override List<Point> GetTiles() =>
+            Enumerable.Range(0, Size / BoardComp.TILE_SIZE).Select(i => TilePos.Add(x: i)).ToList();
 
         protected override PointF GetStartPosition(MovementComp movementComp) =>
             new PointF(x: Position.X, y: BounceLimit);

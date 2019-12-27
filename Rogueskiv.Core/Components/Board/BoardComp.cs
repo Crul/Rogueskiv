@@ -2,7 +2,7 @@
 using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
-using System;
+using Seedwork.Crosscutting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -70,14 +70,13 @@ namespace Rogueskiv.Core.Components.Board
             EntitiesByTiles[positionComp.TilePos].Remove(entityId);
 
         public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp positionComp) =>
-            GetIdsNear(EntitiesByTiles, entityId, positionComp);
+            GetIdsNear(EntitiesByTiles, positionComp, entityId);
 
         public void AddTile(Point tilePos, EntityId tileId)
         {
             TilePositionsByTileId[tileId] = tilePos;
             TileIdByTilePos[tilePos] = tileId;
             TilesNeighbours[tilePos] = new List<EntityId>();
-            WallsByTiles[tilePos] = new List<EntityId>();
             EntitiesByTiles[tilePos] = new List<EntityId>();
         }
 
@@ -86,66 +85,52 @@ namespace Rogueskiv.Core.Components.Board
 
         public void AddWall(IEntity wall, IWallComp wallComp)
         {
+            IEnumerable<Point> wallTilePositions;
             var size = (wallComp.Size / TILE_SIZE);
             if (wallComp is HorizontalWallComp)
             {
-                var init = wallComp.PositionComp.TilePos.X;
-                var y = wallComp.PositionComp.TilePos.Y;
-
-                for (var x = init; x < init + size; x++)
-                    WallsByTiles[new Point(x, y)].Add(wall.Id);
-
-                // because convexe corners and diagonal movement
-                AddWallSafe(init - 1, y, wall.Id);
-                AddWallSafe(init + size, y, wall.Id);
+                var init = wallComp.TilePos.X;
+                var y = wallComp.TilePos.Y;
+                wallTilePositions = Enumerable
+                    .Range(init, size)
+                    .Select(x => new Point(x, y));
             }
             else
             {
-                var init = wallComp.PositionComp.TilePos.Y;
-                var x = wallComp.PositionComp.TilePos.X;
-
-                for (var y = init; y < init + size; y++)
-                    WallsByTiles[new Point(x, y)].Add(wall.Id);
-
-                // because convexe corners and diagonal movement
-                AddWallSafe(x, init - 1, wall.Id);
-                AddWallSafe(x, init + size, wall.Id);
+                var init = wallComp.TilePos.Y;
+                var x = wallComp.TilePos.X;
+                wallTilePositions = Enumerable
+                    .Range(init, size)
+                    .Select(y => new Point(x, y));
             }
+
+            wallTilePositions.ToList().ForEach(wallTilePos =>
+            {
+                if (!WallsByTiles.ContainsKey(wallTilePos))
+                    WallsByTiles[wallTilePos] = new List<EntityId>();
+
+                WallsByTiles[wallTilePos].Add(wall.Id);
+            });
         }
 
-        private void AddWallSafe(int tileX, int tileY, EntityId wallId)
-        {
-            var tilePos = new Point(tileX, tileY);
-            if (WallsByTiles.ContainsKey(tilePos))
-                WallsByTiles[tilePos].Add(wallId);
-        }
+        public List<EntityId> GetWallsIdsNear(PositionComp positionComp) =>
+            GetIdsNear(WallsByTiles, positionComp);
 
-        public List<EntityId> GetWallsIdsNear(EntityId entityId, PositionComp positionComp) =>
-            GetIdsNear(WallsByTiles, entityId, positionComp);
-
-        private List<EntityId> GetIdsNear(
+        private static List<EntityId> GetIdsNear(
             IDictionary<Point, List<EntityId>> EntityIdsByTilePos,
-            EntityId entityId,
-            PositionComp positionComp
+            PositionComp positionComp,
+            EntityId entityId = default
         )
         {
             var tilePos = positionComp.TilePos;
-
-            if (!EntityIdsByTilePos.ContainsKey(tilePos))
-            {
-                Console.WriteLine( // TODO 
-                    $"WARNING: {positionComp.Position.X / TILE_SIZE}, {positionComp.Position.Y / TILE_SIZE} out of bounds {tilePos}"
-                );
-                return Enumerable.Empty<EntityId>().ToList();
-            }
-
-            var tilesPositions = TilesNeighbours[tilePos]
-                .Select(tileId => TilePositionsByTileId[tileId])
+            var tilePositions = NeighbourTilePositions
+                .Select(neighbourTilePos => tilePos.Add(neighbourTilePos))
                 .ToList();
 
-            tilesPositions.Add(tilePos);
+            tilePositions.Add(tilePos);
 
-            return tilesPositions
+            return tilePositions
+                .Where(tilePos => EntityIdsByTilePos.ContainsKey(tilePos)) // TODO diagonal walls ??
                 .SelectMany(tilePos => EntityIdsByTilePos[tilePos])
                 .Distinct()
                 .Where(id => id != entityId)
@@ -154,10 +139,7 @@ namespace Rogueskiv.Core.Components.Board
 
         private void SetTileNeighbours(Point tilePos) =>
             NeighbourTilePositions
-                .Select(neighbourTilePos => new Point(
-                    tilePos.X + neighbourTilePos.X,
-                    tilePos.Y + neighbourTilePos.Y
-                ))
+                .Select(neighbourTilePos => tilePos.Add(neighbourTilePos))
                 .Where(TileIdByTilePos.ContainsKey)
                 .Select(neighbourTilePos => TileIdByTilePos[neighbourTilePos])
                 .ToList()

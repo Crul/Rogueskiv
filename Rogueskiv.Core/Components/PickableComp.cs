@@ -10,7 +10,7 @@ namespace Rogueskiv.Core.Components
         public bool IsBeingPicked { get; private set; } = false;
         public int PickingTime { get; private set; }
 
-        public PickableComp(PointF position) : base(position)
+        public PickableComp(Point tilePos) : base(tilePos)
         { }
 
         public void StartPicking()

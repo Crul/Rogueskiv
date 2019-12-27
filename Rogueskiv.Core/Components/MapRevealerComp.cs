@@ -4,7 +4,7 @@ namespace Rogueskiv.Core.Components
 {
     public class MapRevealerComp : PickableComp
     {
-        public MapRevealerComp(PointF position) : base(position)
+        public MapRevealerComp(Point tilePos) : base(tilePos)
         { }
     }
 }

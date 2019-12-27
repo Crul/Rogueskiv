@@ -1,15 +1,14 @@
 ﻿using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
 {
-    public abstract class WallComp : PositionComp, IWallComp
+    public abstract class WallComp : TilePositionComp, IWallComp
     {
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
-        public PositionComp PositionComp => this;
-
         protected abstract float FixedPosition { get; }
         protected abstract float VariablePosition { get; }
 
@@ -17,6 +16,8 @@ namespace Rogueskiv.Core.Components.Walls
 
         protected WallComp(Point tilePos, int size) : base(tilePos) =>
             Size = BoardComp.TILE_SIZE * size;
+
+        public abstract List<Point> GetTiles();
 
         public bool CheckBounce(
             MovementComp movementComp,
@@ -113,22 +114,22 @@ namespace Rogueskiv.Core.Components.Walls
             }
 
             var variableMarginSign = 1;
-            PointF? advancedBouncPosition = null;
+            PointF? advancedBouncePosition = null;
             var isInStartCorner = (Math.Abs(minVarPos - variablePosCrossingWall) < movementComp.Radius);
             if (isInStartCorner)
-                advancedBouncPosition = GetStartPosition(movementComp);
+                advancedBouncePosition = GetStartPosition(movementComp);
             else
             {
                 variableMarginSign = -1;
                 var isInEndCorner = (Math.Abs(maxVarPos - variablePosCrossingWall) < movementComp.Radius);
                 if (isInEndCorner)
-                    advancedBouncPosition = GetEndPosition(movementComp);
+                    advancedBouncePosition = GetEndPosition(movementComp);
             }
 
-            if (advancedBouncPosition.HasValue)
+            if (advancedBouncePosition.HasValue)
                 // do not return true because no more checks needed (I hope)
                 AdvancedBounce(
-                    movementComp, currentPositionComp, lastPositionComp, advancedBouncPosition.Value,
+                    movementComp, currentPositionComp, lastPositionComp, advancedBouncePosition.Value,
                     variableMarginSign
                 );
 

@@ -6,8 +6,7 @@ namespace Seedwork.Ux.Renderers
     public class BufferRenderer
     {
         private readonly UxContext UxContext;
-
-        public IntPtr BufferTexture { get; private set; }
+        private IntPtr BufferTexture;
 
         public BufferRenderer(UxContext uxContext)
         {

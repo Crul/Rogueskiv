@@ -1,4 +1,5 @@
-﻿using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Crosscutting;
 using Seedwork.Ux;
@@ -18,6 +19,6 @@ namespace Rogueskiv.Ux.Renderers
         { }
 
         protected override Point GetScreenPosition(PointF position) =>
-            position.ToPoint();
+            position.Add(BoardComp.TILE_SIZE / 2).ToPoint();
     }
 }

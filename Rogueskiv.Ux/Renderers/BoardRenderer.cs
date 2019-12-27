@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
+using Rogueskiv.Core.Components.Walls;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
@@ -75,6 +76,10 @@ namespace Rogueskiv.Ux.Renderers
             using var tileRenderer = new TileRenderer(UxContext, game, boardTexture);
             var tileEntities = game.Entities.GetWithComponent<TileComp>();
             tileRenderer.Render(tileEntities, 0);
+
+            using var wallRenderer = new WallRenderer(UxContext, game, boardTexture);
+            var wallEntities = game.Entities.GetWithComponent<IWallComp>();
+            wallRenderer.Render(wallEntities, 0);
 
             using var downStairsRenderer = new DownStairsRenderer(UxContext, game, boardTexture);
             var downStairEntities = game.Entities.GetWithComponent<DownStairsComp>();

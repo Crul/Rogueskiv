@@ -3,9 +3,9 @@ using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    public abstract class StairsComp : CurrentPositionComp
+    public abstract class StairsComp : TilePositionComp
     {
-        protected StairsComp(PointF position) : base(position)
+        protected StairsComp(Point tilePos) : base(tilePos)
         { }
     }
 }
