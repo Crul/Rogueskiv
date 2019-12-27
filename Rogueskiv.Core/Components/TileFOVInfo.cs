@@ -46,5 +46,8 @@ namespace Rogueskiv.Core.Components
             => TileFOVPos = new Point(x, y);
 
         public void Reveal() => RevealedByMap = true;
+
+        public bool HasBeenSeenOrRevealed(bool allowRevealedByMap) =>
+            HasBeenSeen && !(!allowRevealedByMap && RevealedByMap);
     }
 }

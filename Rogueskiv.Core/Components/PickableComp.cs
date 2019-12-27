@@ -7,6 +7,7 @@ namespace Rogueskiv.Core.Components
     {
         public const int MAX_PICKING_TIME = 20;  // TODO calculate in terms of GameFPS
 
+        public override bool AllowRevealedByMap => false;
         public bool IsBeingPicked { get; private set; } = false;
         public int PickingTime { get; private set; }
 

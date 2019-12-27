@@ -54,9 +54,9 @@ namespace Rogueskiv.Core.Components
             GetFOVTiles(positionComp.TilePos)
                 .Any(tileFOVinfo => tileFOVinfo.VisibleByPlayer);
 
-        public bool IsVisible(IPositionComp positionComp) =>
+        public bool HasBeenSeenOrRevealed(IPositionComp positionComp) =>
             GetFOVTiles(positionComp.TilePos)
-                .Any(tileFOVinfo => tileFOVinfo.Visible);
+                .Any(tileFOVinfo => tileFOVinfo.HasBeenSeenOrRevealed(positionComp.AllowRevealedByMap));
 
         private void Reset() =>
             ForAllTiles((x, y) => Reset(TileFOVInfos[x, y]));

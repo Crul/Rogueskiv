@@ -18,7 +18,7 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(IEntity entity, T positionComp, float interpolation)
         {
-            if (FOVComp.IsVisible(positionComp))
+            if (FOVComp.HasBeenSeenOrRevealed(positionComp))
                 base.Render(entity, positionComp, interpolation);
         }
     }

@@ -7,5 +7,6 @@ namespace Rogueskiv.Core.Components.Position
     {
         PointF Position { get; }
         Point TilePos { get; }
+        bool AllowRevealedByMap { get; }
     }
 }

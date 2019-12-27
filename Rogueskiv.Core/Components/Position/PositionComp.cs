@@ -19,6 +19,8 @@ namespace Rogueskiv.Core.Components.Position
 
         public Point TilePos { get; private set; }
 
+        public virtual bool AllowRevealedByMap => true;
+
         protected PositionComp(Point tilePos)
             : this(tilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2)) { }
 
