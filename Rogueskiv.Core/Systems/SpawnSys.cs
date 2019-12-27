@@ -17,6 +17,7 @@ namespace Rogueskiv.Core.Systems
     class SpawnSys : BaseSystem
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
+        private const int MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY = 2;
         private const int MIN_FOOD_SPAWN_DISTANCE = 20;
         private const int MIN_TORCH_SPAWN_DISTANCE = 10;
         private const int MIN_MAP_SPAWN_DISTANCE = 30;
@@ -73,11 +74,16 @@ namespace Rogueskiv.Core.Systems
                 .Where(tile => tilePositions.Contains(tile.tilePos))
                 .ToList();
 
-            Enumerable
-                .Range(0, EnemyNumber)
-                    .Select(i => CreateEnemy(game, boardComp, measuredTiles))
-                    .ToList()
-                    .ForEach(enemy => game.AddEntity(enemy));
+            var enemiesCount = 0;
+            while (enemiesCount < EnemyNumber)
+            {
+                var enemy = CreateEnemy(boardComp, measuredTiles);
+                if (enemy == null)
+                    continue;
+
+                game.AddEntity(enemy);
+                enemiesCount++;
+            }
 
             // TODO avoid spawining 2 items in the same tile
 
@@ -180,12 +186,14 @@ namespace Rogueskiv.Core.Systems
         }
 
         private List<IComponent> CreateEnemy(
-            Game game,
             BoardComp boardComp,
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
             var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
+            var enemySpeed = GetEnemySpeed(boardComp, enemyTilePos);
+            if (!enemySpeed.HasValue)
+                return null;
 
             return new List<IComponent>
             {
@@ -193,7 +201,7 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(enemyTilePos),
                 new LastPositionComp(enemyTilePos),
                 new MovementComp(
-                    speed: GetEnemySpeed(game, boardComp, enemyTilePos),
+                    speed: enemySpeed.Value,
                     frictionFactor: 1,
                     bounceAmortiguationFactor: 1,
                     radius: ENEMY_RADIUS,
@@ -202,7 +210,7 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private PointF GetEnemySpeed(Game game, BoardComp boardComp, Point enemyTilePos)
+        private PointF? GetEnemySpeed(BoardComp boardComp, Point enemyTilePos)
         {
             var numAngles = NumAnglesProbWeights
                 .OrderByDescending(napb => napb.weight * Luck.NextDouble())
@@ -218,7 +226,7 @@ namespace Rogueskiv.Core.Systems
                 var angle = randomizedAngles.First();
                 randomizedAngles.Remove(angle);
 
-                if (numAngles == 4 && !IsValidAngle(game, boardComp, enemyTilePos, angle))
+                if (numAngles == 4 && !IsValidAngle(boardComp, enemyTilePos, angle))
                     continue;
 
                 var speedX = (float)(speed * Math.Cos(angle));
@@ -227,45 +235,27 @@ namespace Rogueskiv.Core.Systems
                 return new PointF(speedX, speedY);
             }
 
-            throw new Exception("GetEnemySpeed: not angles valid");
+            return null;
         }
 
-        private static bool IsValidAngle(Game game, BoardComp boardComp, Point enemyTilePos, double angle)
+        private static bool IsValidAngle(BoardComp boardComp, Point enemyTilePos, double angle)
         {
-            var tilePositionsListOflists = new List<List<Point>>();
-            var forbiddenWallFlags = TileWallFlags.None;
-
-            if (angle == Math.PI * 2 || angle == Math.PI) // RIGHT or LEFT
+            var isRightOrLeft = angle == Math.PI * 2 || angle == Math.PI;
+            if (isRightOrLeft) // RIGHT or LEFT
             {
-                forbiddenWallFlags = TileWallFlags.Left | TileWallFlags.Right;
-                for (var y = -1; y <= 1; y++)
-                    tilePositionsListOflists.Add(
-                        new List<Point>() {
-                            enemyTilePos.Add(x: 1, y: y),
-                            enemyTilePos.Substract(x: 1, y: y)
-                        });
+                for (var x = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x++)
+                    if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(x: x)))
+                        return false;
             }
             else // UP or DOWN
             {
-                forbiddenWallFlags = TileWallFlags.Up | TileWallFlags.Down;
-                for (var x = -1; x <= 1; x++)
-                    tilePositionsListOflists.Add(
-                        new List<Point>() {
-                            enemyTilePos.Add(x: x, y: 1),
-                            enemyTilePos.Substract(x: x, y: 1)
-                        });
+                for (var y = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y++)
+                    if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(y: y)))
+                        return false;
             }
 
-            var isAngleValid = !tilePositionsListOflists
-                .Any(tilePositionList => tilePositionList
-                    .Select(tilePos => boardComp.TileIdByTilePos[tilePos])
-                    .Select(tileId => game.Entities[tileId].GetComponent<TileComp>().WallFlags)
-                    .All(tileWallFlags => (tileWallFlags & forbiddenWallFlags) != TileWallFlags.None)
-                );
-
-            return isAngleValid;
+            return true;
         }
-
 
         private static IComponent CreateFood(
             List<(Point tilePos, int distance)> tilePositionsAndDistances
