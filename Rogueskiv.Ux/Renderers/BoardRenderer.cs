@@ -23,7 +23,7 @@ namespace Rogueskiv.Ux.Renderers
             CreateBuffer(game, boardTexture);
 
         protected override void Render(IEntity entity, BoardComp comp, float interpolation) =>
-            FOVComp.ForAllTiles(tileFOVInfo =>
+            FOVComp.ForAllSubTiles(tileFOVInfo =>
             {
                 if (tileFOVInfo.Visible)
                     Render(tileFOVInfo);
@@ -71,6 +71,7 @@ namespace Rogueskiv.Ux.Renderers
                 BoardSize.Width,
                 BoardSize.Height
             );
+            SDL_SetTextureBlendMode(BoardBufferTexture, SDL_BlendMode.SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(UxContext.WRenderer, BoardBufferTexture);
 
             using var tileRenderer = new TileRenderer(UxContext, game);

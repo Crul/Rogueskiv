@@ -10,6 +10,7 @@ namespace Rogueskiv.Ux.Renderers
 {
     class UpStairsRenderer : FixedPositionRenderer<UpStairsComp>
     {
+        private const int UP_STAIRS_SPRITE_WIDTH = 42;
         public UpStairsRenderer(UxContext uxContext, IRenderizable game, IntPtr boardTexture)
             : base(
                 uxContext,
@@ -18,9 +19,9 @@ namespace Rogueskiv.Ux.Renderers
                     boardTexture,
                     new SDL_Rect
                     {
-                        x = 2 * BoardComp.TILE_SIZE,
-                        y = 0,
-                        w = BoardComp.TILE_SIZE,
+                        x = BoardComp.TILE_SIZE,
+                        y = BoardComp.TILE_SIZE,
+                        w = UP_STAIRS_SPRITE_WIDTH,
                         h = BoardComp.TILE_SIZE
                     }
                 )

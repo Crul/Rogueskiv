@@ -28,7 +28,7 @@ namespace Seedwork.Ux.SpriteProviders
 
         public SingleSpriteProvider(
             IntPtr texture,
-            SDL_Rect textureRect,
+            SDL_Rect? textureRect = null,
             (int width, int height)? outputSize = null
         ) : this(textureRect, outputSize)
         {
@@ -55,8 +55,8 @@ namespace Seedwork.Ux.SpriteProviders
 
         public override SDL_Rect GetTextureRect(T comp, Point screenPosition) => TextureRect;
 
-        public override SDL_Rect GetOutputRect(Point position)
-            => GetOutputRect(position, OutputSize);
+        public override SDL_Rect GetOutputRect(Point screenPosition)
+            => GetOutputRect(screenPosition, OutputSize);
 
         protected override void Dispose(bool cleanManagedResources)
         {

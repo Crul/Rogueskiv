@@ -18,8 +18,8 @@ namespace Rogueskiv.Ux.Renderers
                     boardTexture,
                     new SDL_Rect
                     {
-                        x = BoardComp.TILE_SIZE,
-                        y = 0,
+                        x = 0,
+                        y = BoardComp.TILE_SIZE,
                         w = BoardComp.TILE_SIZE,
                         h = BoardComp.TILE_SIZE
                     }

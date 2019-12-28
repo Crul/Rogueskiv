@@ -14,7 +14,8 @@ namespace Seedwork.Ux.Renderers
             SetBufferTexture();
         }
 
-        private void SetBufferTexture() =>
+        private void SetBufferTexture()
+        {
             BufferTexture = SDL_CreateTexture(
                 UxContext.WRenderer,
                 SDL_PIXELFORMAT_RGBA8888,
@@ -22,6 +23,8 @@ namespace Seedwork.Ux.Renderers
                 UxContext.ScreenSize.Width,
                 UxContext.ScreenSize.Height
             );
+            SDL_SetTextureBlendMode(BufferTexture, SDL_BlendMode.SDL_BLENDMODE_BLEND);
+        }
 
         public void ResetBuffer()
         {

@@ -14,7 +14,7 @@ namespace Seedwork.Ux.Renderers
 
         protected CompRenderer(UxContext uxContext) => UxContext = uxContext;
 
-        public void Render(List<IEntity> entities, float interpolation) =>
+        public virtual void Render(List<IEntity> entities, float interpolation) =>
             entities.ForEach(e => Render(e, e.GetComponent<T>(), interpolation));
 
         protected abstract void Render(IEntity entity, T comp, float interpolation);

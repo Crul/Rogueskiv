@@ -72,9 +72,6 @@ namespace Rogueskiv.Core.Components.Board
         public List<EntityId> GetEntityIdsNear(EntityId entityId, PositionComp positionComp) =>
             GetIdsNear(EntitiesByTiles, positionComp, entityId);
 
-        public bool IsTileOrWall(Point tilePos) =>
-            TileIdByTilePos.ContainsKey(tilePos) || WallsByTiles.ContainsKey(tilePos);
-
         public void AddTile(Point tilePos, EntityId tileId)
         {
             TilePositionsByTileId[tileId] = tilePos;

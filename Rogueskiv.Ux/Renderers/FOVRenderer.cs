@@ -9,15 +9,15 @@ namespace Rogueskiv.Ux.Renderers
 {
     class FOVRenderer : CompRenderer<FOVComp>
     {
-        private const int BLACK_OPACITY_FOR_REVEALED_BY_MAP = 0xDD;
-        private const int BLACK_OPACITY_FOR_COVERED_BY_FOV = 0xAA;
-        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = BLACK_OPACITY_FOR_COVERED_BY_FOV - 0x22;
+        private const int BLACK_OPACITY_FOR_REVEALED_BY_MAP = 212;
+        private const int BLACK_OPACITY_FOR_COVERED_BY_FOV = 164;
+        private const int MAX_BLACK_OPACITY_FOR_VISIBLE = BLACK_OPACITY_FOR_COVERED_BY_FOV - 48;
 
         public FOVRenderer(UxContext uxContext) : base(uxContext) { }
 
         protected override void Render(IEntity entity, FOVComp fovComp, float interpolation)
         {
-            fovComp.ForAllTiles(RenderTileFOV);
+            fovComp.ForAllSubTiles(RenderTileFOV);
             SDL_SetRenderDrawColor(UxContext.WRenderer, 0, 0, 0, 0);
         }
 
