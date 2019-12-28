@@ -27,8 +27,8 @@ namespace Rogueskiv.Core.Systems
             // there are more steps with movement for the same acceleration
 
             var fps = gameContext.GameFPS;
-            ACCELERATION = (float)Math.Pow(2d, 25d / fps);
-            MovementComp.MAX_POS_SPEED = 200f / fps;
+            ACCELERATION = (float)Math.Pow(1.5d, 25d / fps);
+            MovementComp.MAX_POS_SPEED = 150f / fps;
             MovementComp.MAX_NEG_SPEED = -MovementComp.MAX_POS_SPEED;
             MovementComp.STOP_ABS_SPEED = 1f / fps;
         }

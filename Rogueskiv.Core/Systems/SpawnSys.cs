@@ -52,13 +52,13 @@ namespace Rogueskiv.Core.Systems
             IsLastFloor = floorFactor == 1;
 
             // TODO magic numbers
-            EnemyNumber = (int)(8 + (22f * floorFactor));                //   8 ... 30
-            MinEnemySpeed = (int)(75f + (floorFactor * 25f));            //  75 ... 100
-            MaxEnemySpeed = (int)(150f + (floorFactor * 100f));          // 200 ... 300
+            EnemyNumber = (int)(10 + (10f * floorFactor));          //  10 ... 20
+            MinEnemySpeed = (int)(100f + (floorFactor * 25f));      // 100 ... 125
+            MaxEnemySpeed = (int)(125f + (floorFactor * 50f));      // 125 ... 175
             NumAnglesProbWeights = new List<(int numAngles, float weight)> {
-                (numAngles: 4, weight: 5),
-                (numAngles: 8, weight: (floorFactor * 20f) - 8f),
-                (numAngles: 16, weight: (floorFactor * 40f) - 15f)
+                (numAngles: 4, weight: 5),                           //   5 ...   5
+                (numAngles: 8, weight: (floorFactor * 15f) - 10f),   //   0 ...   5
+                (numAngles: 16, weight: (floorFactor * 7.5f) - 2.5f) //   0 ...   5
             };
         }
 
@@ -132,7 +132,7 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(playerTilePos),
                 new LastPositionComp(playerTilePos),
                 new MovementComp(
-                    frictionFactor: 1f / 5f,
+                    frictionFactor: 1f / 10f,
                     bounceAmortiguationFactor: 2f / 3f,
                     radius: PlayerComp.PLAYER_RADIUS,
                     simpleBounce: false

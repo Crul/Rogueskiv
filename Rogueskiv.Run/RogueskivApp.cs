@@ -12,7 +12,7 @@ namespace Rogueskiv.Run
 {
     class RogueskivApp
     {
-        private const int FLOOR_COUNT = 10;
+        private const int FLOOR_COUNT = 26;
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
         private readonly Size ScrrenSize = new Size(640, 480);
 
