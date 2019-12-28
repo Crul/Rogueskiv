@@ -67,7 +67,7 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> GetFloorDown(UxContext uxContext, IGameResult<IEntity> result)
         {
-            if (CurrentFloor + 1 < FloorEngines.Count)
+            if (CurrentFloor < FloorEngines.Count)
                 return GetRestartFloorEngine(++CurrentFloor, result);
 
             return CreateGameStage(uxContext, result);
