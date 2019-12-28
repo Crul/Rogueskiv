@@ -7,6 +7,7 @@ using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using System;
+using System.Drawing;
 using System.IO;
 using static SDL2.SDL;
 
@@ -37,6 +38,9 @@ namespace Rogueskiv.Ux
                 Path.Combine("imgs", "board.png")
             );
 
+            var bgrRenderer = new BgrRenderer(uxContext, Path.Combine("imgs", "bgr.png"), new Size(1920, 1440));
+            Renderers.Add(bgrRenderer);
+
             BoardRenderer = new BoardRenderer(uxContext, game, BoardTexture);
             CompRenderers[typeof(BoardComp)] = BoardRenderer;
             CompRenderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
@@ -62,7 +66,8 @@ namespace Rogueskiv.Ux
         public override void OnWindowResize()
         {
             base.OnWindowResize();
-            BoardRenderer.RecreateBuffer(Game, BoardTexture);  // TODO why is this needed ?
+            // TODO why is this needed ? because SDL_RENDER_TARGETS_RESET should be handled
+            BoardRenderer.RecreateBuffer(Game, BoardTexture);
         }
 
         protected override void Dispose(bool cleanManagedResources)

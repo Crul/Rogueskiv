@@ -25,6 +25,7 @@ Rogueskiv makes use of the following projects:
 - [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) by [SixLabors](https://sixlabors.com/) ([Apache License 2.0](https://github.com/SixLabors/ImageSharp/blob/master/LICENSE))
 - Part of the graphic tiles used in this program is the public domain roguelike tileset "RLTiles".  
   You can find the original tileset at: <http://rltiles.sf.net>
+- [Stone Texture II](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii) by [Daniel Smith](http://artistfire.deviantart.com/) ([CC0 Public Domain](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii#image_text))
 
 ## License (AGPL-3.0)
 

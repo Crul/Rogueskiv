@@ -15,6 +15,7 @@ namespace Seedwork.Ux
         private readonly List<Action> RenderOnEndActions;
 
         protected IntPtr WRenderer { get; }
+        protected List<IRenderer> Renderers { get; }
         protected IDictionary<Type, ICompRenderer> CompRenderers { get; }
 
         public GameRenderer(UxContext uxContext, IRenderizable game)
@@ -22,6 +23,7 @@ namespace Seedwork.Ux
             Game = game;
             WRenderer = uxContext.WRenderer;
             RenderOnEndActions = new List<Action>();
+            Renderers = new List<IRenderer>();
             CompRenderers = new Dictionary<Type, ICompRenderer>();
         }
 
@@ -36,6 +38,7 @@ namespace Seedwork.Ux
         protected virtual void RenderGame(float interpolation)
         {
             RenderOnEndActions.Clear();
+            Renderers.ForEach(r => r.Render());
             CompRenderers.ToList()
                 .ForEach(r =>
                     r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
@@ -57,7 +60,10 @@ namespace Seedwork.Ux
         protected virtual void Dispose(bool cleanManagedResources)
         {
             if (cleanManagedResources)
+            {
+                Renderers.ForEach(renderer => renderer.Dispose());
                 CompRenderers.ToList().ForEach(renderer => renderer.Value.Dispose());
+            }
         }
     }
 }

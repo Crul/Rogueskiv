@@ -33,8 +33,12 @@ namespace Rogueskiv.Core.Components
         public void SetVisualRange(PlayerComp playerComp)
             => FOVRecurse.VisualRange = playerComp.VisualRange;
 
-        public void RevealAll() =>
-            ForAllTiles((x, y) => TileFOVInfos[x, y].Reveal());
+        public void RevealAll(BoardComp boardComp) =>
+            ForAllTiles((x, y) =>
+            {
+                if (boardComp.IsTileOrWall(new Point(x, y).Divide(2)))
+                    TileFOVInfos[x, y].Reveal();
+            });
 
         public void SetPlayerPos(PlayerComp playerComp, IPositionComp playerPosComp)
         {

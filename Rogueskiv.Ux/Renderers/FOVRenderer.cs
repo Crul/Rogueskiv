@@ -23,7 +23,7 @@ namespace Rogueskiv.Ux.Renderers
 
         private void RenderTileFOV(TileFOVInfo tileFOVInfo)
         {
-            if (!tileFOVInfo.CoveredByFOV && !tileFOVInfo.VisibleByPlayer)
+            if (!tileFOVInfo.Visible)
                 return;
 
             byte alpha;
