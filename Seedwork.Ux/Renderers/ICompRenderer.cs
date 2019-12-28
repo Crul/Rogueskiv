@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Seedwork.Ux.Renderers
 {
-    public interface IItemRenderer : IDisposable
+    public interface ICompRenderer : IDisposable
     {
         void Render(List<IEntity> entities, float interpolation);
     }

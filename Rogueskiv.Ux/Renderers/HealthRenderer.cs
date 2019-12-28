@@ -6,7 +6,7 @@ using Seedwork.Ux.Renderers;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class HealthRenderer : BaseItemRenderer<HealthComp>
+    class HealthRenderer : CompRenderer<HealthComp>
     {
         private const int X_LEFT_POS = 20;
         private const int Y_BOTTOM_POS = 20;

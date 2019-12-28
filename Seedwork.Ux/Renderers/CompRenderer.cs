@@ -7,12 +7,12 @@ using System.Drawing;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class BaseItemRenderer<T> : IItemRenderer
+    public abstract class CompRenderer<T> : ICompRenderer
         where T : IComponent
     {
         protected readonly UxContext UxContext;
 
-        protected BaseItemRenderer(UxContext uxContext) => UxContext = uxContext;
+        protected CompRenderer(UxContext uxContext) => UxContext = uxContext;
 
         public void Render(List<IEntity> entities, float interpolation) =>
             entities.ForEach(e => Render(e, e.GetComponent<T>(), interpolation));

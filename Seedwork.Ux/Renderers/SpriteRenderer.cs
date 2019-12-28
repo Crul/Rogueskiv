@@ -6,7 +6,7 @@ using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class SpriteRenderer<T> : BaseItemRenderer<T>
+    public abstract class SpriteRenderer<T> : CompRenderer<T>
         where T : IComponent
     {
         private readonly ISpriteProvider<T> SpriteProvider;

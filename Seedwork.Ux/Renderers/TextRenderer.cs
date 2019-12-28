@@ -8,7 +8,7 @@ using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class TextRenderer<T> : BaseItemRenderer<T>
+    public abstract class TextRenderer<T> : CompRenderer<T>
         where T : IComponent
     {
         private readonly IntPtr Font;

@@ -12,7 +12,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class BoardRenderer : BaseItemRenderer<BoardComp>
+    class BoardRenderer : CompRenderer<BoardComp>
     {
         private IntPtr BoardBufferTexture;
         private FOVComp FOVComp;

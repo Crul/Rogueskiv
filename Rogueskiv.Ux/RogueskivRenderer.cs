@@ -38,16 +38,16 @@ namespace Rogueskiv.Ux
             );
 
             BoardRenderer = new BoardRenderer(uxContext, game, BoardTexture);
-            Renderers[typeof(BoardComp)] = BoardRenderer;
-            Renderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
-            Renderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, game, BoardTexture);
-            Renderers[typeof(MapRevealerComp)] = new MapRevealerRenderer(this, uxContext, game, BoardTexture);
-            Renderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, game, BoardTexture);
-            Renderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext, game);
-            Renderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
-            Renderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game);
-            Renderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
-            Renderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
+            CompRenderers[typeof(BoardComp)] = BoardRenderer;
+            CompRenderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
+            CompRenderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, game, BoardTexture);
+            CompRenderers[typeof(MapRevealerComp)] = new MapRevealerRenderer(this, uxContext, game, BoardTexture);
+            CompRenderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, game, BoardTexture);
+            CompRenderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext, game);
+            CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
+            CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game);
+            CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
+            CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 
         public override void Reset() =>

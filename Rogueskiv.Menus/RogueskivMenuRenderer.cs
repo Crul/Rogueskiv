@@ -17,7 +17,7 @@ namespace Rogueskiv.Menus
             : base(uxContext, game)
         {
             MenuFont = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
-            Renderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
+            CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
         }
 
         protected override void RenderGame(float interpolation)

@@ -7,7 +7,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class FOVRenderer : BaseItemRenderer<FOVComp>
+    class FOVRenderer : CompRenderer<FOVComp>
     {
         private const int BLACK_OPACITY_FOR_REVEALED_BY_MAP = 0xDD;
         private const int BLACK_OPACITY_FOR_COVERED_BY_FOV = 0xAA;
