@@ -73,7 +73,7 @@ namespace Rogueskiv.Ux.Renderers
             );
             SDL_SetRenderTarget(UxContext.WRenderer, BoardBufferTexture);
 
-            using var tileRenderer = new TileRenderer(UxContext, game, boardTexture);
+            using var tileRenderer = new TileRenderer(UxContext, game);
             var tileEntities = game.Entities.GetWithComponent<TileComp>();
             tileRenderer.Render(tileEntities, 0);
 

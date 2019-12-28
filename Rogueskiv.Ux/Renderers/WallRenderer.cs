@@ -38,7 +38,7 @@ namespace Rogueskiv.Ux.Renderers
         )
         {
             var texture = spriteProvider.GetTexture(wallComp);
-            var textureRect = spriteProvider.GetTextureRect(wallComp);
+            var textureRect = spriteProvider.GetTextureRect(wallComp, screenPosition);
             var outputRect = spriteProvider.GetOutputRect(screenPosition);
 
             wallComp.GetTiles().ForEach(tilePos =>  // TODO ugly division inside GetTiles()
