@@ -38,7 +38,7 @@ namespace Seedwork.Ux.Renderers
             SDL_RenderCopy(UxContext.WRenderer, BufferTexture, IntPtr.Zero, IntPtr.Zero);
         }
 
-        public void OnWindowResize()
+        public void RecreateBuffer()
         {
             Dispose(true);
             SetBufferTexture();

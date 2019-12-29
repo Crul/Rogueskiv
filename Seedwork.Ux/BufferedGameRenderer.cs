@@ -18,7 +18,7 @@ namespace Seedwork.Ux
             BufferRenderer.Render();
         }
 
-        public override void OnWindowResize() => BufferRenderer.OnWindowResize();
+        public override void RecreateTextures() => BufferRenderer.RecreateBuffer();
 
         protected override void Dispose(bool cleanManagedResources)
         {

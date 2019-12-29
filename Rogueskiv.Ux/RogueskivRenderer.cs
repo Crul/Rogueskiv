@@ -63,10 +63,9 @@ namespace Rogueskiv.Ux
             base.RenderGame(interpolation);
         }
 
-        public override void OnWindowResize()
+        public override void RecreateTextures()
         {
-            base.OnWindowResize();
-            // TODO why is this needed ? because SDL_RENDER_TARGETS_RESET should be handled
+            base.RecreateTextures();
             BoardRenderer.RecreateBuffer(Game, BoardTexture);
         }
 
