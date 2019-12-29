@@ -30,15 +30,15 @@ namespace Rogueskiv.Ux.SpriteProviders
         ) : base(texture, textureRect, outputSize)
         { }
 
-        public override SDL_Rect GetOutputRect(Point position)
+        public override SDL_Rect GetOutputRect(T pickableComp, Point position)
         {
             var outputSize = OutputSize;
             if (PickableItemComp?.IsBeingPicked ?? false)
             {
                 var sizeFactor = 1 + (
                     (MAX_SIZE_FACTOR - 1)
-                    * (PickableComp.MAX_PICKING_TIME - PickableItemComp.PickingTime)
-                    / PickableComp.MAX_PICKING_TIME
+                    * (pickableComp.MaxPickingTime - PickableItemComp.PickingTime)
+                    / pickableComp.MaxPickingTime
                 );
 
                 outputSize = outputSize.Multiply(sizeFactor);

@@ -12,13 +12,13 @@ namespace Seedwork.Ux
         public IntPtr Window { get; }
         public IntPtr WRenderer { get; }
 
-        public UxContext(string windowTitle, Size? screenSize = null, bool maximized = true)
+        public UxContext(string windowTitle, IUxConfig uxConfig)
         {
-            if (screenSize.HasValue)
-                OnWindowResize(screenSize.Value);
+            if (uxConfig != null)
+                OnWindowResize(uxConfig.ScreenSize);
 
             var sdlWindowFlags = SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE;
-            if (maximized)
+            if (uxConfig?.Maximized ?? true)
                 sdlWindowFlags |= SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED;
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);

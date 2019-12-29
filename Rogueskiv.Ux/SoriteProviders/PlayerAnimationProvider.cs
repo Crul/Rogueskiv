@@ -1,5 +1,4 @@
-﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Position;
 using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
@@ -24,15 +23,13 @@ namespace Rogueskiv.Ux.SoriteProviders
         private readonly List<Rectangle> MaskTexture = Masks
             .GetFromImage(Path.Combine("imgs", "player-texture-mask.png"));
 
-        public int SpawnSys { get; }
-
-        public PlayerAnimationProvider(UxContext uxContext)
+        public PlayerAnimationProvider(UxContext uxContext, int playerRadius)
         {
             Texture = SDL_image.IMG_LoadTexture(
                 uxContext.WRenderer,
                 Path.Combine("imgs", "player-texture.png")
             );
-            var playerDiameter = PlayerComp.PLAYER_RADIUS * 2;
+            var playerDiameter = playerRadius * 2;
             TextureRect = new SDL_Rect { x = 0, y = 0, w = playerDiameter, h = playerDiameter };
             OutputSize = new Size(TextureRect.w, TextureRect.h);
             NonRepeatingTextureSize = 64 - TextureRect.w;
@@ -91,12 +88,14 @@ namespace Rogueskiv.Ux.SoriteProviders
             };
         }
 
-        public override IntPtr GetTexture(CurrentPositionComp comp) => Texture;
+        public override IntPtr GetTexture(CurrentPositionComp comp) =>
+            Texture;
 
         public override SDL_Rect GetTextureRect(CurrentPositionComp comp, Point screenPosition) =>
             TextureRectMasked;
 
-        public override SDL_Rect GetOutputRect(Point position) => OutputRect;
+        public override SDL_Rect GetOutputRect(CurrentPositionComp comp, Point position) =>
+            OutputRect;
 
         protected override void Dispose(bool cleanManagedResources)
         {

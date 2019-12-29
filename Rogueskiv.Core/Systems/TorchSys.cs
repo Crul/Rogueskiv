@@ -7,10 +7,13 @@ namespace Rogueskiv.Core.Systems
 {
     class TorchSys : PickingSys<TorchComp>
     {
+        private readonly int TorchVisualRangeIncrease;
         private PlayerComp PlayerComp;
         private FOVComp FOVComp;
 
-        public TorchSys() : base(isSingleCompPerFloor: true) { }
+        public TorchSys(int pickingTime, int torchVisualRangeIncrease)
+            : base(pickingTime, isSingleCompPerFloor: true) =>
+            TorchVisualRangeIncrease = torchVisualRangeIncrease;
 
         public override void Init(Game game)
         {
@@ -23,7 +26,7 @@ namespace Rogueskiv.Core.Systems
         protected override void StartPicking(List<TorchComp> pickedTorchs)
         {
             base.StartPicking(pickedTorchs);
-            PlayerComp.VisualRange += TorchComp.VISUAL_RANGE_INCREASE * pickedTorchs.Count;
+            PlayerComp.VisualRange += TorchVisualRangeIncrease * pickedTorchs.Count;
             FOVComp.SetVisualRange(PlayerComp);
         }
     }

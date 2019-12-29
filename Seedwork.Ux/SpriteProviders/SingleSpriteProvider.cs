@@ -55,7 +55,7 @@ namespace Seedwork.Ux.SpriteProviders
 
         public override SDL_Rect GetTextureRect(T comp, Point screenPosition) => TextureRect;
 
-        public override SDL_Rect GetOutputRect(Point screenPosition)
+        public override SDL_Rect GetOutputRect(T comp, Point screenPosition)
             => GetOutputRect(screenPosition, OutputSize);
 
         protected override void Dispose(bool cleanManagedResources)

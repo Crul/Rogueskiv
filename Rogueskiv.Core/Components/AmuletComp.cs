@@ -4,6 +4,7 @@ namespace Rogueskiv.Core.Components
 {
     public class AmuletComp : PickableComp
     {
-        public AmuletComp(Point tilePos) : base(tilePos) { }
+        public AmuletComp(int pickingTime, Point tilePos)
+            : base(pickingTime, tilePos) { }
     }
 }

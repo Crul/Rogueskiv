@@ -5,13 +5,14 @@ using System.Linq;
 
 namespace Rogueskiv.MapGeneration
 {
-    public class MapGenerationParams
+    public class MapGenerationParams : IMapGenerationParams
     {
         public int Width { get; }
         public int Height { get; }
         public float MinDensity { get; }
         public int InitialRooms { get; }
         public int MinRoomSize { get; }
+        public int MinRoomSeparation { get; }
 
         private readonly float RoomExpandProbability;
         private readonly float CorridorTurnProbability;
@@ -26,6 +27,7 @@ namespace Rogueskiv.MapGeneration
             float minDensity,
             int initialRooms,
             int minRoomSize,
+            int minRoomSeparation,
             List<(int width, float weight)> corridorWidthProbWeights
         )
         {
@@ -36,6 +38,7 @@ namespace Rogueskiv.MapGeneration
             MinDensity = minDensity;
             InitialRooms = initialRooms;
             MinRoomSize = minRoomSize;
+            MinRoomSeparation = minRoomSeparation;
             CorridorWidthProbWeights = corridorWidthProbWeights;
         }
 

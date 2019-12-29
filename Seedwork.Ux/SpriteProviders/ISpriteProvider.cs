@@ -10,6 +10,6 @@ namespace Seedwork.Ux.SpriteProviders
     {
         IntPtr GetTexture(T comp);
         SDL_Rect GetTextureRect(T comp, Point screenPosition);
-        SDL_Rect GetOutputRect(Point position);
+        SDL_Rect GetOutputRect(T comp, Point position);
     }
 }

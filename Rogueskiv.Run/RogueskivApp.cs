@@ -5,25 +5,21 @@ using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 
 namespace Rogueskiv.Run
 {
     class RogueskivApp
     {
-        private const int FLOOR_COUNT = 26;
-        private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
-        private readonly Size ScrrenSize = new Size(640, 480);
-
+        private readonly RogueskivAppConfig AppConfig;
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
-
         private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
         private int CurrentFloor;
 
+        public RogueskivApp(RogueskivAppConfig appConfig) => AppConfig = appConfig;
+
         public void Run()
         {
-            using var uxContext = new UxContext("Rogueskiv", ScrrenSize);
+            using var uxContext = new UxContext("Rogueskiv", AppConfig);
 
             InitStages(uxContext);
             var engine = CreateMenuStage(uxContext);
@@ -83,19 +79,12 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> CreateGameStage(UxContext uxContext, IGameResult<IEntity> result = null)
         {
-            // var boardData = File.ReadAllText(Path.Combine("data", "board.txt"));
-
             CurrentFloor = FloorEngines.Count + 1;
 
-            var gameContext = new GameContext();
-            var game = new RogueskivGame(
-                gameContext,
-                GameStageCodes.Game,
-                FLOOR_COUNT,
-                CurrentFloor,
-                result
-            );
-            var renderer = new RogueskivRenderer(uxContext, game, FONT_FILE);
+            var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
+            var gameConfig = new RogueskivGameConfig(AppConfig, gameContext, CurrentFloor);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
+            var renderer = new RogueskivRenderer(uxContext, game, AppConfig);
             var userInput = new RogueskivInputHandler(uxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
@@ -110,9 +99,9 @@ namespace Rogueskiv.Run
             FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
             FloorEngines.Clear();
 
-            var gameContext = new GameContext();
+            var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
             var game = new RogueskivMenu(GameStageCodes.Menu);
-            var renderer = new RogueskivMenuRenderer(uxContext, game, FONT_FILE);
+            var renderer = new RogueskivMenuRenderer(uxContext, game, AppConfig.FontFile);
             var userInput = new RogueskivMenuInputHandler(uxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 

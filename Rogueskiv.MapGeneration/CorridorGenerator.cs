@@ -29,7 +29,7 @@ namespace Rogueskiv.MapGeneration
             };
 
         public static List<Corridor> ConnectRooms(
-            MapGenerationParams mapParams, List<Room> rooms
+            IMapGenerationParams mapParams, List<Room> rooms
         )
         {
             var corridors = new List<Corridor>();
@@ -49,7 +49,7 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static bool CreateCorridor(
-            MapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
+            IMapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
         )
         {
             var corridorWidth = mapParams.GetRandomCorridorWidth();
@@ -170,7 +170,7 @@ namespace Rogueskiv.MapGeneration
 
         #region Expansion
         private static List<Room> ExpandCorridor(
-            MapGenerationParams mapParams,
+            IMapGenerationParams mapParams,
             List<Corridor> corridors,
             Corridor corridor,
             int corridorWidth,

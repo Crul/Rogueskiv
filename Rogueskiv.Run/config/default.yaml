@@ -1,0 +1,101 @@
+# graphics
+maximized: true
+screenSize:
+    width: 640
+    height: 480
+maxGameStepsWithoutRender: 5
+cameraMovementFriction: 20
+
+# game
+floorCount: 26
+
+# player
+playerRadius: 10
+playerAcceleration: 1.5
+playerMaxSpeed: 150
+playerStopSpeed: 1
+initialPlayerHealth: 10
+initialPlayerVisualRange: 5
+playerFrictionFactor: 0.1
+playerBounceAmortiguationFactor:  0.6666
+
+# items
+minFoodSpawnDistanceFactor: 16
+minFoodSpawnDistanceFactor: 0.33
+minTorchSpawnDistanceFactor: 0.1
+minMapRevealerSpawnDistanceFactor: 0.4
+minAmuletSpawnFactor: 0.9
+minDownStairsSpawnFactor: 0.8
+
+maxItemPickingTime: 600
+foodHealthIncrease: 3
+torchVisualRangeIncrease: 1
+
+# enemies
+enemyCollisionDamage: 1
+minSpaceToSpawnEnemy: 1
+minEnemySpawnDistance: 5
+enemyRadius: 6
+enemyAnglesProbWeightRanges:
+    - value: 4
+      weightRange:
+        start: 5
+        end: 5
+
+    - value: 8
+      weightRange:
+        start: -10
+        end: 5
+
+    - value: 16
+      weightRange:
+        start: -2.5
+        end: 5
+
+# map generation params
+minRoomSize: 3
+minRoomSeparation: 1
+mapSizeRange:
+    start: 36
+    end: 48
+enemyNumberRange:
+    start: 10
+    end: 20
+minEnemySpeedRange:
+    start: 100
+    end: 125
+maxEnemySpeedRange:
+    start: 125
+    end: 175
+roomExpandProbRange:
+    start: 0.6
+    end: 0.3
+corridorTurnProbRange:
+    start: 0.05
+    end: 0.15
+minMapDensityRange:
+    start: 0.18
+    end: 0.12
+initialRoomsRange:
+    start: 15
+    end: 45
+corridorWidthProbWeightRanges:
+    - value: 1
+      weightRange:
+        start: 1
+        end: 8
+
+    - value: 2
+      weightRange:
+        start: 4
+        end: 4
+
+    - value: 3
+      weightRange:
+        start: 8
+        end: 2
+
+    - value: 4
+      weightRange:
+        start: 1
+        end: 1

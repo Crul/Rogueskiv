@@ -17,6 +17,7 @@ namespace Rogueskiv.Ux
     {
         private const int FONT_SIZE = 18;
         private readonly UxContext UxContext;
+        private readonly IRogueskivUxConfig UxConfig;
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
@@ -26,13 +27,14 @@ namespace Rogueskiv.Ux
 #pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore IDE0069 // Disposable fields should be disposed
 
-        public RogueskivRenderer(UxContext uxContext, IRenderizable game, string fontFile)
+        public RogueskivRenderer(UxContext uxContext, IRenderizable game, IRogueskivUxConfig uxConfig)
             : base(uxContext, game)
         {
             UxContext = uxContext;
+            UxConfig = uxConfig;
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
-            Font = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
+            Font = SDL_ttf.TTF_OpenFont(uxConfig.FontFile, FONT_SIZE);
             BoardTexture = SDL_image.IMG_LoadTexture(
                 uxContext.WRenderer,
                 Path.Combine("imgs", "board.png")
@@ -49,7 +51,7 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, game, BoardTexture);
             CompRenderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext, game);
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
-            CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game);
+            CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
@@ -59,7 +61,7 @@ namespace Rogueskiv.Ux
 
         protected override void RenderGame(float interpolation)
         {
-            PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, PlayerRenderer.CAMERA_MOVEMENT_FRICTION);
+            PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
         }
 

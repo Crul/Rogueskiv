@@ -9,7 +9,6 @@ namespace Seedwork.Engine
         private readonly IGameContext GameContext;
         private readonly IInputHandler InputHandler;
         private readonly IGameRenderer Renderer;
-        private const int MAX_STEPS_WITHOUT_RENDER = 5;
 
         public GameEngine(
             IGameContext gameContext,
@@ -71,8 +70,8 @@ namespace Seedwork.Engine
             }
         }
 
-        private static bool ShouldUpdate(long nextGameTick, int stepsWithoutRender) =>
-            CurrentTime() > nextGameTick && stepsWithoutRender < MAX_STEPS_WITHOUT_RENDER;
+        private bool ShouldUpdate(long nextGameTick, int gameStepsWithoutRender) =>
+            CurrentTime() > nextGameTick && gameStepsWithoutRender < GameContext.MaxGameStepsWithoutRender;
 
         private static long CurrentTime() => DateTime.Now.Ticks;
 

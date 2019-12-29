@@ -6,5 +6,6 @@
         long GameTicks { get; }
         int UxFPS { get; }
         long UxTicks { get; }
+        int MaxGameStepsWithoutRender { get; }
     }
 }

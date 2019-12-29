@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
@@ -10,13 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Rogueskiv.Core\Rogueskiv.Core.csproj" />
     <ProjectReference Include="..\Rogueskiv.Menus\Rogueskiv.Menus.csproj" />
     <ProjectReference Include="..\Rogueskiv.Ux\Rogueskiv.Ux.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="data\*.*">
+    <None Update="config\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

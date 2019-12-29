@@ -7,9 +7,13 @@ namespace Rogueskiv.Core.Systems
 {
     class FoodSys : PickingSys<FoodComp>
     {
+        private readonly int FoodHealthIncrease;
+
         private HealthComp PlayerHealthComp;
 
-        public FoodSys() : base(isSingleCompPerFloor: true) { }
+        public FoodSys(int pickingTime, int foodHealthIncrease)
+            : base(pickingTime, isSingleCompPerFloor: true) =>
+            FoodHealthIncrease = foodHealthIncrease;
 
         public override void Init(Game game)
         {
@@ -25,7 +29,7 @@ namespace Rogueskiv.Core.Systems
         protected override void StartPicking(List<FoodComp> pickedFoods)
         {
             base.StartPicking(pickedFoods);
-            PlayerHealthComp.Health += FoodComp.HEALTH_INCREASE * pickedFoods.Count;
+            PlayerHealthComp.Health += FoodHealthIncrease * pickedFoods.Count;
         }
     }
 }

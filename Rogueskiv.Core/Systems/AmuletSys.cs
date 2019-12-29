@@ -7,7 +7,8 @@ namespace Rogueskiv.Core.Systems
 {
     class AmuletSys : PickingSys<AmuletComp>
     {
-        public AmuletSys() : base(isSingleCompPerFloor: true) { }
+        public AmuletSys(int pickingTime)
+            : base(pickingTime, isSingleCompPerFloor: true) { }
 
         protected override void EndPicking(
             EntityList entities, List<(EntityId, AmuletComp)> pickedEntities

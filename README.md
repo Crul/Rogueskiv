@@ -4,6 +4,14 @@
 
 Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia=web) (by jf) and the countless [Roguelike games](https://www.reddit.com/r/roguelikedev/), inspired by the [Roguelike Celebration 2018](https://roguelike.club/event2018.html) talk: [Pippin Barr + Jonathan Lessard: Chess + Rogue = Chogue](https://www.youtube.com/watch?v=l1YEJBKehAY).
 
+## Configuration
+
+A configuration filename can be specified on execution (default value is `default`):
+
+```Rogueskiv.Run.exe --config=configfilename```
+
+Options will be loaded from `config/configfilename.yaml`.
+
 ## Environment Setup
 
 Download and extract into `Seedwork.Ux/dlls/`:
@@ -26,6 +34,7 @@ Rogueskiv makes use of the following projects:
 - Part of the graphic tiles used in this program is the public domain roguelike tileset "RLTiles".  
   You can find the original tileset at: <http://rltiles.sf.net>
 - [Stone Texture II](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii) by [Daniel Smith](http://artistfire.deviantart.com/) ([CC0 Public Domain](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii#image_text))
+- [YamlDotNet](https://github.com/aaubry/YamlDotNet) by [Antoine Aubry](https://www.aaubry.net/) ([MIT License](https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt))
 
 ## License (AGPL-3.0)
 

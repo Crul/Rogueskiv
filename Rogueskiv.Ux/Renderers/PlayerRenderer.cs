@@ -13,22 +13,19 @@ namespace Rogueskiv.Ux.Renderers
 {
     class PlayerRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
-        public const int CAMERA_MOVEMENT_FRICTION = 20;
-
         private readonly PlayerAnimationProvider AnimationProvider;
 
-        public PlayerRenderer(UxContext uxContext, IRenderizable game)
+        public PlayerRenderer(UxContext uxContext, IRenderizable game, int playerRadius)
             : base(
                 uxContext,
                 game,
                 new SingleSpriteProvider<CurrentPositionComp>(
                     uxContext,
                     Path.Combine("imgs", "player.png"),
-                    new SDL_Rect { x = 0, y = 0, w = 36, h = 36 },
-                    (36, 36)
+                    GetPlayerTextureRect(playerRadius)
                 )
             ) =>
-            AnimationProvider = new PlayerAnimationProvider(uxContext);
+            AnimationProvider = new PlayerAnimationProvider(uxContext, playerRadius);
 
         protected override void Render(
             ISpriteProvider<CurrentPositionComp> spriteProvider,
@@ -60,6 +57,13 @@ namespace Rogueskiv.Ux.Renderers
                 .Divide(friction);
 
             uxContext.Center = uxContext.Center.Add(cameraMovement);
+        }
+
+        private static SDL_Rect GetPlayerTextureRect(int playerRadius)
+        {
+            var spriteSize = (int)(3.6f * playerRadius);
+
+            return new SDL_Rect { x = 0, y = 0, w = spriteSize, h = spriteSize };
         }
 
         protected override void Dispose(bool cleanManagedResources)
