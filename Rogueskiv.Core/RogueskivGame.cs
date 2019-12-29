@@ -8,7 +8,6 @@ using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,11 +57,7 @@ namespace Rogueskiv.Core
             )
         {
             Pause = true;
-
-            BoardComp = Entities
-                    .GetWithComponent<BoardComp>()
-                    .Single()
-                    .GetComponent<BoardComp>();
+            BoardComp = Entities.GetSingleComponent<BoardComp>();
         }
 
         private static string GetStartText(int floor) =>
@@ -72,12 +67,12 @@ namespace Rogueskiv.Core
             (int floorCount, int floor)
         {
             var floorFactor = (float)floor / floorCount;
-            var mapSize = 32 + (int)(floorFactor * 32);           // 32    ... 64
+            var mapSize = 48 + (int)(floorFactor * 16);           // 48    ... 64
             var roomExpandProb = 0.6f - (0.3f * floorFactor);     //  0.6  ...  0.3
             var corridorTurnProb = 0.05f + (0.15f * floorFactor); //  0.05 ...  0.2
             var minDensity = 0.18f - (0.12f * floorFactor);       //  0.18 ...  0.06
             var initialRooms = 15 + (int)(floorFactor * 45);      // 15    ... 60
-            var minRoomSize = 2;                                  //  2
+            var minRoomSize = 3;                                  //  3
 
             return new MapGenerationParams(
                 width: mapSize,
@@ -94,10 +89,7 @@ namespace Rogueskiv.Core
         {
             base.Restart(previousFloorResult);
 
-            var playerComp = Entities
-                .GetWithComponent<PlayerComp>()
-                .Single();
-
+            var playerComp = Entities.GetWithComponent<PlayerComp>().Single();
             var playerMovementComp = playerComp.GetComponent<MovementComp>();
             playerMovementComp.Stop();
 
@@ -118,11 +110,7 @@ namespace Rogueskiv.Core
             {
                 Pause = false;
                 HasStarted = true;
-                Entities
-                    .GetWithComponent<PopUpComp>()
-                    .Single()
-                    .GetComponent<PopUpComp>()
-                    .Text = "PAUSE";
+                Entities.GetSingleComponent<PopUpComp>().Text = "PAUSE";
             }
 
             base.Update();
@@ -130,8 +118,8 @@ namespace Rogueskiv.Core
 
         public override void RemoveEntity(EntityId id)
         {
-            var position = Entities[id].GetComponent<CurrentPositionComp>();
-            BoardComp.RemoveEntity(id, position);
+            var currentPositionComp = Entities[id].GetComponent<CurrentPositionComp>();
+            BoardComp.RemoveEntity(id, currentPositionComp);
             base.RemoveEntity(id);
         }
     }

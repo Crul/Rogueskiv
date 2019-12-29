@@ -15,20 +15,14 @@ namespace Seedwork.Ux.Renderers
         protected BaseItemRenderer(UxContext uxContext) => UxContext = uxContext;
 
         public void Render(List<IEntity> entities, float interpolation) =>
-            entities.ForEach(e => RenderIfComponent(e, interpolation));
+            entities.ForEach(e => Render(e, e.GetComponent<T>(), interpolation));
 
-        private void RenderIfComponent(IEntity entity, float interpolation)
-        {
-            if (entity.HasComponent<T>())
-                Render(entity, interpolation);
-        }
-
-        protected abstract void Render(IEntity entity, float interpolation);
+        protected abstract void Render(IEntity entity, T comp, float interpolation);
 
         protected Point GetScreenPosition(PointF position) =>
             position.Add(UxContext.Center).ToPoint();
 
-        protected virtual void Dispose(bool disposing) { }
+        protected virtual void Dispose(bool cleanManagedResources) { }
 
         public void Dispose()
         {

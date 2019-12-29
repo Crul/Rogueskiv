@@ -25,9 +25,7 @@ namespace Rogueskiv.Menus.MenuOptions
 
             if (Moved) return;
 
-            var menuOptions = entities
-                .GetWithComponent<MenuOptionComp>()
-                .Select(e => e.GetComponent<MenuOptionComp>())
+            var menuOptions = entities.GetComponents<MenuOptionComp>()
                 .OrderBy(mo => mo.Order)
                 .ToList();
 

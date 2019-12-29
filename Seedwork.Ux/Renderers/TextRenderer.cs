@@ -19,12 +19,11 @@ namespace Seedwork.Ux.Renderers
         protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
 
-        protected override void Render(IEntity entity, float interpolation)
+        protected override void Render(IEntity entity, T comp, float interpolation)
         {
-            var component = entity.GetComponent<T>();
-            var text = GetText(component);
-            var textColor = GetColor(component);
-            var position = GetPosition(component);
+            var text = GetText(comp);
+            var textColor = GetColor(comp);
+            var position = GetPosition(comp);
 
             if (HasDataChanged(text, textColor, position))
             {
@@ -38,6 +37,7 @@ namespace Seedwork.Ux.Renderers
 
             RenderBgr(position);
 
+            // TODO TextSpriteProvider ?
             var src = new SDL_Rect()
             {
                 x = 0,

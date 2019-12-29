@@ -1,0 +1,32 @@
+﻿using Seedwork.Core.Components;
+using System;
+using System.Drawing;
+using static SDL2.SDL;
+
+namespace Seedwork.Ux.SpriteProviders
+{
+    public abstract class SpriteProvider<T> : ISpriteProvider<T>
+        where T : IComponent
+    {
+        public abstract IntPtr GetTexture(T comp);
+        public abstract SDL_Rect GetTextureRect(T comp);
+        public abstract SDL_Rect GetOutputRect(Point position);
+
+        protected SDL_Rect GetOutputRect(Point position, Size outputSize) =>
+            new SDL_Rect()
+            {
+                x = position.X - (outputSize.Width / 2),
+                y = position.Y - (outputSize.Height / 2),
+                w = outputSize.Width,
+                h = outputSize.Height
+            };
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool cleanManagedResources) { }
+    }
+}

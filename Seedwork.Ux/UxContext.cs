@@ -12,10 +12,14 @@ namespace Seedwork.Ux
         public IntPtr Window { get; }
         public IntPtr WRenderer { get; }
 
-        public UxContext(string windowTitle, Size screenSize)
+        public UxContext(string windowTitle, Size? screenSize = null, bool maximized = true)
         {
-            ScreenSize = screenSize;
-            Center = screenSize.Divide(2).ToPoint();
+            if (screenSize.HasValue)
+                OnWindowResize(screenSize.Value);
+
+            var sdlWindowFlags = SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE;
+            if (maximized)
+                sdlWindowFlags |= SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED;
 
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             SDL_ttf.TTF_Init();
@@ -25,8 +29,7 @@ namespace Seedwork.Ux
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 ScreenSize.Width, ScreenSize.Height,
-                SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
-                | SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED
+                sdlWindowFlags
             );
 
             WRenderer = SDL.SDL_CreateRenderer(Window, -1, 0);
@@ -35,9 +38,12 @@ namespace Seedwork.Ux
             // SDL.SDL_RenderSetLogicalSize(WRenderer, screenSize.Width, screenSize.Height);
         }
 
-        public void OnWindowResize(int width, int height)
+        public void OnWindowResize(int width, int height) =>
+            OnWindowResize(new Size(width, height));
+
+        private void OnWindowResize(Size screenSize)
         {
-            ScreenSize = new Size(width, height);
+            ScreenSize = screenSize;
             Center = ScreenSize.Divide(2).ToPoint();
         }
 

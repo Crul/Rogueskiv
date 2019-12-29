@@ -1,6 +1,6 @@
-﻿using SDL2;
-using Seedwork.Core.Components;
-using System;
+﻿using Seedwork.Core.Components;
+using Seedwork.Core.Entities;
+using Seedwork.Ux.SpriteProviders;
 using System.Drawing;
 using static SDL2.SDL;
 
@@ -9,62 +9,47 @@ namespace Seedwork.Ux.Renderers
     public abstract class SpriteRenderer<T> : BaseItemRenderer<T>
         where T : IComponent
     {
-        protected readonly Tuple<int, int> OutputSize;
-        protected readonly IntPtr Texture;
-        protected SDL_Rect TextureRect;
-        private readonly bool ShouldDestroyTexture;
+        private readonly ISpriteProvider<T> SpriteProvider;
 
-        protected SpriteRenderer(
-            UxContext uxContext,
-            string imgPath,
-            SDL_Rect textureRect,
-            Tuple<int, int> outputSize = null
-        ) : this(uxContext, textureRect, outputSize)
-        {
-            ShouldDestroyTexture = true;
-            Texture = SDL_image.IMG_LoadTexture(UxContext.WRenderer, imgPath);
-        }
+        protected SpriteRenderer(UxContext uxContext, ISpriteProvider<T> spriteProvider)
+            : base(uxContext) =>
+            SpriteProvider = spriteProvider;
 
-        protected SpriteRenderer(
-            UxContext uxContext,
-            IntPtr texture,
-            SDL_Rect textureRect,
-            Tuple<int, int> outputSize = null
-        ) : this(uxContext, textureRect, outputSize)
-        {
-            ShouldDestroyTexture = false;
-            Texture = texture;
-        }
+        protected override void Render(IEntity entity, T comp, float interpolation) =>
+            Render(SpriteProvider, entity, comp, interpolation);
 
-        private SpriteRenderer(
-            UxContext uxContext,
-            SDL_Rect textureRect,
-            Tuple<int, int> outputSize = null
-        ) : base(uxContext)
+        protected virtual void Render(
+            ISpriteProvider<T> spriteProvider,
+            IEntity entity,
+            T comp,
+            float interpolation
+        )
         {
-            TextureRect = textureRect;
-            OutputSize = outputSize ?? new Tuple<int, int>(textureRect.w, textureRect.h);
-        }
-
-        protected virtual void Render(PointF position)
-        {
+            var position = GetPosition(entity, comp, interpolation);
             var screenPosition = GetScreenPosition(position);
-
-            var tRect = new SDL_Rect()
-            {
-                x = screenPosition.X - OutputSize.Item1 / 2,
-                y = screenPosition.Y - OutputSize.Item2 / 2,
-                w = OutputSize.Item1,
-                h = OutputSize.Item2
-            };
-
-            SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref tRect);
+            Render(spriteProvider, entity, comp, screenPosition);
         }
+
+        protected virtual void Render(
+            ISpriteProvider<T> spriteProvider,
+            IEntity entity,
+            T comp,
+            Point screenPosition
+        )
+        {
+            var texture = spriteProvider.GetTexture(comp);
+            var textureRect = spriteProvider.GetTextureRect(comp);
+            var outputRect = spriteProvider.GetOutputRect(screenPosition);
+
+            SDL_RenderCopy(UxContext.WRenderer, texture, ref textureRect, ref outputRect);
+        }
+
+        protected abstract PointF GetPosition(IEntity entity, T comp, float interpolation);
 
         protected override void Dispose(bool cleanManagedResources)
         {
-            if (ShouldDestroyTexture)
-                SDL_DestroyTexture(Texture);
+            if (cleanManagedResources)
+                SpriteProvider.Dispose();
         }
     }
 }
