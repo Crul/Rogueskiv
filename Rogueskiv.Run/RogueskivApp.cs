@@ -5,25 +5,24 @@ using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 
 namespace Rogueskiv.Run
 {
     class RogueskivApp
     {
-        private const int FLOOR_COUNT = 26;
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
-        private readonly Size ScrrenSize = new Size(640, 480);
 
+        private readonly RogueskivConfig Config;
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
-
         private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
         private int CurrentFloor;
 
+        public RogueskivApp(RogueskivConfig config) => Config = config;
+
         public void Run()
         {
-            using var uxContext = new UxContext("Rogueskiv", ScrrenSize);
+            using var uxContext = new UxContext("Rogueskiv", Config);
 
             InitStages(uxContext);
             var engine = CreateMenuStage(uxContext);
@@ -83,18 +82,11 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> CreateGameStage(UxContext uxContext, IGameResult<IEntity> result = null)
         {
-            // var boardData = File.ReadAllText(Path.Combine("data", "board.txt"));
-
             CurrentFloor = FloorEngines.Count + 1;
 
             var gameContext = new GameContext();
-            var game = new RogueskivGame(
-                gameContext,
-                GameStageCodes.Game,
-                FLOOR_COUNT,
-                CurrentFloor,
-                result
-            );
+            var gameConfig = new RogueskivFloorConfig(Config, CurrentFloor);
+            var game = new RogueskivGame(gameContext, GameStageCodes.Game, gameConfig, result);
             var renderer = new RogueskivRenderer(uxContext, game, FONT_FILE);
             var userInput = new RogueskivInputHandler(uxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);

@@ -2,7 +2,6 @@
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Core.Systems;
-using Rogueskiv.MapGeneration;
 using Seedwork.Core;
 using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
@@ -21,8 +20,7 @@ namespace Rogueskiv.Core
         public RogueskivGame(
             IGameContext gameContext,
             GameStageCode stageCode,
-            int floorCount,
-            int floor,
+            IRogueskivGameConfig gameConfig,
             IGameResult<IEntity> previousFloorResult,
             string boardData = default
         )
@@ -32,15 +30,15 @@ namespace Rogueskiv.Core
                 {
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
-                    new List<IComponent> { new PopUpComp() { Text = GetStartText(floor) } },
+                    new List<IComponent> { new PopUpComp() { Text = GetStartText(gameConfig.Floor) } },
                 },
                 systems: new List<ISystem> {
                     string.IsNullOrEmpty(boardData)
-                        ? new BoardSys(GetMapGenerationParams(floorCount, floor))
+                        ? new BoardSys(gameConfig.MapGenerationParams)
                         : new BoardSys(boardData),
                     new SpawnSys(
                         gameContext,
-                        (float)floor / floorCount,
+                        gameConfig,
                         previousFloorResult
                     ),
                     new PlayerSys(gameContext),
@@ -65,36 +63,6 @@ namespace Rogueskiv.Core
 
         private static string GetStartText(int floor) =>
             $"FLOOR {floor} - Press any arrow to " + (floor == 1 ? "start" : "continue");
-
-        private static MapGenerationParams GetMapGenerationParams
-            (int floorCount, int floor)
-        {
-            var floorFactor = (float)floor / floorCount;
-            var mapSize = 26 + (int)(floorFactor * 12);           // 36    ... 48
-            var roomExpandProb = 0.6f - (0.3f * floorFactor);     //  0.6  ...  0.3
-            var corridorTurnProb = 0.05f + (0.15f * floorFactor); //  0.05 ...  0.2
-            var minDensity = 0.18f - (0.12f * floorFactor);       //  0.18 ...  0.06
-            var initialRooms = 15 + (int)(floorFactor * 45);      // 15    ... 60
-            var minRoomSize = 3;                                  //  3
-            var corridorWidthProbWeights = new List<(int width, float weight)>
-            {
-                ( width: 1, weight: 1 + (int)(floorFactor * 7) ), //  1    ... 8
-                ( width: 2, weight: 4 ),                          //  4        4
-                ( width: 3, weight: 8 - (int)(floorFactor * 6) ), //  8    ... 2
-                ( width: 4, weight: 1 )                           //  1        1
-            };
-
-            return new MapGenerationParams(
-                width: mapSize,
-                height: mapSize,
-                roomExpandProb,
-                corridorTurnProb,
-                minDensity,
-                initialRooms,
-                minRoomSize,
-                corridorWidthProbWeights
-            );
-        }
 
         public override void Restart(IGameResult<IEntity> previousFloorResult)
         {

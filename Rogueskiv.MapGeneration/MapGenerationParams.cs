@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Rogueskiv.MapGeneration
 {
-    public class MapGenerationParams
+    public class MapGenerationParams : IMapGenerationParams
     {
         public int Width { get; }
         public int Height { get; }

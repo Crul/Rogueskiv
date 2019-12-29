@@ -7,7 +7,7 @@ namespace Rogueskiv.MapGeneration
 {
     public static class MapGenerator
     {
-        public static string GenerateMap(MapGenerationParams mapParams)
+        public static string GenerateMap(IMapGenerationParams mapParams)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace Rogueskiv.MapGeneration
             }
         }
 
-        private static string TryGenerateMap(MapGenerationParams mapParams)
+        private static string TryGenerateMap(IMapGenerationParams mapParams)
         {
             var rooms = RoomGenerator.GenerateRooms(mapParams);
             var corridors = CorridorGenerator.ConnectRooms(mapParams, rooms);
@@ -28,7 +28,7 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static string PrintBoard(
-            MapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
+            IMapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
         )
         {
             var board = "";

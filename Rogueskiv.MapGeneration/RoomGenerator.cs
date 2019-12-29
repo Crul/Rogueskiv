@@ -10,7 +10,7 @@ namespace Rogueskiv.MapGeneration
         private const int MIN_ROOM_SEPARATION = 2;
         private const int INITIAL_ROOMS_MAX_LOOPS = 150;
 
-        public static List<Room> GenerateRooms(MapGenerationParams mapParams)
+        public static List<Room> GenerateRooms(IMapGenerationParams mapParams)
         {
             var rooms = new List<Room>();
             var area = mapParams.Width * mapParams.Height;
@@ -43,7 +43,7 @@ namespace Rogueskiv.MapGeneration
             }
         }
 
-        private static void AddNewRoom(MapGenerationParams mapParams, List<Room> rooms)
+        private static void AddNewRoom(IMapGenerationParams mapParams, List<Room> rooms)
         {
             var newRoom = new Room()
             {
@@ -62,7 +62,7 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static bool TryToExpand(
-            MapGenerationParams mapParams, List<Room> rooms, Room room
+            IMapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
             var expanded = false;
@@ -102,7 +102,7 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static bool CanExpandRight(
-            MapGenerationParams mapParams, List<Room> rooms, Room room
+            IMapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
             var targetX = room.TilePos.X + room.Size.Width;
@@ -122,7 +122,7 @@ namespace Rogueskiv.MapGeneration
         }
 
         private static bool CanExpandDown(
-            MapGenerationParams mapParams, List<Room> rooms, Room room
+            IMapGenerationParams mapParams, List<Room> rooms, Room room
         )
         {
             var targetY = room.TilePos.Y + room.Size.Height;

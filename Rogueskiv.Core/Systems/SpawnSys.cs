@@ -16,23 +16,9 @@ namespace Rogueskiv.Core.Systems
 {
     class SpawnSys : BaseSystem
     {
-        private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
-        private const int MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY = 1;
-        private const int MIN_FOOD_SPAWN_DISTANCE = 20;
-        private const int MIN_TORCH_SPAWN_DISTANCE = 10;
-        private const int MIN_MAP_SPAWN_DISTANCE = 30;
-        private const float MIN_AMULET_SPAWN_DISTANCE_FACTOR = 0.9f;
-        private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
-        private const int ENEMY_RADIUS = 6;
-
         private readonly IGameContext GameContext;
+        private readonly ISpawnConfig SpawnConfig;
         private readonly IGameResult<IEntity> PreviousFloorResult;
-        private readonly bool IsLastFloor;
-
-        private readonly int EnemyNumber;
-        private readonly int MinEnemySpeed;
-        private readonly int MaxEnemySpeed;
-        private readonly List<(int numAngles, float weight)> NumAnglesProbWeights;
 
         public static List<Point> NeighbourTilePositions { get; } = new List<Point>
         {
@@ -43,23 +29,13 @@ namespace Rogueskiv.Core.Systems
 
         public SpawnSys(
             IGameContext gameContext,
-            float floorFactor,
+            ISpawnConfig spawnConfig,
             IGameResult<IEntity> previousFloorResult
         )
         {
             GameContext = gameContext;
+            SpawnConfig = spawnConfig;
             PreviousFloorResult = previousFloorResult;
-            IsLastFloor = floorFactor == 1;
-
-            // TODO magic numbers
-            EnemyNumber = (int)(10 + (10f * floorFactor));          //  10 ... 20
-            MinEnemySpeed = (int)(100f + (floorFactor * 25f));      // 100 ... 125
-            MaxEnemySpeed = (int)(125f + (floorFactor * 50f));      // 125 ... 175
-            NumAnglesProbWeights = new List<(int numAngles, float weight)> {
-                (numAngles: 4, weight: 5),                           //   5 ...   5
-                (numAngles: 8, weight: (floorFactor * 15f) - 10f),   //   0 ...   5
-                (numAngles: 16, weight: (floorFactor * 7.5f) - 2.5f) //   0 ...   5
-            };
         }
 
         public override void Init(Game game)
@@ -77,14 +53,14 @@ namespace Rogueskiv.Core.Systems
             var playerTile = tilesPosWithSpaceAround[Luck.Next(tilesPosWithSpaceAround.Count)];
             game.AddEntity(CreatePlayer(playerTile));
 
-            var measuredTiles = GetDistancesFrom(boardComp, playerTile)
+            var tilePosAndDistances = GetDistancesFrom(boardComp, playerTile)
                 .Where(tile => tilePositions.Contains(tile.tilePos))
                 .ToList();
 
             var enemiesCount = 0;
-            while (enemiesCount < EnemyNumber)
+            while (enemiesCount < SpawnConfig.EnemyNumber)
             {
-                var enemy = CreateEnemy(boardComp, measuredTiles);
+                var enemy = CreateEnemy(boardComp, tilePosAndDistances);
                 if (enemy == null)
                     continue;
 
@@ -92,16 +68,24 @@ namespace Rogueskiv.Core.Systems
                 enemiesCount++;
             }
 
+            var maxDistance = tilePosAndDistances.Max(tcd => tcd.distance);
+
             // TODO avoid spawining 2 items in the same tile
 
-            game.AddEntity(CreateFood(measuredTiles));
-            game.AddEntity(CreateTorch(measuredTiles));
-            game.AddEntity(CreateMapRevealer(measuredTiles));
+            game.AddEntity(CreateFood(tilePosAndDistances, maxDistance));
+            game.AddEntity(CreateTorch(tilePosAndDistances, maxDistance));
+            game.AddEntity(CreateMapRevealer(tilePosAndDistances, maxDistance));
 
-            if (IsLastFloor)
-                game.AddEntity(CreateAmulet(measuredTiles, tilesPosWithSpaceAround));
+            if (SpawnConfig.IsLastFloor)
+                game.AddEntity(CreateAmulet(tilePosAndDistances, maxDistance));
             else
-                game.AddEntity(CreateDownStairs(measuredTiles, tilesPosWithSpaceAround));
+            {
+                var tilePosAndDistWithSpaceAround = tilePosAndDistances
+                    .Where(tpad => tilesPosWithSpaceAround.Contains(tpad.tilePos))
+                    .ToList();
+
+                game.AddEntity(CreateDownStairs(tilePosAndDistWithSpaceAround, maxDistance));
+            }
 
             var isFirstFloor = PreviousFloorResult == null;
             if (!isFirstFloor)
@@ -121,20 +105,20 @@ namespace Rogueskiv.Core.Systems
                 new PlayerComp() {
                     VisualRange =
                         previousPlayerEntity?.GetComponent<PlayerComp>().VisualRange
-                        ?? PlayerComp.INITIAL_VISUAL_RANGE
+                        ?? SpawnConfig.InitialPlayerVisualRange
                 },
                 new HealthComp() {
-                    MaxHealth = PlayerComp.INITIAL_PLAYER_HEALTH,
+                    MaxHealth = SpawnConfig.InitialPlayerHealth,
                     Health =
                         previousPlayerEntity?.GetComponent<HealthComp>().Health
-                        ?? PlayerComp.INITIAL_PLAYER_HEALTH
+                        ?? SpawnConfig.InitialPlayerHealth
                 },
                 new CurrentPositionComp(playerTilePos),
                 new LastPositionComp(playerTilePos),
                 new MovementComp(
-                    frictionFactor: 1f / 10f,
-                    bounceAmortiguationFactor: 2f / 3f,
-                    radius: PlayerComp.PLAYER_RADIUS,
+                    frictionFactor: SpawnConfig.PlayerFrictionFactor,
+                    bounceAmortiguationFactor: SpawnConfig.PlayerBounceAmortiguationFactor,
+                    radius: SpawnConfig.PlayerRadius,
                     simpleBounce: false
                 )
             };
@@ -196,7 +180,7 @@ namespace Rogueskiv.Core.Systems
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
-            var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
+            var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, SpawnConfig.MinEnemySpawnDistance);
             var enemySpeed = GetEnemySpeed(boardComp, enemyTilePos);
             if (!enemySpeed.HasValue)
                 return null;
@@ -210,7 +194,7 @@ namespace Rogueskiv.Core.Systems
                     speed: enemySpeed.Value,
                     frictionFactor: 1,
                     bounceAmortiguationFactor: 1,
-                    radius: ENEMY_RADIUS,
+                    radius: SpawnConfig.EnemyRadius,
                     simpleBounce: true
                 )
             };
@@ -218,12 +202,14 @@ namespace Rogueskiv.Core.Systems
 
         private PointF? GetEnemySpeed(BoardComp boardComp, Point enemyTilePos)
         {
-            var numAngles = NumAnglesProbWeights
+            var numAngles = SpawnConfig
+                .EnemyNumAnglesProbWeights
                 .OrderByDescending(napb => napb.weight * Luck.NextDouble())
                 .First()
                 .numAngles;
 
-            var speed = (MinEnemySpeed + Luck.Next(MaxEnemySpeed - MinEnemySpeed)) / GameContext.GameFPS;
+            var speed = (SpawnConfig.MinEnemySpeed
+                + Luck.Next(SpawnConfig.MaxEnemySpeed - SpawnConfig.MinEnemySpeed)) / GameContext.GameFPS;
             var angleRatios = Enumerable.Range(1, numAngles).ToList();
 
             var randomizedAngleRatios = angleRatios.OrderBy(a => Luck.NextDouble()).ToList();
@@ -245,14 +231,14 @@ namespace Rogueskiv.Core.Systems
             return null;
         }
 
-        private static bool IsValidAngle(BoardComp boardComp, Point enemyTilePos, int angleNum, int angleRatio)
+        private bool IsValidAngle(BoardComp boardComp, Point enemyTilePos, int angleNum, int angleRatio)
         {
             var isRightOrLeft = angleRatio == angleNum
                 || angleRatio == (angleNum / 2);
 
             if (isRightOrLeft)
             {
-                for (var x = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x++)
+                for (var x = -SpawnConfig.MinSpaceToSpawnEnemy; x <= SpawnConfig.MinSpaceToSpawnEnemy; x++)
                     if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(x: x)))
                         return false;
 
@@ -269,7 +255,7 @@ namespace Rogueskiv.Core.Systems
 
             if (isUpOrDown)
             {
-                for (var y = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y++)
+                for (var y = -SpawnConfig.MinSpaceToSpawnEnemy; y <= SpawnConfig.MinSpaceToSpawnEnemy; y++)
                     if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(y: y)))
                         return false;
 
@@ -281,61 +267,56 @@ namespace Rogueskiv.Core.Systems
             return true;
         }
 
-        private static IComponent CreateFood(
-            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        private IComponent CreateFood(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            int maxDistance
         )
         {
-            var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_FOOD_SPAWN_DISTANCE);
+            var minDistance = (int)(SpawnConfig.MinFoodSpawnDistanceFactor * maxDistance);
+            var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
             return new FoodComp(foodTilePos);
         }
 
-        private static IComponent CreateTorch(
-            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        private IComponent CreateTorch(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            int maxDistance
         )
         {
-            var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_TORCH_SPAWN_DISTANCE);
+            var minDistance = (int)(SpawnConfig.MinTorchSpawnDistanceFactor * maxDistance);
+            var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
             return new TorchComp(torchTilePos);
         }
 
-        private static IComponent CreateMapRevealer(
-            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        private IComponent CreateMapRevealer(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            int maxDistance
         )
         {
-            var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_MAP_SPAWN_DISTANCE);
+            var minDistance = (int)(SpawnConfig.MinMapRevealerSpawnDistanceFactor * maxDistance);
+            var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
             return new MapRevealerComp(mapRevealerTilePos);
         }
 
-        private static IComponent CreateAmulet(
+        private IComponent CreateAmulet(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
-            List<Point> tilesWithSpaceAround
+            int maxDistance
         )
         {
-            var tilePosAndDistWithSpaceAround = tilePositionsAndDistances
-                .Where(x => tilesWithSpaceAround.Contains(x.tilePos))
-                .ToList();
+            var minDistance = (int)(SpawnConfig.MinAmuletSpawnFactor * maxDistance);
+            var amuletTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
-            var maxDistance = tilePosAndDistWithSpaceAround.Max(tcd => tcd.distance);
-            var minDistance = (int)(MIN_AMULET_SPAWN_DISTANCE_FACTOR * maxDistance);
-            var tilePos = GetRandomTilePos(tilePosAndDistWithSpaceAround, minDistance);
-
-            return new AmuletComp(tilePos);
+            return new AmuletComp(amuletTilePos);
         }
 
-        private static IComponent CreateDownStairs(
-            List<(Point tilePos, int distance)> tilePositionsAndDistances,
-            List<Point> tilesWithSpaceAround
+        private IComponent CreateDownStairs(
+            List<(Point tilePos, int distance)> tilePosAndDistWithSpaceAround,
+            int maxDistance
         )
         {
-            var tilePosAndDistWithSpaceAround = tilePositionsAndDistances
-                .Where(x => tilesWithSpaceAround.Contains(x.tilePos))
-                .ToList();
-
-            var maxDistance = tilePosAndDistWithSpaceAround.Max(tcd => tcd.distance);
-            var minDistance = (int)(STAIRS_MIN_DISTANCE_FACTOR * maxDistance);
-
+            var minDistance = (int)(SpawnConfig.MinDownStairsSpawnFactor * maxDistance);
             var tilePos = GetRandomTilePos(tilePosAndDistWithSpaceAround, minDistance);
 
             return new DownStairsComp(tilePos);

@@ -18,14 +18,14 @@ namespace Rogueskiv.Core.Systems
     {
         private const string TILE_CHAR = "T";
 
-        private readonly MapGenerationParams MapGenerationParams;
+        private readonly IMapGenerationParams MapGenerationParams;
         private string BoardData;
         private BoardComp BoardComp;
 
         public BoardSys(string boardData = "") =>
              BoardData = boardData;
 
-        public BoardSys(MapGenerationParams mapGenerationParams) =>
+        public BoardSys(IMapGenerationParams mapGenerationParams) =>
              MapGenerationParams = mapGenerationParams;
 
         public override void Init(Game game)

@@ -1,5 +1,4 @@
-﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Position;
+﻿using Rogueskiv.Core.Components.Position;
 using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
@@ -15,6 +14,8 @@ namespace Rogueskiv.Ux.SoriteProviders
 {
     class PlayerAnimationProvider : SpriteProvider<CurrentPositionComp>
     {
+        private const int PLAYER_DIAMETER = 10 * 2; // TODO make it configurable
+
         private readonly IntPtr Texture;
         private SDL_Rect TextureRect;
         private SDL_Rect TextureRectMasked;
@@ -32,8 +33,7 @@ namespace Rogueskiv.Ux.SoriteProviders
                 uxContext.WRenderer,
                 Path.Combine("imgs", "player-texture.png")
             );
-            var playerDiameter = PlayerComp.PLAYER_RADIUS * 2;
-            TextureRect = new SDL_Rect { x = 0, y = 0, w = playerDiameter, h = playerDiameter };
+            TextureRect = new SDL_Rect { x = 0, y = 0, w = PLAYER_DIAMETER, h = PLAYER_DIAMETER };
             OutputSize = new Size(TextureRect.w, TextureRect.h);
             NonRepeatingTextureSize = 64 - TextureRect.w;
         }
