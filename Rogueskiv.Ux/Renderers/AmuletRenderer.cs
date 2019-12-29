@@ -24,7 +24,7 @@ namespace Rogueskiv.Ux.Renderers
                 new SDL_Rect
                 {
                     x = 3 * BoardComp.TILE_SIZE,
-                    y = BoardComp.TILE_SIZE,
+                    y = 0,
                     w = BoardComp.TILE_SIZE,
                     h = BoardComp.TILE_SIZE
                 }

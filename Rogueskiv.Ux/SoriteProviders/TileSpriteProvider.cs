@@ -1,23 +1,30 @@
 ﻿using Rogueskiv.Core.Components.Board;
+using Seedwork.Crosscutting;
+using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
-using System;
+using System.Drawing;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.SoriteProviders
 {
     class TileSpriteProvider : SingleSpriteProvider<TileComp>
     {
-        public TileSpriteProvider(IntPtr texture)
+        private readonly Size TextureSize;
+
+        public TileSpriteProvider(UxContext uxContext, string texturePath, Size textureSize)
             : base(
-                  texture,
-                  new SDL_Rect()
-                  {
-                      x = 0,
-                      y = 0,
-                      w = BoardComp.TILE_SIZE,
-                      h = BoardComp.TILE_SIZE
-                  }
-            )
-        { }
+                  uxContext,
+                  texturePath,
+                  outputSize: (BoardComp.TILE_SIZE, BoardComp.TILE_SIZE)
+            ) =>
+            TextureSize = textureSize;
+
+        public override SDL_Rect GetTextureRect(TileComp comp, Point screenPosition) => new SDL_Rect()
+        {
+            x = Maths.Modulo(screenPosition.X, TextureSize.Width),
+            y = Maths.Modulo(screenPosition.Y, TextureSize.Height),
+            w = BoardComp.TILE_SIZE,
+            h = BoardComp.TILE_SIZE
+        };
     }
 }
