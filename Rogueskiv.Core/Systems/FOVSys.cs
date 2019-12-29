@@ -19,7 +19,7 @@ namespace Rogueskiv.Core.Systems
         private BoardComp BoardComp;
         private List<TileComp> TileComps;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             Game = game;
 
@@ -48,8 +48,6 @@ namespace Rogueskiv.Core.Systems
                 .GetComponent<BoardComp>();
 
             FOVComp.Init(BoardComp);
-
-            return base.Init(Game);
         }
 
         public override void Update(EntityList entities, List<int> controls)

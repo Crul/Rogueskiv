@@ -5,5 +5,6 @@ namespace Seedwork.Engine
     public interface IGameRenderer : IDisposable
     {
         void Render(float interpolation);
+        void Reset();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
+using System.Drawing;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Menus.MenuOptions
@@ -18,7 +19,7 @@ namespace Rogueskiv.Menus.MenuOptions
                 ? new SDL_Color { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF }
                 : new SDL_Color { r = 0x99, g = 0x99, b = 0x99, a = 0xFF };
 
-        protected override (int x, int y) GetPosition(MenuOptionComp component) =>
-            (100, 100 + (component.Order * 50));
+        protected override Point GetPosition(MenuOptionComp component) =>
+            new Point(100, 100 + (component.Order * 50));
     }
 }

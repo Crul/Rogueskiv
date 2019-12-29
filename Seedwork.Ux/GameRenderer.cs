@@ -11,7 +11,6 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        private readonly IntPtr Window;
         private readonly IntPtr WRenderer;
         private readonly IRenderizable Game;
 
@@ -20,10 +19,11 @@ namespace Seedwork.Ux
         public GameRenderer(UxContext uxContext, IRenderizable game)
         {
             Game = game;
-            Window = uxContext.Window;
             WRenderer = uxContext.WRenderer;
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
+
+        public virtual void Reset() { }
 
         public void Render(float interpolation)
         {

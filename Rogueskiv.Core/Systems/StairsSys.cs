@@ -1,5 +1,4 @@
 ﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
@@ -22,7 +21,7 @@ namespace Rogueskiv.Core.Systems
 
         public StairsSys(bool isLastFloor) => IsLastFloor = isLastFloor;
 
-        public override bool Init(Game game)
+        public override void Init(Game game)
         {
             Game = game;
 
@@ -40,8 +39,6 @@ namespace Rogueskiv.Core.Systems
                 .Single();
 
             PlayerPositionComp = PlayerEntity.GetComponent<CurrentPositionComp>();
-
-            return base.Init(game);
         }
 
         public override void Update(EntityList entities, List<int> controls)
@@ -83,9 +80,6 @@ namespace Rogueskiv.Core.Systems
         }
 
         private bool IsInStairs(StairsComp stairsComp) =>
-             PlayerPositionComp.Position.X > stairsComp.Position.X - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.X < stairsComp.Position.X + (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.Y > stairsComp.Position.Y - (BoardComp.TILE_SIZE / 2)
-            && PlayerPositionComp.Position.Y < stairsComp.Position.Y + (BoardComp.TILE_SIZE / 2);
+            PlayerPositionComp.TilePos == stairsComp.TilePos;
     }
 }

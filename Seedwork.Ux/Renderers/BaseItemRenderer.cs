@@ -26,7 +26,7 @@ namespace Seedwork.Ux.Renderers
         protected abstract void Render(IEntity entity, float interpolation);
 
         protected Point GetScreenPosition(PointF position) =>
-            position.Add(UxContext.CenterX, UxContext.CenterY).ToPoint();
+            position.Add(UxContext.Center).ToPoint();
 
         protected virtual void Dispose(bool disposing) { }
 

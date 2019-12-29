@@ -2,6 +2,7 @@
 using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using static SDL2.SDL;
 
@@ -13,7 +14,7 @@ namespace Seedwork.Ux.Renderers
         private readonly IntPtr Font;
         protected SDL_Surface SurfaceCache;
         private IntPtr TextureCache;
-        private (string text, (byte r, byte g, byte b, byte a), (int x, int y)) DataCache;
+        private (string text, (byte r, byte g, byte b, byte a), Point) DataCache;
 
         protected TextRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext) => Font = font;
@@ -46,8 +47,8 @@ namespace Seedwork.Ux.Renderers
             };
             var dest = new SDL_Rect()
             {
-                x = position.x - SurfaceCache.w / 2,
-                y = position.y - SurfaceCache.h / 2,
+                x = position.X - SurfaceCache.w / 2,
+                y = position.Y - SurfaceCache.h / 2,
                 w = SurfaceCache.w,
                 h = SurfaceCache.h
             };
@@ -57,14 +58,14 @@ namespace Seedwork.Ux.Renderers
 
         protected abstract string GetText(T component);
         protected abstract SDL_Color GetColor(T component);
-        protected abstract (int x, int y) GetPosition(T component);
+        protected abstract Point GetPosition(T component);
 
-        protected virtual void RenderBgr((int x, int y) position) { }
+        protected virtual void RenderBgr(Point position) { }
 
-        private bool HasDataChanged(string text, SDL_Color color, (int, int) position) =>
+        private bool HasDataChanged(string text, SDL_Color color, Point position) =>
             DataCache != (text, (color.r, color.g, color.b, color.a), position);
 
-        private void SetCache(string text, SDL_Color color, (int, int) position) =>
+        private void SetCache(string text, SDL_Color color, Point position) =>
             DataCache = (text, (color.r, color.g, color.b, color.a), position);
 
         protected override void Dispose(bool disposing)

@@ -3,9 +3,11 @@ using Rogueskiv.Core.Components;
 using SDL2;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
+using System.Drawing;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -29,8 +31,8 @@ namespace Rogueskiv.Ux.Renderers
         protected override SDL.SDL_Color GetColor(PopUpComp component) =>
             new SDL.SDL_Color() { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF };
 
-        protected override (int x, int y) GetPosition(PopUpComp component) =>
-            (UxContext.ScreenWidth / 2, UxContext.ScreenHeight / 2);
+        protected override Point GetPosition(PopUpComp component) =>
+            UxContext.ScreenSize.Divide(2).ToPoint();
 
         protected override string GetText(PopUpComp component)
         {
@@ -45,13 +47,13 @@ namespace Rogueskiv.Ux.Renderers
             return "PAUSE";
         }
 
-        protected override void RenderBgr((int x, int y) position)
+        protected override void RenderBgr(Point position)
         {
             var bgr = new SDL.SDL_Rect()
             {
                 x = PADDING,
-                y = position.y - PADDING - SurfaceCache.h / 2,
-                w = UxContext.ScreenWidth - 2 * PADDING,
+                y = position.Y - PADDING - SurfaceCache.h / 2,
+                w = UxContext.ScreenSize.Width - 2 * PADDING,
                 h = SurfaceCache.h + 2 * PADDING
             };
             SDL.SDL_GetRenderDrawColor(UxContext.WRenderer, out byte r, out byte g, out byte b, out byte a);

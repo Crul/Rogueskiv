@@ -13,6 +13,8 @@ namespace Rogueskiv.Ux.Renderers
 {
     class PlayerRenderer : InterpolatedPositionRenderer<CurrentPositionComp>
     {
+        public const int CAMERA_MOVEMENT_FRICTION = 20;
+
         private readonly IntPtr BgrTexture;
         private SDL_Rect BgrTextureRect;
         private readonly Tuple<int, int> BgrOutputSize;
@@ -70,9 +72,6 @@ namespace Rogueskiv.Ux.Renderers
 
         protected override void Render(PointF position)
         {
-            UxContext.CenterX = (int)((UxContext.ScreenWidth / 2) - position.X);
-            UxContext.CenterY = (int)((UxContext.ScreenHeight / 2) - position.Y);
-
             var screenPosition = GetScreenPosition(position);
 
             BgrMaskTexture.ForEach(maskRect =>
@@ -97,6 +96,21 @@ namespace Rogueskiv.Ux.Renderers
             });
 
             base.Render(position);
+        }
+
+        public static void SetUxCenter(
+            UxContext uxContext, PointF playerPosition, int friction = 1
+        )
+        {
+            var targetCenter = uxContext
+                .ScreenSize.ToPoint().Divide(2)
+                .Substract(playerPosition.ToPoint());
+
+            var cameraMovement = targetCenter
+                .Substract(uxContext.Center)
+                .Divide(friction);
+
+            uxContext.Center = uxContext.Center.Add(cameraMovement);
         }
 
         protected override void Dispose(bool cleanManagedResources)
