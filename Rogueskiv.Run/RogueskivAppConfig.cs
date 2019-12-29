@@ -1,14 +1,26 @@
-﻿using Seedwork.Crosscutting;
+﻿using Rogueskiv.Ux;
+using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace Rogueskiv.Run
 {
-    class RogueskivAppConfig : IUxConfig
+    class RogueskivAppConfig : IUxConfig, IRogueskivUxConfig
     {
         public int FloorCount { get; set; }
-        public int EnemyCollisionDamage { get; set; }
+
+        // for GameContext
+        public int MaxGameStepsWithoutRender { get; set; }
+
+        // IUxConfig
+        public bool Maximized { get; set; }
+        public Size ScreenSize { get; set; }
+
+        // IRogueskivUxConfig
+        public string FontFile { get; } = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
+        public int CameraMovementFriction { get; set; }
 
         // for IMapGenerationParams
         public int MinRoomSize { get; set; }
@@ -31,6 +43,7 @@ namespace Rogueskiv.Run
         public float PlayerStopSpeed { get; set; }
 
         public Range<int> EnemyNumberRange { get; set; }
+        public int EnemyCollisionDamage { get; set; }
         public Range<int> MinEnemySpeedRange { get; set; }
         public Range<int> MaxEnemySpeedRange { get; set; }
         public List<RangedWeightedValue<int>> EnemyAnglesProbWeightRanges { get; set; }
@@ -47,12 +60,5 @@ namespace Rogueskiv.Run
         public int MaxItemPickingTime { get; set; }
         public int FoodHealthIncrease { get; set; }
         public int TorchVisualRangeIncrease { get; set; }
-
-        // IUxConfig
-        public bool Maximized { get; set; }
-        public Size ScreenSize { get; set; }
-
-        // for GameContext
-        public int MaxGameStepsWithoutRender { get; set; }
     }
 }

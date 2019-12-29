@@ -14,8 +14,6 @@ namespace Rogueskiv.Ux.SoriteProviders
 {
     class PlayerAnimationProvider : SpriteProvider<CurrentPositionComp>
     {
-        private const int PLAYER_DIAMETER = 10 * 2; // TODO make it configurable
-
         private readonly IntPtr Texture;
         private SDL_Rect TextureRect;
         private SDL_Rect TextureRectMasked;
@@ -25,15 +23,14 @@ namespace Rogueskiv.Ux.SoriteProviders
         private readonly List<Rectangle> MaskTexture = Masks
             .GetFromImage(Path.Combine("imgs", "player-texture-mask.png"));
 
-        public int SpawnSys { get; }
-
-        public PlayerAnimationProvider(UxContext uxContext)
+        public PlayerAnimationProvider(UxContext uxContext, int playerRadius)
         {
             Texture = SDL_image.IMG_LoadTexture(
                 uxContext.WRenderer,
                 Path.Combine("imgs", "player-texture.png")
             );
-            TextureRect = new SDL_Rect { x = 0, y = 0, w = PLAYER_DIAMETER, h = PLAYER_DIAMETER };
+            var playerDiameter = playerRadius * 2;
+            TextureRect = new SDL_Rect { x = 0, y = 0, w = playerDiameter, h = playerDiameter };
             OutputSize = new Size(TextureRect.w, TextureRect.h);
             NonRepeatingTextureSize = 64 - TextureRect.w;
         }

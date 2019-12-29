@@ -4,6 +4,7 @@ screenSize:
     width: 640
     height: 480
 maxGameStepsWithoutRender: 5
+cameraMovementFriction: 20
 
 # game
 floorCount: 26
