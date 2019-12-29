@@ -13,6 +13,7 @@ namespace Seedwork.Ux
     {
         private readonly IntPtr WRenderer;
         private readonly IRenderizable Game;
+        private readonly List<Action> RenderOnEndActions;
 
         protected IDictionary<Type, IItemRenderer> Renderers { get; }
 
@@ -20,6 +21,7 @@ namespace Seedwork.Ux
         {
             Game = game;
             WRenderer = uxContext.WRenderer;
+            RenderOnEndActions = new List<Action>();
             Renderers = new Dictionary<Type, IItemRenderer>();
         }
 
@@ -32,11 +34,18 @@ namespace Seedwork.Ux
             SDL.SDL_RenderPresent(WRenderer);
         }
 
-        protected virtual void RenderGame(float interpolation) =>
+        protected virtual void RenderGame(float interpolation)
+        {
+            RenderOnEndActions.Clear();
             Renderers.ToList()
                 .ForEach(r =>
                     r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
                 );
+            RenderOnEndActions.ForEach(renderOnEnd => renderOnEnd());
+        }
+
+        public void AddRenderOnEnd(Action renderOnEnd) =>
+            RenderOnEndActions.Add(renderOnEnd);
 
         public void Dispose()
         {

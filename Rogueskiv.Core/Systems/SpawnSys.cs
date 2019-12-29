@@ -17,12 +17,16 @@ namespace Rogueskiv.Core.Systems
     class SpawnSys : BaseSystem
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
-        private const int MIN_FOOD_SPAWN_DISTANCE = 10;
+        private const int MIN_FOOD_SPAWN_DISTANCE = 20;
+        private const int MIN_TORCH_SPAWN_DISTANCE = 10;
+        private const int MIN_MAP_SPAWN_DISTANCE = 30;
+        private const float MIN_AMULET_SPAWN_DISTANCE_FACTOR = 0.9f;
         private const float STAIRS_MIN_DISTANCE_FACTOR = 0.8f;
         private const int ENEMY_RADIUS = 6;
 
         private readonly IGameContext GameContext;
         private readonly IGameResult<IEntity> PreviousFloorResult;
+        private readonly bool IsLastFloor;
 
         private readonly int EnemyNumber;
         private readonly int MinEnemySpeed;
@@ -37,6 +41,7 @@ namespace Rogueskiv.Core.Systems
         {
             GameContext = gameContext;
             PreviousFloorResult = previousFloorResult;
+            IsLastFloor = floorFactor == 1;
 
             // TODO magic numbers
             EnemyNumber = (int)Math.Pow(8 + (15f * floorFactor), 1.33f); //  15 ... 64
@@ -77,9 +82,16 @@ namespace Rogueskiv.Core.Systems
                     .ToList()
                     .ForEach(enemy => game.AddEntity(enemy));
 
-            game.AddEntity(CreateFood(measuredTiles));
+            // TODO avoid spawining 2 items in the same tile
 
-            game.AddEntity(CreateDownStairs(measuredTiles, tilesPosWithSpaceAround));
+            game.AddEntity(CreateFood(measuredTiles));
+            game.AddEntity(CreateTorch(measuredTiles));
+            game.AddEntity(CreateMap(measuredTiles));
+
+            if (IsLastFloor)
+                game.AddEntity(CreateAmulet(measuredTiles, tilesPosWithSpaceAround));
+            else
+                game.AddEntity(CreateDownStairs(measuredTiles, tilesPosWithSpaceAround));
 
             var isFirstFloor = PreviousFloorResult == null;
             if (!isFirstFloor)
@@ -98,11 +110,19 @@ namespace Rogueskiv.Core.Systems
                 .Multiply(BoardComp.TILE_SIZE)
                 .Add(BoardComp.TILE_SIZE / 2);
 
+            var previousPlayerEntity = GetPreviousPlayerEntity();
+
             return new List<IComponent> {
-                new PlayerComp(),
+                new PlayerComp() {
+                    VisualRange =
+                        previousPlayerEntity?.GetComponent<PlayerComp>().VisualRange
+                        ?? PlayerComp.INITIAL_VISUAL_RANGE
+                },
                 new HealthComp() {
                     MaxHealth = PlayerComp.INITIAL_PLAYER_HEALTH,
-                    Health = GetPreviousHealth() ?? PlayerComp.INITIAL_PLAYER_HEALTH
+                    Health =
+                        previousPlayerEntity?.GetComponent<HealthComp>().Health
+                        ?? PlayerComp.INITIAL_PLAYER_HEALTH
                 },
                 new CurrentPositionComp(playerPos),
                 new LastPositionComp(playerPos),
@@ -114,20 +134,15 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private int? GetPreviousHealth()
+        private IEntity GetPreviousPlayerEntity()
         {
             if (PreviousFloorResult == null)
                 return null;
 
-            var previousPlayer = PreviousFloorResult
+            return PreviousFloorResult
                 .Data
                 .GetWithComponent<PlayerComp>()
                 .Single();
-
-            var previousPlayerHealtComp = previousPlayer
-                .GetComponent<HealthComp>();
-
-            return previousPlayerHealtComp.Health;
         }
 
         private static List<(Point tilePos, int distance)> GetDistancesFrom(
@@ -224,6 +239,46 @@ namespace Rogueskiv.Core.Systems
                 .Add(BoardComp.TILE_SIZE / 2);
 
             return new FoodComp(foodTilePos);
+        }
+
+        private static IComponent CreateTorch(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        )
+        {
+            var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_TORCH_SPAWN_DISTANCE)
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
+
+            return new TorchComp(torchTilePos);
+        }
+
+        private static IComponent CreateMap(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances
+        )
+        {
+            var mapTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_MAP_SPAWN_DISTANCE)
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
+
+            return new MapComp(mapTilePos);
+        }
+
+        private static IComponent CreateAmulet(
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> tilesWithSpaceAround
+        )
+        {
+            var tilePosAndDistWithSpaceAround = tilePositionsAndDistances
+                .Where(x => tilesWithSpaceAround.Contains(x.tilePos))
+                .ToList();
+
+            var maxDistance = tilePosAndDistWithSpaceAround.Max(tcd => tcd.distance);
+            var minDistance = (int)(MIN_AMULET_SPAWN_DISTANCE_FACTOR * maxDistance);
+            var tilePos = GetRandomTilePos(tilePosAndDistWithSpaceAround, minDistance)
+                .Multiply(BoardComp.TILE_SIZE)
+                .Add(BoardComp.TILE_SIZE / 2);
+
+            return new AmuletComp(tilePos);
         }
 
         private static IComponent CreateDownStairs(

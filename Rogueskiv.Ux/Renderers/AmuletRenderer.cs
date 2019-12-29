@@ -7,9 +7,9 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class FoodRenderer : PickableRenderer<FoodComp>
+    class AmuletRenderer : PickableRenderer<AmuletComp>
     {
-        public FoodRenderer(
+        public AmuletRenderer(
             IGameRenderer gameRenderer, UxContext uxContext, IntPtr boardTexture
         )
             : base(
@@ -18,7 +18,7 @@ namespace Rogueskiv.Ux.Renderers
                 boardTexture,
                 new SDL_Rect
                 {
-                    x = 5 * BoardComp.TILE_SIZE,
+                    x = 6 * BoardComp.TILE_SIZE,
                     y = BoardComp.TILE_SIZE,
                     w = BoardComp.TILE_SIZE,
                     h = BoardComp.TILE_SIZE

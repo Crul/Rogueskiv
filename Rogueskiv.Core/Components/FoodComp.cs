@@ -1,9 +1,8 @@
-﻿using Rogueskiv.Core.Components.Position;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    public class FoodComp : CurrentPositionComp
+    public class FoodComp : PickableComp
     {
         public const int HEALTH_INCREASE = 30;
 

@@ -23,6 +23,8 @@ Rogueskiv makes use of the following projects:
 - [FOVRecurse](https://github.com/AndyStobirski/RogueLike) by [Andy Stobirski](http://www.evilscience.co.uk/) (no license)
 - [Hack typeface](https://sourcefoundry.org/hack/) by [Christopher Simpkins and contributors](https://github.com/source-foundry/Hack/blob/master/docs/CONTRIBUTORS.md) ([MIT license](https://github.com/source-foundry/Hack/blob/master/LICENSE.md))
 - [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) by [SixLabors](https://sixlabors.com/) ([Apache License 2.0](https://github.com/SixLabors/ImageSharp/blob/master/LICENSE))
+- Part of the graphic tiles used in this program is the public domain roguelike tileset "RLTiles".  
+  You can find the original tileset at: <http://rltiles.sf.net>
 
 ## License (AGPL-3.0)
 

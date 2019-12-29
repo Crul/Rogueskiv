@@ -7,19 +7,17 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class FoodRenderer : PickableRenderer<FoodComp>
+    class TorchRenderer : PickableRenderer<TorchComp>
     {
-        public FoodRenderer(
-            IGameRenderer gameRenderer, UxContext uxContext, IntPtr boardTexture
-        )
+        public TorchRenderer(IGameRenderer gameRendeerer, UxContext uxContext, IntPtr boardTexture)
             : base(
-                gameRenderer,
+                gameRendeerer,
                 uxContext,
                 boardTexture,
                 new SDL_Rect
                 {
                     x = 5 * BoardComp.TILE_SIZE,
-                    y = BoardComp.TILE_SIZE,
+                    y = 2 * BoardComp.TILE_SIZE,
                     w = BoardComp.TILE_SIZE,
                     h = BoardComp.TILE_SIZE
                 }
