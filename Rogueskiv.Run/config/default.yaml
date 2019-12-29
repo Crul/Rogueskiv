@@ -53,6 +53,7 @@ enemyAnglesProbWeightRanges:
 
 # map generation params
 minRoomSize: 3
+minRoomSeparation: 1
 mapSizeRange:
     start: 36
     end: 48

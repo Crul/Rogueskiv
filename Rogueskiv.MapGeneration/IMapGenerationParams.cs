@@ -9,6 +9,7 @@ namespace Rogueskiv.MapGeneration
         float MinDensity { get; }
         int InitialRooms { get; }
         int MinRoomSize { get; }
+        int MinRoomSeparation { get; }
 
         bool RoomExpandCheck();
         bool CorridorTurnCheck();

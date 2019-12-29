@@ -73,6 +73,7 @@ namespace Rogueskiv.Run
             var minMapDensity = GetFloorDependantValue(rogueskivConfig.MinMapDensityRange);
             var initialRooms = GetFloorDependantValue(rogueskivConfig.InitialRoomsRange);
             var minRoomSize = rogueskivConfig.MinRoomSize;
+            var minRoomSeparation = rogueskivConfig.MinRoomSeparation;
             var corridorWidthProbWeights = rogueskivConfig
                 .CorridorWidthProbWeightRanges
                 .Select(cwpwr => (numAngles: cwpwr.Value, weight: GetFloorDependantValue(cwpwr.WeightRange)))
@@ -86,6 +87,7 @@ namespace Rogueskiv.Run
                 minMapDensity,
                 initialRooms,
                 minRoomSize,
+                minRoomSeparation,
                 corridorWidthProbWeights
             );
         }

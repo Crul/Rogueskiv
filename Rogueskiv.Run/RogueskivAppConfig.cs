@@ -12,6 +12,7 @@ namespace Rogueskiv.Run
 
         // for IMapGenerationParams
         public int MinRoomSize { get; set; }
+        public int MinRoomSeparation { get; set; }
         public Range<int> MapSizeRange { get; set; }
         public Range<float> RoomExpandProbRange { get; set; }
         public Range<float> CorridorTurnProbRange { get; set; }
