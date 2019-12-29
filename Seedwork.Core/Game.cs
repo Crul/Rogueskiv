@@ -16,6 +16,7 @@ namespace Seedwork.Core
         public List<int> Controls { get; set; }
         public GameStageCode StageCode { get; protected set; } = default;
         public IGameResult<IEntity> Result { get; protected set; }
+
         public bool Pause { get; set; }
         public bool Quit { get; protected set; }
 
@@ -41,7 +42,7 @@ namespace Seedwork.Core
             Systems.ToList().ForEach(sys => sys.Init(this));
         }
 
-        public void Update()
+        public virtual void Update()
         {
             Quit = Controls.Contains(QuitControl);
             SetPause();

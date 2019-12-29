@@ -9,6 +9,8 @@ namespace Seedwork.Ux
     public class InputHandler<T> : IInputHandler
         where T : IControlable
     {
+        private readonly UxContext UxContext;
+
         private readonly T Game;
 
         private readonly int QuitKey;
@@ -17,8 +19,14 @@ namespace Seedwork.Ux
 
         private readonly IDictionary<int, bool> KeyPressStates;
 
-        public InputHandler(T game, IDictionary<int, int> keyControls, int quitKey)
+        public InputHandler(
+            UxContext uxContext,
+            T game,
+            IDictionary<int, int> keyControls,
+            int quitKey
+        )
         {
+            UxContext = uxContext;
             Game = game;
             KeyControls = keyControls;
             KeyPressStates = KeyControls
@@ -41,6 +49,12 @@ namespace Seedwork.Ux
         {
             switch (ev.type)
             {
+                case SDL_EventType.SDL_WINDOWEVENT:
+                    if (ev.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
+                        UxContext.OnWindowResize(width: ev.window.data1, height: ev.window.data2);
+
+                    return;
+
                 case SDL_EventType.SDL_QUIT:
                     KeyPressStates[QuitKey] = true;
                     return;

@@ -19,7 +19,7 @@ namespace Rogueskiv.Core.Components.Position
 
         public Point TilePos { get; private set; }
 
-        public virtual bool Visible { get; set; } = true;
+        public virtual bool Visible { get; set; } = false;
 
         protected PositionComp(PointF position) =>
             Position = position;

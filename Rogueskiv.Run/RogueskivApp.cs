@@ -95,7 +95,7 @@ namespace Rogueskiv.Run
                 CurrentFloor,
                 result
             );
-            var userInput = new RogueskivInputHandler(game);
+            var userInput = new RogueskivInputHandler(uxContext, game);
             var renderer = new RogueskivRenderer(uxContext, game, FONT_FILE);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
@@ -112,7 +112,7 @@ namespace Rogueskiv.Run
 
             var gameContext = new GameContext();
             var game = new RogueskivMenu(GameStageCodes.Menu);
-            var userInput = new RogueskivMenuInputHandler(game);
+            var userInput = new RogueskivMenuInputHandler(uxContext, game);
             var renderer = new RogueskivMenuRenderer(uxContext, game, FONT_FILE);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 

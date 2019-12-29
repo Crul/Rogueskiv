@@ -23,17 +23,30 @@ namespace Rogueskiv.Core.Systems
 
         private readonly IGameContext GameContext;
         private readonly IGameResult<IEntity> PreviousFloorResult;
+
         private readonly int EnemyNumber;
+        private readonly int MinEnemySpeed;
+        private readonly int MaxEnemySpeed;
+        private readonly List<(int numAngles, float weight)> NumAnglesProbWeights;
 
         public SpawnSys(
             IGameContext gameContext,
-            IGameResult<IEntity> previousFloorResult,
-            int enemyNumber
+            float floorFactor,
+            IGameResult<IEntity> previousFloorResult
         )
         {
             GameContext = gameContext;
             PreviousFloorResult = previousFloorResult;
-            EnemyNumber = enemyNumber;
+
+            // TODO magic numbers
+            EnemyNumber = (int)Math.Pow(8 + (15f * floorFactor), 1.33f); //  15 ... 64
+            MinEnemySpeed = (int)(75f + (floorFactor * 25f));            //  75 ... 100
+            MaxEnemySpeed = (int)(150f + (floorFactor * 100f));          // 200 ... 300
+            NumAnglesProbWeights = new List<(int numAngles, float weight)> {
+                (numAngles: 4, weight: 5),
+                (numAngles: 8, weight: (floorFactor * 20f) - 8f),
+                (numAngles: 16, weight: (floorFactor * 40f) - 15f)
+            };
         }
 
         public override void Init(Game game)
@@ -58,11 +71,11 @@ namespace Rogueskiv.Core.Systems
 
             Enumerable
                 .Range(0, EnemyNumber)
-                    .Select(i => CreateEnemy(measuredTiles))
+                    .Select(i => CreateEnemy(boardComp, tilePositions, measuredTiles))
                     .ToList()
                     .ForEach(enemy => game.AddEntity(enemy));
 
-            game.AddEntity(CreateFood(boardComp, tilePositions, measuredTiles));
+            game.AddEntity(CreateFood(measuredTiles));
 
             game.AddEntity(CreateDownStairs(boardComp, tilePositions, measuredTiles));
 
@@ -156,11 +169,17 @@ namespace Rogueskiv.Core.Systems
         }
 
         private List<IComponent> CreateEnemy(
+            BoardComp boardComp,
+            List<Point> tilePositions,
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {
-            var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, MIN_ENEMY_SPAWN_DISTANCE);
-            var enemyPos = enemyTilePos.Multiply(BoardComp.TILE_SIZE);
+            var enemyTilePos = GetRandomTilePos(
+                tilePositionsAndDistances,
+                MIN_ENEMY_SPAWN_DISTANCE,
+                isValidTilePos: tilePos => HasSpaceAround(boardComp, tilePositions, tilePos)
+            );
+            var enemyPos = enemyTilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2);
 
             return new List<IComponent>
             {
@@ -168,19 +187,32 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(enemyPos),
                 new LastPositionComp(enemyPos),
                 new MovementComp(
-                    speed: new PointF(
-                        (50 + Luck.Next(100)) / GameContext.GameFPS,
-                        (50 + Luck.Next(100)) / GameContext.GameFPS
-                    ),
+                    speed: GetEnemySpeed(),
                     frictionFactor: 1,
                     bounceAmortiguationFactor: 1
                 )
             };
         }
 
+        private PointF GetEnemySpeed()
+        {
+            var numAngles = NumAnglesProbWeights
+                .OrderByDescending(napb => napb.weight * Luck.NextDouble())
+                .First()
+                .numAngles;
+
+            var speed = (MinEnemySpeed + Luck.Next(MaxEnemySpeed - MinEnemySpeed)) / GameContext.GameFPS;
+
+            var angles = Enumerable.Range(1, numAngles).Select(i => (float)i * 2 * Math.PI / numAngles).ToList();
+            var angle = angles[Luck.Next(angles.Count)];
+
+            var speedX = (float)(speed * Math.Cos(angle));
+            var speedY = (float)(speed * Math.Sin(angle));
+
+            return new PointF(speedX, speedY);
+        }
+
         private static IComponent CreateFood(
-            BoardComp boardComp,
-            List<Point> tilePositions,
             List<(Point tilePos, int distance)> tilePositionsAndDistances
         )
         {

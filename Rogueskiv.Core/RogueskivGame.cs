@@ -16,6 +16,7 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        private bool HasStarted = false;
         private readonly BoardComp BoardComp;
 
         public RogueskivGame(
@@ -32,7 +33,7 @@ namespace Rogueskiv.Core
                 {
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
-                    new List<IComponent> { new PopUpComp() },
+                    new List<IComponent> { new PopUpComp() { Text = GetStartText(floor) } },
                 },
                 systems: new List<ISystem> {
                     string.IsNullOrEmpty(boardData)
@@ -40,8 +41,8 @@ namespace Rogueskiv.Core
                         : new BoardSys(boardData),
                     new SpawnSys(
                         gameContext,
-                        previousFloorResult,
-                        GetEnemyNumber(floorCount, floor)
+                        (float)floor / floorCount,
+                        previousFloorResult
                     ),
                     new PlayerSys(gameContext),
                     new MovementSys(),
@@ -54,13 +55,18 @@ namespace Rogueskiv.Core
                 },
                 pauseControl: (int)Core.Controls.PAUSE,
                 quitControl: (int)Core.Controls.QUIT
-            ) => BoardComp = Entities
+            )
+        {
+            Pause = true;
+
+            BoardComp = Entities
                     .GetWithComponent<BoardComp>()
                     .Single()
                     .GetComponent<BoardComp>();
+        }
 
-        private static int GetEnemyNumber(int floorCount, int floor) =>
-            (int)Math.Pow(5 + (15 * ((float)floor / floorCount)), 1.5f);  // 11 ... 103
+        private static string GetStartText(int floor) =>
+            $"FLOOR {floor + 1} - Press any arrow to " + (floor == 0 ? "start" : "continue");
 
         private static MapGenerationParams GetMapGenerationParams
             (int floorCount, int floor)
@@ -104,6 +110,22 @@ namespace Rogueskiv.Core
             var playerHealthComp = playerComp.GetComponent<HealthComp>();
 
             playerHealthComp.Health = previousPlayerHealtComp.Health;
+        }
+
+        public override void Update()
+        {
+            if (!HasStarted && Controls.Any())
+            {
+                Pause = false;
+                HasStarted = true;
+                Entities
+                    .GetWithComponent<PopUpComp>()
+                    .Single()
+                    .GetComponent<PopUpComp>()
+                    .Text = "PAUSE";
+            }
+
+            base.Update();
         }
 
         public override void RemoveEntity(EntityId id)

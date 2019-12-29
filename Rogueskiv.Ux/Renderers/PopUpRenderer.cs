@@ -44,7 +44,7 @@ namespace Rogueskiv.Ux.Renderers
             if (resultCode == RogueskivGameResults.WinResult.ResultCode)
                 return "YOU WIN";
 
-            return "PAUSE";
+            return component.Text;
         }
 
         protected override void RenderBgr(Point position)

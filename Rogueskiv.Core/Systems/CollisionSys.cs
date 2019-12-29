@@ -6,6 +6,7 @@ using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Crosscutting;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.Core.Systems
@@ -19,6 +20,7 @@ namespace Rogueskiv.Core.Systems
         private BoardComp BoardComp;
         private EntityId PlayerId;
         private CurrentPositionComp PlayerPosComp;
+        private MovementComp PlayerMovementComp;
         private HealthComp PlayerHealthComp;
 
         public override void Init(Game game)
@@ -41,28 +43,41 @@ namespace Rogueskiv.Core.Systems
 
             PlayerPosComp = player.GetComponent<CurrentPositionComp>();
             PlayerHealthComp = player.GetComponent<HealthComp>();
+            PlayerMovementComp = player.GetComponent<MovementComp>();
         }
 
         public override void Update(EntityList entities, List<int> controls)
         {
-            var collidedEntityIds = GetCollidedEntityIds(entities);
-            collidedEntityIds.ForEach(Game.RemoveEntity);
+            var collidedEntityIds = GetCollisionsInfo(entities);
+            collidedEntityIds.ForEach(colInfo => Game.RemoveEntity(colInfo.entityId));
+
+            if (collidedEntityIds.Count == 0)
+                return;
 
             PlayerHealthComp.Health -= COLLISION_DAMAGE * collidedEntityIds.Count;
+
+            var speedChangeX = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.X);
+            var speedChangeY = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.Y);
+            PlayerSys.AddSped(PlayerMovementComp, speedChangeX, speedChangeY);
         }
 
-        private List<EntityId> GetCollidedEntityIds(EntityList entities) =>
+        private List<(EntityId entityId, PointF bounce)> GetCollisionsInfo(EntityList entities) =>
             BoardComp
                 .GetEntityIdsNear(PlayerId, PlayerPosComp)
-                .Where(id =>
+                .Where(id => entities.ContainsKey(id)) // TODO debug corner case
+                .Select(id => (
+                    entityId: id,
+                    positionComp: entities[id].GetComponent<CurrentPositionComp>()
+                ))
+                .Where(info =>
                 {
-                    if (!entities.ContainsKey(id)) // TODO debug corner case
-                        return false;
-
-                    var positionComp = entities[id].GetComponent<CurrentPositionComp>();
-                    var distance = Distance.Get(positionComp.Position, PlayerPosComp.Position);
+                    var distance = Distance.Get(info.positionComp.Position, PlayerPosComp.Position);
                     return (distance < COLLISION_DISTANCE);
                 })
+                .Select(info => (
+                    info.entityId,
+                    bounce: PlayerPosComp.Position.Substract(info.positionComp.Position)
+                ))
                 .ToList();
     }
 }
