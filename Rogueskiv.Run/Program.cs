@@ -17,7 +17,7 @@ namespace Rogueskiv.Run
             new RogueskivApp(rogueskivConfig).Run();
         }
 
-        private static RogueskivConfig ParseConfigFileArg(string[] args)
+        private static RogueskivAppConfig ParseConfigFileArg(string[] args)
         {
             var configFileName = args
                 .Where(arg => arg.StartsWith(CONFIG_FILE_PATH_ARG))
@@ -33,7 +33,7 @@ namespace Rogueskiv.Run
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
-            var rogueskivConfig = deserializer.Deserialize<RogueskivConfig>(fileReader);
+            var rogueskivConfig = deserializer.Deserialize<RogueskivAppConfig>(fileReader);
 
             return rogueskivConfig;
         }

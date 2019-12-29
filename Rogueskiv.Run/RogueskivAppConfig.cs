@@ -5,9 +5,10 @@ using System.Drawing;
 
 namespace Rogueskiv.Run
 {
-    class RogueskivConfig : IUxConfig
+    class RogueskivAppConfig : IUxConfig
     {
         public int FloorCount { get; set; }
+        public int EnemyCollisionDamage { get; set; }
 
         // for IMapGenerationParams
         public int MinRoomSize { get; set; }
@@ -24,6 +25,9 @@ namespace Rogueskiv.Run
         public int InitialPlayerVisualRange { get; set; }
         public float PlayerBounceAmortiguationFactor { get; set; }
         public float PlayerFrictionFactor { get; set; }
+        public float PlayerAcceleration { get; set; }
+        public float PlayerMaxSpeed { get; set; }
+        public float PlayerStopSpeed { get; set; }
 
         public Range<int> EnemyNumberRange { get; set; }
         public Range<int> MinEnemySpeedRange { get; set; }
@@ -39,8 +43,15 @@ namespace Rogueskiv.Run
         public float MinAmuletSpawnFactor { get; set; }
         public float MinDownStairsSpawnFactor { get; set; }
 
+        public int MaxItemPickingTime { get; set; }
+        public int FoodHealthIncrease { get; set; }
+        public int TorchVisualRangeIncrease { get; set; }
+
         // IUxConfig
         public bool Maximized { get; set; }
         public Size ScreenSize { get; set; }
+
+        // for GameContext
+        public int MaxGameStepsWithoutRender { get; set; }
     }
 }

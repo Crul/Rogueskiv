@@ -10,7 +10,7 @@ namespace Seedwork.Ux.SpriteProviders
     {
         public abstract IntPtr GetTexture(T comp);
         public abstract SDL_Rect GetTextureRect(T comp, Point screenPosition);
-        public abstract SDL_Rect GetOutputRect(Point position);
+        public abstract SDL_Rect GetOutputRect(T comp, Point screenPosition);
 
         protected SDL_Rect GetOutputRect(Point screenPosition, Size outputSize) =>
             new SDL_Rect()

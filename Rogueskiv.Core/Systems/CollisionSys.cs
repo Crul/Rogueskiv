@@ -13,7 +13,7 @@ namespace Rogueskiv.Core.Systems
 {
     class CollisionSys : BaseSystem
     {
-        private const int COLLISION_DAMAGE = 10;
+        private readonly int CollisionDamage;
 
         private Game Game;
         private BoardComp BoardComp;
@@ -21,6 +21,9 @@ namespace Rogueskiv.Core.Systems
         private CurrentPositionComp PlayerPosComp;
         private MovementComp PlayerMovementComp;
         private HealthComp PlayerHealthComp;
+
+        public CollisionSys(int collisionDamage) =>
+            CollisionDamage = collisionDamage;
 
         public override void Init(Game game)
         {
@@ -48,7 +51,7 @@ namespace Rogueskiv.Core.Systems
             if (collidedEntityIds.Count == 0)
                 return;
 
-            PlayerHealthComp.Health -= COLLISION_DAMAGE * collidedEntityIds.Count;
+            PlayerHealthComp.Health -= CollisionDamage * collidedEntityIds.Count;
 
             var speedChangeX = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.X);
             var speedChangeY = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.Y);
@@ -58,7 +61,7 @@ namespace Rogueskiv.Core.Systems
         private List<(EntityId entityId, PointF bounce)> GetCollisionsInfo(EntityList entities) =>
             BoardComp
                 .GetEntityIdsNear(PlayerId, PlayerPosComp)
-                .Where(id => entities.ContainsKey(id)) // TODO debug corner case
+                .Where(id => entities.ContainsKey(id)) // TODO debug corner case when enemy dies?
                 .Select(id => entities[id])
                 .Select(entity => (
                     entityId: entity.Id,

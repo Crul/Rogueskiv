@@ -9,8 +9,12 @@ namespace Rogueskiv.Core.Systems
         int PlayerRadius { get; }
         int InitialPlayerHealth { get; }
         int InitialPlayerVisualRange { get; }
+        float PlayerAcceleration { get; }
+        float PlayerMaxSpeed { get; }
+        float PlayerStopSpeed { get; }
 
         int EnemyNumber { get; }
+        int EnemyCollisionDamage { get; }
         int MinEnemySpeed { get; }
         int MaxEnemySpeed { get; }
         List<(int numAngles, float weight)> EnemyNumAnglesProbWeights { get; }
@@ -25,5 +29,9 @@ namespace Rogueskiv.Core.Systems
         float MinDownStairsSpawnFactor { get; }
         float PlayerBounceAmortiguationFactor { get; }
         float PlayerFrictionFactor { get; }
+
+        int MaxItemPickingTime { get; }
+        int FoodHealthIncrease { get; }
+        int TorchVisualRangeIncrease { get; }
     }
 }

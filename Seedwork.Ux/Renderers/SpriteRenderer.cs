@@ -39,7 +39,7 @@ namespace Seedwork.Ux.Renderers
         {
             var texture = spriteProvider.GetTexture(comp);
             var textureRect = spriteProvider.GetTextureRect(comp, screenPosition);
-            var outputRect = spriteProvider.GetOutputRect(screenPosition);
+            var outputRect = spriteProvider.GetOutputRect(comp, screenPosition);
 
             SDL_RenderCopy(UxContext.WRenderer, texture, ref textureRect, ref outputRect);
         }

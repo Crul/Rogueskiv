@@ -91,12 +91,14 @@ namespace Rogueskiv.Ux.SoriteProviders
             };
         }
 
-        public override IntPtr GetTexture(CurrentPositionComp comp) => Texture;
+        public override IntPtr GetTexture(CurrentPositionComp comp) =>
+            Texture;
 
         public override SDL_Rect GetTextureRect(CurrentPositionComp comp, Point screenPosition) =>
             TextureRectMasked;
 
-        public override SDL_Rect GetOutputRect(Point position) => OutputRect;
+        public override SDL_Rect GetOutputRect(CurrentPositionComp comp, Point position) =>
+            OutputRect;
 
         protected override void Dispose(bool cleanManagedResources)
         {

@@ -4,9 +4,7 @@ namespace Rogueskiv.Core.Components
 {
     public class FoodComp : PickableComp
     {
-        public const int HEALTH_INCREASE = 30;
-
-        public FoodComp(Point tilePos) : base(tilePos)
-        { }
+        public FoodComp(int maxPickingTime, Point tilePos)
+            : base(maxPickingTime, tilePos) { }
     }
 }

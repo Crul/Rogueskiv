@@ -16,7 +16,6 @@ namespace Rogueskiv.Core.Systems
 {
     class SpawnSys : BaseSystem
     {
-        private readonly IGameContext GameContext;
         private readonly ISpawnConfig SpawnConfig;
         private readonly IGameResult<IEntity> PreviousFloorResult;
 
@@ -28,12 +27,10 @@ namespace Rogueskiv.Core.Systems
         };
 
         public SpawnSys(
-            IGameContext gameContext,
             ISpawnConfig spawnConfig,
             IGameResult<IEntity> previousFloorResult
         )
         {
-            GameContext = gameContext;
             SpawnConfig = spawnConfig;
             PreviousFloorResult = previousFloorResult;
         }
@@ -115,7 +112,9 @@ namespace Rogueskiv.Core.Systems
                 },
                 new CurrentPositionComp(playerTilePos),
                 new LastPositionComp(playerTilePos),
-                new MovementComp(
+                new BoundedMovementComp(
+                    SpawnConfig.PlayerMaxSpeed,
+                    SpawnConfig.PlayerStopSpeed,
                     frictionFactor: SpawnConfig.PlayerFrictionFactor,
                     bounceAmortiguationFactor: SpawnConfig.PlayerBounceAmortiguationFactor,
                     radius: SpawnConfig.PlayerRadius,
@@ -209,7 +208,7 @@ namespace Rogueskiv.Core.Systems
                 .numAngles;
 
             var speed = (SpawnConfig.MinEnemySpeed
-                + Luck.Next(SpawnConfig.MaxEnemySpeed - SpawnConfig.MinEnemySpeed)) / GameContext.GameFPS;
+                + Luck.Next(SpawnConfig.MaxEnemySpeed - SpawnConfig.MinEnemySpeed));
             var angleRatios = Enumerable.Range(1, numAngles).ToList();
 
             var randomizedAngleRatios = angleRatios.OrderBy(a => Luck.NextDouble()).ToList();
@@ -275,7 +274,7 @@ namespace Rogueskiv.Core.Systems
             var minDistance = (int)(SpawnConfig.MinFoodSpawnDistanceFactor * maxDistance);
             var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
-            return new FoodComp(foodTilePos);
+            return new FoodComp(SpawnConfig.MaxItemPickingTime, foodTilePos);
         }
 
         private IComponent CreateTorch(
@@ -286,7 +285,7 @@ namespace Rogueskiv.Core.Systems
             var minDistance = (int)(SpawnConfig.MinTorchSpawnDistanceFactor * maxDistance);
             var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
-            return new TorchComp(torchTilePos);
+            return new TorchComp(SpawnConfig.MaxItemPickingTime, torchTilePos);
         }
 
         private IComponent CreateMapRevealer(
@@ -297,7 +296,7 @@ namespace Rogueskiv.Core.Systems
             var minDistance = (int)(SpawnConfig.MinMapRevealerSpawnDistanceFactor * maxDistance);
             var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
-            return new MapRevealerComp(mapRevealerTilePos);
+            return new MapRevealerComp(SpawnConfig.MaxItemPickingTime, mapRevealerTilePos);
         }
 
         private IComponent CreateAmulet(
@@ -308,7 +307,7 @@ namespace Rogueskiv.Core.Systems
             var minDistance = (int)(SpawnConfig.MinAmuletSpawnFactor * maxDistance);
             var amuletTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
 
-            return new AmuletComp(amuletTilePos);
+            return new AmuletComp(SpawnConfig.MaxItemPickingTime, amuletTilePos);
         }
 
         private IComponent CreateDownStairs(

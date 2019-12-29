@@ -5,19 +5,19 @@ namespace Rogueskiv.Core.Components
 {
     public class PickableComp : CurrentPositionComp
     {
-        public const int MAX_PICKING_TIME = 20;  // TODO calculate in terms of GameFPS
-
         public override bool AllowRevealedByMap => false;
         public bool IsBeingPicked { get; private set; } = false;
         public int PickingTime { get; private set; }
+        public int MaxPickingTime { get; set; }
 
-        public PickableComp(Point tilePos) : base(tilePos)
-        { }
+        public PickableComp(int maxPickingTime, Point tilePos)
+            : base(tilePos) =>
+            MaxPickingTime = maxPickingTime;
 
-        public void StartPicking()
+        public void StartPicking(int pickingTime)
         {
             IsBeingPicked = true;
-            PickingTime = MAX_PICKING_TIME;
+            PickingTime = pickingTime;
         }
 
         public void TickPickingTime() => PickingTime--;

@@ -1,27 +1,15 @@
 ﻿using Seedwork.Core.Components;
 using Seedwork.Crosscutting;
-using System;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
     public class MovementComp : IComponent
     {
-        // set in PlayerSys (TODO ?)
-        public static float MAX_POS_SPEED;
-        public static float MAX_NEG_SPEED;
-        public static float STOP_ABS_SPEED;
-
-        private PointF speed;
-        public PointF Speed
-        {
-            get => speed;
-            set => speed = value.Map(BoundSpeed);
-        }
-
+        public virtual PointF Speed { get; set; }
         public int Radius { get; }
-        public float FrictionFactor { get; set; }
-        public float BounceAmortiguationFactor { get; set; }
+        public float FrictionFactor { get; }
+        public float BounceAmortiguationFactor { get; }
         public bool SimpleBounce { get; }
 
         public MovementComp(
@@ -43,12 +31,5 @@ namespace Rogueskiv.Core.Components
             Speed = Speed.Multiply(factorX, factorY);
 
         public void Stop() => Speed = new PointF(0, 0);
-
-        private static float BoundSpeed(float speed)
-        {
-            var boundedSpeed = Math.Max(MAX_NEG_SPEED, Math.Min(MAX_POS_SPEED, speed));
-
-            return (Math.Abs(boundedSpeed) < STOP_ABS_SPEED ? 0 : boundedSpeed);
-        }
     }
 }

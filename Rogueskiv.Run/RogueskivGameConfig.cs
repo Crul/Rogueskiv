@@ -1,14 +1,16 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.MapGeneration;
 using Seedwork.Crosscutting;
+using Seedwork.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rogueskiv.Run
 {
-    class RogueskivFloorConfig : IRogueskivGameConfig
+    class RogueskivGameConfig : IRogueskivGameConfig
     {
-        private readonly RogueskivConfig RogueskivConfig;
+        private readonly RogueskivAppConfig RogueskivConfig;
         private readonly float FloorFactor;
 
         public int Floor { get; }
@@ -20,6 +22,9 @@ namespace Rogueskiv.Run
         public int InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
         public float PlayerBounceAmortiguationFactor => RogueskivConfig.PlayerBounceAmortiguationFactor;
         public float PlayerFrictionFactor => RogueskivConfig.PlayerFrictionFactor;
+        public float PlayerAcceleration { get; }
+        public float PlayerMaxSpeed { get; }
+        public float PlayerStopSpeed { get; }
 
         public int EnemyNumber { get; }
         public int MinEnemySpeed { get; }
@@ -34,7 +39,12 @@ namespace Rogueskiv.Run
         public float MinAmuletSpawnFactor => RogueskivConfig.MinAmuletSpawnFactor;
         public float MinDownStairsSpawnFactor => RogueskivConfig.MinDownStairsSpawnFactor;
 
-        public RogueskivFloorConfig(RogueskivConfig rogueskivConfig, int floor)
+        public int EnemyCollisionDamage => RogueskivConfig.EnemyCollisionDamage;
+        public int MaxItemPickingTime { get; }
+        public int FoodHealthIncrease => RogueskivConfig.FoodHealthIncrease;
+        public int TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
+
+        public RogueskivGameConfig(RogueskivAppConfig rogueskivConfig, IGameContext gameContext, int floor)
         {
             RogueskivConfig = rogueskivConfig;
             Floor = floor;
@@ -42,8 +52,15 @@ namespace Rogueskiv.Run
             FloorFactor = (float)floor / RogueskivConfig.FloorCount;
 
             EnemyNumber = GetFloorDependantValue(rogueskivConfig.EnemyNumberRange);
-            MinEnemySpeed = GetFloorDependantValue(rogueskivConfig.MinEnemySpeedRange);
-            MaxEnemySpeed = GetFloorDependantValue(rogueskivConfig.MaxEnemySpeedRange);
+            MinEnemySpeed = GetFloorDependantValue(rogueskivConfig.MinEnemySpeedRange) / gameContext.GameFPS;
+            MaxEnemySpeed = GetFloorDependantValue(rogueskivConfig.MaxEnemySpeedRange) / gameContext.GameFPS;
+            MaxItemPickingTime = RogueskivConfig.MaxItemPickingTime / gameContext.GameFPS;
+
+            // the parametrization is not perfect because with high FPS
+            // there are more steps with movement for the same acceleration
+            PlayerAcceleration = (float)Math.Pow(RogueskivConfig.PlayerAcceleration, 25d / gameContext.GameFPS);
+            PlayerMaxSpeed = RogueskivConfig.PlayerMaxSpeed / gameContext.GameFPS;
+            PlayerStopSpeed = RogueskivConfig.PlayerStopSpeed / gameContext.GameFPS;
 
             EnemyNumAnglesProbWeights = rogueskivConfig
                 .EnemyAnglesProbWeightRanges

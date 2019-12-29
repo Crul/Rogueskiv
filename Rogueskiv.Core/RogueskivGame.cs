@@ -18,7 +18,6 @@ namespace Rogueskiv.Core
         private readonly BoardComp BoardComp;
 
         public RogueskivGame(
-            IGameContext gameContext,
             GameStageCode stageCode,
             IRogueskivGameConfig gameConfig,
             IGameResult<IEntity> previousFloorResult,
@@ -37,18 +36,17 @@ namespace Rogueskiv.Core
                         ? new BoardSys(gameConfig.MapGenerationParams)
                         : new BoardSys(boardData),
                     new SpawnSys(
-                        gameContext,
                         gameConfig,
                         previousFloorResult
                     ),
-                    new PlayerSys(gameContext),
+                    new PlayerSys(gameConfig.PlayerAcceleration),
                     new MovementSys(),
                     new WallSys(),
-                    new FoodSys(),
-                    new TorchSys(),
-                    new RevealMapSys(),
-                    new AmuletSys(),
-                    new CollisionSys(),
+                    new FoodSys(gameConfig.MaxItemPickingTime, gameConfig.FoodHealthIncrease),
+                    new TorchSys(gameConfig.MaxItemPickingTime, gameConfig.TorchVisualRangeIncrease),
+                    new RevealMapSys(gameConfig.MaxItemPickingTime),
+                    new AmuletSys(gameConfig.MaxItemPickingTime),
+                    new CollisionSys(gameConfig.EnemyCollisionDamage),
                     new FOVSys(),
                     new StairsSys(),
                     new DeathSys()

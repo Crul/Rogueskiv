@@ -97,7 +97,7 @@ namespace Rogueskiv.Ux.SoriteProviders
             return TextureRects[(subTile, wall1, wall2)];
         }
 
-        public override SDL_Rect GetOutputRect(Point screenPosition) =>
+        public override SDL_Rect GetOutputRect(IWallComp wallComp, Point screenPosition) =>
             throw new NotImplementedException();
 
         public SDL_Rect GetOutputRect(SubTile subtile, Point subTilePos)

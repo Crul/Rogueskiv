@@ -4,9 +4,7 @@ namespace Rogueskiv.Core.Components
 {
     public class TorchComp : PickableComp
     {
-        public const int VISUAL_RANGE_INCREASE = 1;
-
-        public TorchComp(Point tilePos) : base(tilePos)
-        { }
+        public TorchComp(int maxPickingTime, Point tilePos)
+            : base(maxPickingTime, tilePos) { }
     }
 }

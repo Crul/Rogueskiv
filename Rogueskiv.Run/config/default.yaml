@@ -3,18 +3,22 @@ maximized: true
 screenSize:
     width: 640
     height: 480
+maxGameStepsWithoutRender: 5
 
 # game
 floorCount: 26
 
 # player
 playerRadius: 10
-initialPlayerHealth: 100
+playerAcceleration: 1.5
+playerMaxSpeed: 150
+playerStopSpeed: 1
+initialPlayerHealth: 10
 initialPlayerVisualRange: 5
 playerFrictionFactor: 0.1
 playerBounceAmortiguationFactor:  0.6666
 
-# spawn
+# items
 minFoodSpawnDistanceFactor: 16
 minFoodSpawnDistanceFactor: 0.33
 minTorchSpawnDistanceFactor: 0.1
@@ -22,7 +26,12 @@ minMapRevealerSpawnDistanceFactor: 0.4
 minAmuletSpawnFactor: 0.9
 minDownStairsSpawnFactor: 0.8
 
+maxItemPickingTime: 600
+foodHealthIncrease: 3
+torchVisualRangeIncrease: 1
+
 # enemies
+enemyCollisionDamage: 1
 minSpaceToSpawnEnemy: 1
 minEnemySpawnDistance: 5
 enemyRadius: 6

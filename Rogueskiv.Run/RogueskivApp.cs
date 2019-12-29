@@ -13,16 +13,16 @@ namespace Rogueskiv.Run
     {
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
 
-        private readonly RogueskivConfig Config;
+        private readonly RogueskivAppConfig AppConfig;
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
         private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
         private int CurrentFloor;
 
-        public RogueskivApp(RogueskivConfig config) => Config = config;
+        public RogueskivApp(RogueskivAppConfig appConfig) => AppConfig = appConfig;
 
         public void Run()
         {
-            using var uxContext = new UxContext("Rogueskiv", Config);
+            using var uxContext = new UxContext("Rogueskiv", AppConfig);
 
             InitStages(uxContext);
             var engine = CreateMenuStage(uxContext);
@@ -84,9 +84,9 @@ namespace Rogueskiv.Run
         {
             CurrentFloor = FloorEngines.Count + 1;
 
-            var gameContext = new GameContext();
-            var gameConfig = new RogueskivFloorConfig(Config, CurrentFloor);
-            var game = new RogueskivGame(gameContext, GameStageCodes.Game, gameConfig, result);
+            var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
+            var gameConfig = new RogueskivGameConfig(AppConfig, gameContext, CurrentFloor);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
             var renderer = new RogueskivRenderer(uxContext, game, FONT_FILE);
             var userInput = new RogueskivInputHandler(uxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
@@ -102,7 +102,7 @@ namespace Rogueskiv.Run
             FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
             FloorEngines.Clear();
 
-            var gameContext = new GameContext();
+            var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
             var game = new RogueskivMenu(GameStageCodes.Menu);
             var renderer = new RogueskivMenuRenderer(uxContext, game, FONT_FILE);
             var userInput = new RogueskivMenuInputHandler(uxContext, game, renderer);
