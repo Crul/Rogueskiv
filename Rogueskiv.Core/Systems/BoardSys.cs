@@ -30,13 +30,8 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            if (string.IsNullOrEmpty(BoardData))
-            {
-                while (string.IsNullOrEmpty(BoardData))
-                    BoardData = MapGenerator.GenerateMap(MapGenerationParams);
-
-                Console.WriteLine(BoardData);
-            }
+            while (string.IsNullOrEmpty(BoardData))
+                BoardData = MapGenerator.GenerateMap(MapGenerationParams);
 
             BoardComp = game.Entities.GetSingleComponent<BoardComp>();
 

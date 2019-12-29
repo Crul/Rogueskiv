@@ -13,9 +13,8 @@ namespace Rogueskiv.MapGeneration
             {
                 return TryGenerateMap(mapParams);
             }
-            catch (InvalidMapException ex)
+            catch (InvalidMapException)
             {
-                Console.WriteLine(ex.Message);
                 return string.Empty;
             }
         }
