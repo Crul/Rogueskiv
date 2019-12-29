@@ -7,6 +7,6 @@ namespace Seedwork.Engine
         void Render(float interpolation);
         void Reset();
         void AddRenderOnEnd(Action renderOnEnd);
-        void OnWindowResize();
+        void RecreateTextures();
     }
 }

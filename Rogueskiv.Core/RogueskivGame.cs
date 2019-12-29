@@ -70,7 +70,7 @@ namespace Rogueskiv.Core
             (int floorCount, int floor)
         {
             var floorFactor = (float)floor / floorCount;
-            var mapSize = 48 + (int)(floorFactor * 16);           // 48    ... 64
+            var mapSize = 26 + (int)(floorFactor * 12);           // 36    ... 48
             var roomExpandProb = 0.6f - (0.3f * floorFactor);     //  0.6  ...  0.3
             var corridorTurnProb = 0.05f + (0.15f * floorFactor); //  0.05 ...  0.2
             var minDensity = 0.18f - (0.12f * floorFactor);       //  0.18 ...  0.06

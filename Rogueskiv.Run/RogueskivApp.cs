@@ -12,7 +12,7 @@ namespace Rogueskiv.Run
 {
     class RogueskivApp
     {
-        private const int FLOOR_COUNT = 10;
+        private const int FLOOR_COUNT = 26;
         private readonly string FONT_FILE = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
         private readonly Size ScrrenSize = new Size(640, 480);
 
@@ -67,7 +67,7 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> GetFloorDown(UxContext uxContext, IGameResult<IEntity> result)
         {
-            if (CurrentFloor + 1 < FloorEngines.Count)
+            if (CurrentFloor < FloorEngines.Count)
                 return GetRestartFloorEngine(++CurrentFloor, result);
 
             return CreateGameStage(uxContext, result);

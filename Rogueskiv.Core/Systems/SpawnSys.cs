@@ -17,7 +17,7 @@ namespace Rogueskiv.Core.Systems
     class SpawnSys : BaseSystem
     {
         private const int MIN_ENEMY_SPAWN_DISTANCE = 5;
-        private const int MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY = 2;
+        private const int MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY = 1;
         private const int MIN_FOOD_SPAWN_DISTANCE = 20;
         private const int MIN_TORCH_SPAWN_DISTANCE = 10;
         private const int MIN_MAP_SPAWN_DISTANCE = 30;
@@ -52,13 +52,13 @@ namespace Rogueskiv.Core.Systems
             IsLastFloor = floorFactor == 1;
 
             // TODO magic numbers
-            EnemyNumber = (int)(8 + (22f * floorFactor));                //   8 ... 30
-            MinEnemySpeed = (int)(75f + (floorFactor * 25f));            //  75 ... 100
-            MaxEnemySpeed = (int)(150f + (floorFactor * 100f));          // 200 ... 300
+            EnemyNumber = (int)(10 + (10f * floorFactor));          //  10 ... 20
+            MinEnemySpeed = (int)(100f + (floorFactor * 25f));      // 100 ... 125
+            MaxEnemySpeed = (int)(125f + (floorFactor * 50f));      // 125 ... 175
             NumAnglesProbWeights = new List<(int numAngles, float weight)> {
-                (numAngles: 4, weight: 5),
-                (numAngles: 8, weight: (floorFactor * 20f) - 8f),
-                (numAngles: 16, weight: (floorFactor * 40f) - 15f)
+                (numAngles: 4, weight: 5),                           //   5 ...   5
+                (numAngles: 8, weight: (floorFactor * 15f) - 10f),   //   0 ...   5
+                (numAngles: 16, weight: (floorFactor * 7.5f) - 2.5f) //   0 ...   5
             };
         }
 
@@ -132,7 +132,7 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(playerTilePos),
                 new LastPositionComp(playerTilePos),
                 new MovementComp(
-                    frictionFactor: 1f / 5f,
+                    frictionFactor: 1f / 10f,
                     bounceAmortiguationFactor: 2f / 3f,
                     radius: PlayerComp.PLAYER_RADIUS,
                     simpleBounce: false
@@ -224,17 +224,18 @@ namespace Rogueskiv.Core.Systems
                 .numAngles;
 
             var speed = (MinEnemySpeed + Luck.Next(MaxEnemySpeed - MinEnemySpeed)) / GameContext.GameFPS;
-            var angles = Enumerable.Range(1, numAngles).Select(i => (float)i * 2 * Math.PI / numAngles).ToList();
+            var angleRatios = Enumerable.Range(1, numAngles).ToList();
 
-            var randomizedAngles = angles.OrderBy(a => Luck.NextDouble()).ToList();
-            while (randomizedAngles.Any())
+            var randomizedAngleRatios = angleRatios.OrderBy(a => Luck.NextDouble()).ToList();
+            while (randomizedAngleRatios.Any())
             {
-                var angle = randomizedAngles.First();
-                randomizedAngles.Remove(angle);
+                var angleRatio = randomizedAngleRatios.First();
+                randomizedAngleRatios.Remove(angleRatio);
 
-                if (numAngles == 4 && !IsValidAngle(boardComp, enemyTilePos, angle))
+                if (!IsValidAngle(boardComp, enemyTilePos, numAngles, angleRatio))
                     continue;
 
+                var angle = (float)angleRatio * 2 * Math.PI / numAngles;
                 var speedX = (float)(speed * Math.Cos(angle));
                 var speedY = (float)(speed * Math.Sin(angle));
 
@@ -244,20 +245,37 @@ namespace Rogueskiv.Core.Systems
             return null;
         }
 
-        private static bool IsValidAngle(BoardComp boardComp, Point enemyTilePos, double angle)
+        private static bool IsValidAngle(BoardComp boardComp, Point enemyTilePos, int angleNum, int angleRatio)
         {
-            var isRightOrLeft = angle == Math.PI * 2 || angle == Math.PI;
-            if (isRightOrLeft) // RIGHT or LEFT
+            var isRightOrLeft = angleRatio == angleNum
+                || angleRatio == (angleNum / 2);
+
+            if (isRightOrLeft)
             {
                 for (var x = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; x++)
                     if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(x: x)))
                         return false;
+
+                if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(y: 1))
+                    && boardComp.WallsByTiles.ContainsKey(enemyTilePos.Substract(y: 1)))
+                    return false;
+
+                return true;
             }
-            else // UP or DOWN
+
+            var nintyDegreesInRatio = angleNum / 4;
+            var isUpOrDown = angleRatio + nintyDegreesInRatio == angleNum
+                || angleRatio + nintyDegreesInRatio == (angleNum / 2);
+
+            if (isUpOrDown)
             {
                 for (var y = -MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y <= MIN_SPACE_FOR_EACH_SIDE_TO_SPAWN_ENEMY; y++)
                     if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(y: y)))
                         return false;
+
+                if (boardComp.WallsByTiles.ContainsKey(enemyTilePos.Add(x: 1))
+                    && boardComp.WallsByTiles.ContainsKey(enemyTilePos.Substract(x: 1)))
+                    return false;
             }
 
             return true;

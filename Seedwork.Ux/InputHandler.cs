@@ -55,8 +55,7 @@ namespace Seedwork.Ux
             {
                 case SDL_EventType.SDL_WINDOWEVENT:
                     if (ev.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
-                        OnWindowResize(width: ev.window.data1, height: ev.window.data2);
-
+                        UxContext.OnWindowResize(width: ev.window.data1, height: ev.window.data2);
                     return;
 
                 case SDL_EventType.SDL_QUIT:
@@ -65,11 +64,15 @@ namespace Seedwork.Ux
 
                 case SDL_EventType.SDL_KEYDOWN:
                     OnKeyEvent(ev.key.keysym.sym, true);
-                    break;
+                    return;
 
                 case SDL_EventType.SDL_KEYUP:
                     OnKeyEvent(ev.key.keysym.sym, false);
-                    break;
+                    return;
+
+                case SDL_EventType.SDL_RENDER_TARGETS_RESET:
+                    GameRenderer.RecreateTextures();
+                    return;
             }
         }
 
@@ -78,12 +81,6 @@ namespace Seedwork.Ux
             var intKey = (int)key;
             if (KeyPressStates.ContainsKey(intKey))
                 KeyPressStates[intKey] = pressed;
-        }
-
-        protected virtual void OnWindowResize(int width, int height)
-        {
-            UxContext.OnWindowResize(width, height);
-            GameRenderer.OnWindowResize();
         }
 
         public void Reset() =>
