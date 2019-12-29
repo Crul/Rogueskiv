@@ -4,7 +4,7 @@ namespace Rogueskiv.Core.Components
 {
     public class DownStairsComp : StairsComp
     {
-        public DownStairsComp(PointF position) : base(position)
+        public DownStairsComp(Point tilePos) : base(tilePos)
         { }
     }
 }

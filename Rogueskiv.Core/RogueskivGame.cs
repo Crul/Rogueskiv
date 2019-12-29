@@ -48,7 +48,7 @@ namespace Rogueskiv.Core
                     new WallSys(),
                     new FoodSys(),
                     new TorchSys(),
-                    new MapSys(),
+                    new RevealMapSys(),
                     new AmuletSys(),
                     new CollisionSys(),
                     new FOVSys(),
@@ -76,6 +76,13 @@ namespace Rogueskiv.Core
             var minDensity = 0.18f - (0.12f * floorFactor);       //  0.18 ...  0.06
             var initialRooms = 15 + (int)(floorFactor * 45);      // 15    ... 60
             var minRoomSize = 3;                                  //  3
+            var corridorWidthProbWeights = new List<(int width, float weight)>
+            {
+                ( width: 1, weight: 1 + (int)(floorFactor * 7) ), //  1    ... 8
+                ( width: 2, weight: 4 ),                          //  4        4
+                ( width: 3, weight: 8 - (int)(floorFactor * 6) ), //  8    ... 2
+                ( width: 4, weight: 1 )                           //  1        1
+            };
 
             return new MapGenerationParams(
                 width: mapSize,
@@ -84,7 +91,8 @@ namespace Rogueskiv.Core
                 corridorTurnProb,
                 minDensity,
                 initialRooms,
-                minRoomSize
+                minRoomSize,
+                corridorWidthProbWeights
             );
         }
 

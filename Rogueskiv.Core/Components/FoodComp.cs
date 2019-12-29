@@ -6,7 +6,7 @@ namespace Rogueskiv.Core.Components
     {
         public const int HEALTH_INCREASE = 30;
 
-        public FoodComp(PointF position) : base(position)
+        public FoodComp(Point tilePos) : base(tilePos)
         { }
     }
 }

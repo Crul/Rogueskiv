@@ -4,6 +4,7 @@ using Rogueskiv.Core.Systems;
 using Seedwork.Core.Components;
 using Seedwork.Crosscutting;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -12,45 +13,77 @@ namespace Rogueskiv.Core.Components
     public class FOVComp : IComponent
     {
         private FOVRecurse FOVRecurse;
-        private Size BoardSize;
-        private TileFOVInfo[,] FOVTiles;
+        private Size DoubleBoardSize;
+        private TileFOVInfo[,] TileFOVInfos;
+        private readonly List<(int x, int y)> indexList =
+            new List<(int, int)> { (0, 0), (0, 1), (1, 0), (1, 1) };
 
         public void Init(BoardComp boardComp, PlayerComp playerComp)
         {
-            BoardSize = boardComp.BoardSize;
+            DoubleBoardSize = boardComp.BoardSize.Multiply(2);
+            TileFOVInfos = new TileFOVInfo[DoubleBoardSize.Width, DoubleBoardSize.Height];
+            ForAllTiles((x, y) => TileFOVInfos[x, y] = new TileFOVInfo(x, y));
 
-            FOVTiles = new TileFOVInfo[BoardSize.Width, BoardSize.Height];
-            ForAllTiles((x, y) => FOVTiles[x, y] = new TileFOVInfo());
-
-            FOVRecurse = new FOVRecurse(BoardSize.Width, BoardSize.Height, playerComp.VisualRange);
-
-            BoardSys.ForAllTiles(BoardSize, tilePos =>
+            FOVRecurse = new FOVRecurse(boardComp.BoardSize.Width, boardComp.BoardSize.Height);
+            SetVisualRange(playerComp);
+            BoardSys.ForAllTiles(boardComp.BoardSize, tilePos => // TODO move ForAllTiles & IsTile to BoardComp ?
                 FOVRecurse.Point_Set(tilePos.X, tilePos.Y, !BoardSys.IsTile(boardComp.Board, tilePos) ? 1 : 0));
         }
 
-        public TileFOVInfo GetTileFOVInfo(int x, int y) => FOVTiles[x, y];
+        public void SetVisualRange(PlayerComp playerComp)
+            => FOVRecurse.VisualRange = playerComp.VisualRange;
 
-        public void SetPlayerPos(PositionComp positionComp) =>
-            FOVRecurse.SetPlayerPos(positionComp.TilePos.X, positionComp.TilePos.Y);
+        public void RevealAll() =>
+            ForAllTiles((x, y) => TileFOVInfos[x, y].Reveal());
 
-        public bool IsVisible(PositionComp positionComp) =>
-            FOVRecurse.VisiblePoints.Any(vp => vp == positionComp.TilePos);
+        public void SetPlayerPos(PlayerComp playerComp, IPositionComp playerPosComp)
+        {
+            Reset();
 
-        public void Reset() =>
-            ForAllTiles((x, y) => Reset(FOVTiles[x, y]));
+            FOVRecurse.SetPlayerPos(playerPosComp.TilePos.X, playerPosComp.TilePos.Y);
+            ForAllTiles(tileFOVInfo =>
+            {
+                tileFOVInfo.Visible = FOVRecurse.IsPointVisible(tileFOVInfo.TileFOVPos);
+                tileFOVInfo.DistanceFactor =
+                    Distance.Get(tileFOVInfo.Position, playerPosComp.Position)
+                    / (BoardComp.TILE_SIZE * playerComp.VisualRange);
+            });
+        }
+
+        public bool IsVisibleByPlayer(IPositionComp positionComp) =>
+            GetFOVTiles(positionComp.TilePos)
+                .Any(tileFOVinfo => tileFOVinfo.VisibleByPlayer);
+
+        public bool HasBeenSeenOrRevealed(IPositionComp positionComp) =>
+            GetFOVTiles(positionComp.TilePos)
+                .Any(tileFOVinfo => tileFOVinfo.HasBeenSeenOrRevealed(positionComp.AllowRevealedByMap));
+
+        private void Reset() =>
+            ForAllTiles((x, y) => Reset(TileFOVInfos[x, y]));
 
         private static void Reset(TileFOVInfo tileFOVInfo)
         {
-            tileFOVInfo.Hidden = false;
             tileFOVInfo.VisibleByPlayer = false;
-            tileFOVInfo.DistanceFromPlayer = 0;
+            tileFOVInfo.DistanceFactor = 0;
         }
+
+        public void ForAllTiles(Action<TileFOVInfo> action)
+            => ForAllTiles((x, y) => action(TileFOVInfos[x, y]));
 
         private void ForAllTiles(Action<int, int> action)
         {
-            for (var x = 0; x < BoardSize.Width; x++)
-                for (var y = 0; y < BoardSize.Height; y++)
+            for (var x = 0; x < DoubleBoardSize.Width; x++)
+                for (var y = 0; y < DoubleBoardSize.Height; y++)
                     action(x, y);
+        }
+
+        private List<TileFOVInfo> GetFOVTiles(Point tilePos)
+        {
+            var fovTilePos = tilePos.Multiply(2).ToPoint();
+
+            return indexList
+                .Select(index => TileFOVInfos[fovTilePos.X + index.x, fovTilePos.Y + index.y])
+                .ToList();
         }
     }
 }

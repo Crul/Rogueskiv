@@ -8,7 +8,7 @@ using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class TextRenderer<T> : BaseItemRenderer<T>
+    public abstract class TextRenderer<T> : CompRenderer<T>
         where T : IComponent
     {
         private readonly IntPtr Font;
@@ -68,10 +68,11 @@ namespace Seedwork.Ux.Renderers
         private void SetCache(string text, SDL_Color color, Point position) =>
             DataCache = (text, (color.r, color.g, color.b, color.a), position);
 
-        protected override void Dispose(bool disposing)
+        protected override void Dispose(bool cleanManagedResources)
         {
-            base.Dispose(disposing);
-            SDL_DestroyTexture(TextureCache);
+            base.Dispose(cleanManagedResources);
+            if (cleanManagedResources)
+                SDL_DestroyTexture(TextureCache);
         }
     }
 }

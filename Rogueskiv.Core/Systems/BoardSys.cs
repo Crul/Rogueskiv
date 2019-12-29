@@ -56,7 +56,7 @@ namespace Rogueskiv.Core.Systems
             AddUpWalls(game, board, size);
             AddDownWalls(game, board, size);
 
-            SetCornerTiles(game, size);
+            BoardComp.SetTilesNeighbours();
         }
 
         public override void Update(EntityList entities, List<int> controls) =>
@@ -84,53 +84,11 @@ namespace Rogueskiv.Core.Systems
                 BoardComp.AddTile(tilePos, tile.Id);
             });
 
-            BoardComp.SetTilesNeighbours();
-
             return tileComps;
-        }
-
-        private void SetCornerTiles(Game game, Size size) =>
-            ForAllTiles(size, tilePos => SetCornerTiles(game, tilePos));
-
-        private void SetCornerTiles(Game game, Point tilePos)
-        {
-            var tile = TryGetTile(game, tilePos);
-            if (tile == null)
-                return;
-
-            var tileUp = TryGetTile(game, tilePos.Add(y: -1));
-            var tileDown = TryGetTile(game, tilePos.Add(y: 1));
-            var tileLeft = TryGetTile(game, tilePos.Add(x: -1));
-            var tileRight = TryGetTile(game, tilePos.Add(x: 1));
-
-            if (TileHasWall(tileUp, TileWallFlags.Right) && TileHasWall(tileLeft, TileWallFlags.Down))
-                tile.AddWall(TileWallFlags.CornerDownRight);
-
-            if (TileHasWall(tileUp, TileWallFlags.Left) && TileHasWall(tileRight, TileWallFlags.Down))
-                tile.AddWall(TileWallFlags.CornerDownLeft);
-
-            if (TileHasWall(tileDown, TileWallFlags.Right) && TileHasWall(tileLeft, TileWallFlags.Up))
-                tile.AddWall(TileWallFlags.CornerUpRight);
-
-            if (TileHasWall(tileDown, TileWallFlags.Left) && TileHasWall(tileRight, TileWallFlags.Up))
-                tile.AddWall(TileWallFlags.CornerUpLeft);
-        }
-
-        private TileComp TryGetTile(Game game, Point tilePos)
-        {
-            if (!BoardComp.TileIdByTilePos.ContainsKey(tilePos))
-                return null;
-
-            var tileId = BoardComp.TileIdByTilePos[tilePos];
-
-            return game.Entities[tileId].GetComponent<TileComp>();
         }
 
         public static bool IsTile(List<string> board, Point tilePos) =>
             board[tilePos.Y].Substring(tilePos.X, 1).ToUpper() == TILE_CHAR;
-
-        private static bool TileHasWall(TileComp tileComp, TileWallFlags wallFlag) =>
-            tileComp != null && ((tileComp.WallFlags & wallFlag) != 0);
 
         public static void ForAllTiles(Size size, Action<Point> action)
         {
@@ -143,100 +101,130 @@ namespace Rogueskiv.Core.Systems
         #region Walls
         private List<IWallComp> AddUpWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, board,
-                getXY: (y, x) => (x, y),
-                checkWallPosTile: (y, x) => (x, y + 1),
+                game, board, size,
+                isHorizontal: true,
+                checkTilePosTile: (y, x) => (x, y - 1),
                 createComponent: wall => new UpWallComp(wall.tilePos, wall.size),
-                tileWallFlag: TileWallFlags.Up,
-                lengthIndex1: size.Height,
-                lengthIndex2: size.Width,
-                marginIndex1: 1
+                initIndex1: 1
             );
 
         private List<IWallComp> AddDownWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, board,
-                getXY: (y, x) => (x, y),
-                checkWallPosTile: (y, x) => (x, y - 1),
+                game, board, size,
+                isHorizontal: true,
+                checkTilePosTile: (y, x) => (x, y + 1),
                 createComponent: wall => new DownWallComp(wall.tilePos, wall.size),
-                tileWallFlag: TileWallFlags.Down,
-                lengthIndex1: size.Height,
-                lengthIndex2: size.Width,
-                initIndex1: 1
+                marginIndex1: 1
             );
 
         private List<IWallComp> AddLeftWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, board,
-                getXY: (x, y) => (x, y),
-                checkWallPosTile: (x, y) => (x + 1, y),
+                game, board, size,
+                isHorizontal: false,
+                checkTilePosTile: (x, y) => (x - 1, y),
                 createComponent: wall => new LeftWallComp(wall.tilePos, wall.size),
-                tileWallFlag: TileWallFlags.Left,
-                lengthIndex1: size.Width,
-                lengthIndex2: size.Height,
-                marginIndex1: 1
+                initIndex1: 1
             );
 
         private List<IWallComp> AddRightWalls(Game game, List<string> board, Size size) =>
             AddWalls(
-                game, board,
-                getXY: (x, y) => (x, y),
-                checkWallPosTile: (x, y) => (x - 1, y),
+                game, board, size,
+                isHorizontal: false,
+                checkTilePosTile: (x, y) => (x + 1, y),
                 createComponent: wall => new RightWallComp(wall.tilePos, wall.size),
-                tileWallFlag: TileWallFlags.Right,
-                lengthIndex1: size.Width,
-                lengthIndex2: size.Height,
-                initIndex1: 1
+                marginIndex1: 1
             );
 
         private List<IWallComp> AddWalls(
             Game game,
             List<string> board,
-            Func<int, int, (int tileX, int tileY)> getXY,
-            Func<int, int, (int tileX, int tileY)> checkWallPosTile,
+            Size size,
+            bool isHorizontal,
+            Func<int, int, (int tileX, int tileY)> checkTilePosTile,
             Func<(Point tilePos, int size), IWallComp> createComponent,
-            TileWallFlags tileWallFlag,
-            int lengthIndex1,
-            int lengthIndex2,
             int initIndex1 = 0,
             int marginIndex1 = 0
         )
         {
+            Func<int, int, (int x, int y)> getXY;
+            int lengthIndex1, lengthIndex2;
+            if (isHorizontal)
+            {
+                getXY = (i1, i2) => (x: i2, y: i1);
+                lengthIndex1 = size.Height;
+                lengthIndex2 = size.Width;
+            }
+            else
+            {
+                getXY = (i1, i2) => (x: i1, y: i2);
+                lengthIndex1 = size.Width;
+                lengthIndex2 = size.Height;
+            }
+
             var walls = new List<IWallComp>();
             for (var i1 = initIndex1; i1 < lengthIndex1 - marginIndex1; i1++)
             {
-                (Point tilePos, int size)? tmpWall = null;
+                (Point tilePos, int size)? wallInfo = null;
                 for (var i2 = 0; i2 < lengthIndex2; i2++)
                 {
-                    var (tileX, tileY) = getXY(i1, i2);
-                    var (wallX, wallY) = checkWallPosTile(i1, i2);
+                    var (wallX, wallY) = getXY(i1, i2);
+                    var (tileX, tileY) = checkTilePosTile(i1, i2);
+                    var wallPos = new Point(wallX, wallY);
                     var tilePos = new Point(tileX, tileY);
-                    var isWall =
-                        IsTile(board, tilePos)
-                        && !IsTile(board, new Point(wallX, wallY));
+                    var isWall = IsTile(board, tilePos) && !IsTile(board, wallPos);
 
                     if (isWall)
                     {
-                        var tileId = BoardComp.TileIdByTilePos[tilePos];
-                        var tileComp = game.Entities[tileId].GetComponent<TileComp>();
-                        tileComp.AddWall(tileWallFlag);
-
-                        tmpWall = tmpWall.HasValue
-                            ? ExtendWall(tmpWall.Value)
-                            : (tilePos, 1);
+                        if (wallInfo.HasValue)
+                            wallInfo = (wallInfo.Value.tilePos, wallInfo.Value.size + 1);
+                        else
+                            wallInfo = ExpandTopIfNeeded((wallPos, 1), board, isHorizontal);
                     }
-                    else if (tmpWall.HasValue)
+                    else if (wallInfo.HasValue)
                     {
-                        AddWall(game, walls, createComponent, tmpWall.Value);
-                        tmpWall = null;
+                        wallInfo = ExpandBottomIfNeeded(wallInfo.Value, board, isHorizontal);
+                        AddWall(game, walls, createComponent, wallInfo.Value);
+                        wallInfo = null;
                     }
                 }
 
-                if (tmpWall.HasValue)
-                    AddWall(game, walls, createComponent, tmpWall.Value);
+                if (wallInfo.HasValue)
+                    throw new NotImplementedException();
             }
 
             return walls;
+        }
+
+        private static (Point tilePos, int size) ExpandTopIfNeeded(
+            (Point tilePos, int size) wallInfo,
+            List<string> board,
+            bool isHorizontal
+        )
+        {
+            if (isHorizontal)
+                return wallInfo;
+
+            var tileOnTop = wallInfo.tilePos.Substract(y: 1);
+            if (!IsTile(board, tileOnTop))
+                return (tileOnTop, wallInfo.size + 1);
+
+            return wallInfo;
+        }
+
+        private static (Point tilePos, int size) ExpandBottomIfNeeded(
+            (Point tilePos, int size) wallInfo,
+            List<string> board,
+            bool isHorizontal
+        )
+        {
+            if (isHorizontal)
+                return wallInfo;
+
+            var tileOnBottom = wallInfo.tilePos.Add(y: wallInfo.size);
+            if (!IsTile(board, tileOnBottom))
+                wallInfo = (wallInfo.tilePos, wallInfo.size + 1);
+
+            return wallInfo;
         }
 
         private void AddWall(
@@ -252,9 +240,6 @@ namespace Rogueskiv.Core.Systems
             var wallEntity = game.AddEntity(wallComp);
             BoardComp.AddWall(wallEntity, wallComp);
         }
-
-        private static (Point tilePos, int size)? ExtendWall((Point tilePos, int size) wall) =>
-            (wall.tilePos, wall.size + 1);
 
         #endregion
     }

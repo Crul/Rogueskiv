@@ -6,6 +6,7 @@ namespace Rogueskiv.Core.Components.Position
     public interface IPositionComp : IComponent
     {
         PointF Position { get; }
-        bool Visible { get; set; }
+        Point TilePos { get; }
+        bool AllowRevealedByMap { get; }
     }
 }

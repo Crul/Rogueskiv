@@ -29,7 +29,7 @@ namespace Rogueskiv.Core.Systems
             var movementComp = entity.GetComponent<MovementComp>();
 
             var wallComponents = BoardComp
-                .GetWallsIdsNear(entity.Id, lastPosition)
+                .GetWallsIdsNear(lastPosition)
                 .Select(wei => entities[wei])
                 .Select(wall => wall.GetComponent<WallComp>())
                 .ToList();

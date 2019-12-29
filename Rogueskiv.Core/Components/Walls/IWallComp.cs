@@ -1,11 +1,11 @@
 ﻿using Rogueskiv.Core.Components.Position;
-using Seedwork.Core.Components;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
 {
-    public interface IWallComp : IComponent
+    public interface IWallComp : IPositionComp
     {
-        PositionComp PositionComp { get; }
         int Size { get; }
 
         bool CheckBounce(
@@ -13,5 +13,7 @@ namespace Rogueskiv.Core.Components.Walls
             CurrentPositionComp currentPositionComp,
             LastPositionComp lastPositionComp
         );
+
+        List<Point> GetTiles();
     }
 }

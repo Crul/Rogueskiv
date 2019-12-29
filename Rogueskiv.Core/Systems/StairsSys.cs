@@ -1,8 +1,10 @@
 ﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
+using Seedwork.Crosscutting;
 using Seedwork.Engine;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +62,7 @@ namespace Rogueskiv.Core.Systems
         {
             // reset for next floor execution
             HasExitedStairs = false;
-            PlayerPositionComp.Position = stairsComp.Position;
+            PlayerPositionComp.Position = stairsComp.Position.Add(BoardComp.TILE_SIZE / 2);
 
             gameresult.Data.Clear();
             gameresult.Data.Add(PlayerEntity);

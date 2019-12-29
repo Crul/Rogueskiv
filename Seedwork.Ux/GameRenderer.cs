@@ -11,25 +11,24 @@ namespace Seedwork.Ux
 {
     public class GameRenderer : IGameRenderer
     {
-        private readonly IntPtr WRenderer;
-        private readonly IRenderizable Game;
+        protected readonly IRenderizable Game;
         private readonly List<Action> RenderOnEndActions;
 
-        protected IDictionary<Type, IItemRenderer> Renderers { get; }
+        protected IntPtr WRenderer { get; }
+        protected IDictionary<Type, ICompRenderer> CompRenderers { get; }
 
         public GameRenderer(UxContext uxContext, IRenderizable game)
         {
             Game = game;
             WRenderer = uxContext.WRenderer;
             RenderOnEndActions = new List<Action>();
-            Renderers = new Dictionary<Type, IItemRenderer>();
+            CompRenderers = new Dictionary<Type, ICompRenderer>();
         }
 
         public virtual void Reset() { }
 
         public void Render(float interpolation)
         {
-            SDL.SDL_RenderClear(WRenderer);
             RenderGame(interpolation);
             SDL.SDL_RenderPresent(WRenderer);
         }
@@ -37,7 +36,7 @@ namespace Seedwork.Ux
         protected virtual void RenderGame(float interpolation)
         {
             RenderOnEndActions.Clear();
-            Renderers.ToList()
+            CompRenderers.ToList()
                 .ForEach(r =>
                     r.Value.Render(Game.Entities.GetWithComponent(r.Key), interpolation)
                 );
@@ -46,6 +45,8 @@ namespace Seedwork.Ux
 
         public void AddRenderOnEnd(Action renderOnEnd) =>
             RenderOnEndActions.Add(renderOnEnd);
+
+        public virtual void OnWindowResize() { }
 
         public void Dispose()
         {
@@ -56,7 +57,7 @@ namespace Seedwork.Ux
         protected virtual void Dispose(bool cleanManagedResources)
         {
             if (cleanManagedResources)
-                Renderers.ToList().ForEach(renderer => renderer.Value.Dispose());
+                CompRenderers.ToList().ForEach(renderer => renderer.Value.Dispose());
         }
     }
 }

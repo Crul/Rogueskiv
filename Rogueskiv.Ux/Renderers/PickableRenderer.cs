@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Ux.SpriteProviders;
+using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
@@ -10,7 +11,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class PickableRenderer<T> : PositionRenderer<T>
+    class PickableRenderer<T> : HideablePositionRenderer<T>
         where T : PickableComp
     {
         private readonly IGameRenderer GameRenderer;
@@ -18,11 +19,13 @@ namespace Rogueskiv.Ux.Renderers
         public PickableRenderer(
             IGameRenderer gameRenderer,
             UxContext uxContext,
+            IRenderizable game,
             IntPtr texture,
             SDL_Rect textureRect
         )
             : base(
                 uxContext,
+                game,
                 new PickableSpriteProvider<T>(texture, textureRect)
             ) =>
             GameRenderer = gameRenderer;

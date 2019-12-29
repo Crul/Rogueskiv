@@ -3,6 +3,7 @@ using SDL2;
 using Seedwork.Core;
 using Seedwork.Ux;
 using System;
+using static SDL2.SDL;
 
 namespace Rogueskiv.Menus
 {
@@ -16,7 +17,13 @@ namespace Rogueskiv.Menus
             : base(uxContext, game)
         {
             MenuFont = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
-            Renderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
+            CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
+        }
+
+        protected override void RenderGame(float interpolation)
+        {
+            SDL_RenderClear(WRenderer);
+            base.RenderGame(interpolation);
         }
 
         protected override void Dispose(bool cleanManagedResources)

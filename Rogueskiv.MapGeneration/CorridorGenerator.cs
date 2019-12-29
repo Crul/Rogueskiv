@@ -1,6 +1,7 @@
 ﻿using Seedwork.Crosscutting;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Rogueskiv.MapGeneration
@@ -8,7 +9,24 @@ namespace Rogueskiv.MapGeneration
     class CorridorGenerator
     {
         private const int CONNECT_ROOMS_MAX_LOOPS = 250;
-        private const int EXPAND_CORRIDOR_MAX_LOOPS = 50;
+
+        private readonly static IDictionary<Direction, Func<Point, Point>> NextTileFn =
+            new Dictionary<Direction, Func<Point, Point>>
+            {
+                { Direction.UP, tile => tile.Substract(y: 1)},
+                { Direction.RIGHT, tile => tile.Add(x: 1) },
+                { Direction.DOWN, tile => tile.Add(y: 1) },
+                { Direction.LEFT, tile => tile.Substract(x: 1) },
+            };
+
+        private readonly static IDictionary<Direction, Func<Point, Func<int, Point>>> GetTurnedTileFn =
+            new Dictionary<Direction, Func<Point, Func<int, Point>>>
+            {
+                { Direction.UP, tile => (i => tile.Add(y: i)) },
+                { Direction.DOWN, tile => (i => tile.Substract(y: i)) },
+                { Direction.LEFT, tile => (i => tile.Add(x: i)) },
+                { Direction.RIGHT, tile => (i => tile.Substract(x: i)) },
+            };
 
         public static List<Corridor> ConnectRooms(
             MapGenerationParams mapParams, List<Room> rooms
@@ -22,136 +40,288 @@ namespace Rogueskiv.MapGeneration
                 if (whileLoops > CONNECT_ROOMS_MAX_LOOPS)
                     throw new InvalidMapException("Connecting rooms");
 
-                var room = rooms.OrderBy(r => r.Corridors.Count).First();
-
-                var availableTiles = new List<((int x, int y) tile, Direction direction)>();
-                for (var x = room.X + 1; x < room.X + room.Width - 1; x++)
-                {
-                    if (room.Y > 1)
-                    {
-                        var tileAbove = (tile: (x, room.Y - 1), dir: Direction.UP);
-                        if (!room.Corridors.Any(c => c.Tiles.Contains(tileAbove.tile)))
-                            availableTiles.Add(tileAbove);
-                    }
-                    if (room.Y + room.Height < mapParams.Height)
-                    {
-                        var tileBelow = (tile: (x, room.Y + room.Height), Direction.DOWN);
-                        if (!room.Corridors.Any(c => c.Tiles.Contains(tileBelow.tile)))
-                            availableTiles.Add(tileBelow);
-                    }
-                }
-
-                for (var y = room.Y; y < room.Y + room.Height; y++)
-                {
-                    if (room.X > 1)
-                    {
-                        var tileLeft = (tile: (room.X - 1, y), dir: Direction.LEFT);
-                        if (!room.Corridors.Any(c => c.Tiles.Contains(tileLeft.tile)))
-                            availableTiles.Add(tileLeft);
-                    }
-                    if (room.X + room.Width < mapParams.Width)
-                    {
-                        var tileRight = (tile: (room.X + room.Width, y), dir: Direction.RIGHT);
-                        if (!room.Corridors.Any(c => c.Tiles.Contains(tileRight.tile)))
-                            availableTiles.Add(tileRight);
-                    }
-                }
-
-                if (availableTiles.Count == 0)
-                    continue;
-
-                var newCorridor = new Corridor();
-
-                var (tile, direction) = availableTiles[Luck.Next(availableTiles.Count)];
-
-                newCorridor.StartRoom = room;
-                newCorridor.StartX = tile.x;
-                newCorridor.StartY = tile.y;
-
-                ExpandCorridor(
-                    mapParams, corridors, newCorridor, direction, rooms
-                );
-
-                if (newCorridor.EndRoom == null)
-                    continue;
-
-                newCorridor.StartRoom.Corridors.Add(newCorridor);
-                newCorridor.EndRoom.Corridors.Add(newCorridor);
-                corridors.Add(newCorridor);
-
-                if (AreAllConnected(rooms))
+                var added = CreateCorridor(mapParams, rooms, corridors);
+                if (added && AreAllConnected(rooms))
                     break;
             }
 
             return corridors;
         }
 
-        private static void ExpandCorridor(
+        private static bool CreateCorridor(
+            MapGenerationParams mapParams, List<Room> rooms, List<Corridor> corridors
+        )
+        {
+            var corridorWidth = mapParams.GetRandomCorridorWidth();
+            var wideIndexList = Enumerable.Range(0, corridorWidth).ToList();
+
+            var (startRoom, startTiles, direction) =
+                GetStartTiles(rooms, corridors, corridorWidth, wideIndexList);
+
+            if (startRoom == null)
+                return false;
+
+            var newCorridor = new Corridor();
+            newCorridor.Rooms.Add(startRoom);
+
+            var endRooms = ExpandCorridor(
+                mapParams, corridors, newCorridor, corridorWidth, wideIndexList, startTiles, direction, rooms
+            );
+            if (endRooms == null || !endRooms.Any())
+                return false;
+
+            startRoom.Corridors.Add(newCorridor);
+
+            newCorridor.Rooms.AddRange(endRooms);
+            endRooms.ForEach(endRoom => endRoom.Corridors.Add(newCorridor));
+
+            corridors.Add(newCorridor);
+
+            return true;
+        }
+
+        #region StartTiles
+        private static (Room room, List<Point>, Direction direction) GetStartTiles(
+            List<Room> rooms,
+            List<Corridor> corridors,
+            int corridorWidth,
+            List<int> wideIndexList
+        )
+        {
+            var minNumberOfCorridors = rooms.Min(room => room.Corridors.Count);
+            var startRoomCanddiates = (minNumberOfCorridors == 0)
+                ? rooms.Where(room => room.Corridors.Count == 0).ToList()
+                : rooms;
+
+            var room = startRoomCanddiates[Luck.Next(startRoomCanddiates.Count)];
+            var availableTiles = new List<(List<Point> tiles, Direction direction)>();
+
+            var upTilesList = GetUpOrDownStartTiles(room, rooms, corridors, corridorWidth, wideIndexList, upOrDown: true);
+            upTilesList.ForEach(upTiles => availableTiles.Add((upTiles, Direction.UP)));
+
+            var downTilesList = GetUpOrDownStartTiles(room, rooms, corridors, corridorWidth, wideIndexList, upOrDown: false);
+            downTilesList.ForEach(downTiles => availableTiles.Add((downTiles, Direction.DOWN)));
+
+            var leftTiles = GetLeftOrRightStartTiles(room, rooms, corridors, corridorWidth, wideIndexList, leftOrRight: true);
+            leftTiles.ForEach(leftTiles => availableTiles.Add((leftTiles, Direction.LEFT)));
+
+            var rightTilesList = GetLeftOrRightStartTiles(room, rooms, corridors, corridorWidth, wideIndexList, leftOrRight: false);
+            rightTilesList.ForEach(rightTiles => availableTiles.Add((rightTiles, Direction.RIGHT)));
+
+            if (!availableTiles.Any())
+                return (default, default, default);
+
+            var (startTiles, direction) = availableTiles[Luck.Next(availableTiles.Count)];
+
+            return (room, startTiles, direction);
+        }
+
+        private static List<List<Point>> GetUpOrDownStartTiles(
+            Room room,
+            List<Room> rooms,
+            List<Corridor> corridors,
+            int corridorWidth,
+            List<int> indexList,
+            bool upOrDown
+        )
+        {
+            var deltaY = upOrDown ? -1 : 1;
+            var initialStartTile = upOrDown ? room.TilePos : room.TilePos.Add(y: room.Size.Height - 1);
+            var startTilesList = new List<List<Point>>();
+            for (var x = 0; x < room.Size.Width - corridorWidth; x++)
+            {
+                var currentInitialTile = initialStartTile.Add(x: x, y: deltaY);
+                var candidateStartTiles = indexList.Select(idx => currentInitialTile.Add(x: idx)).ToList();
+                var areValidCandidates = candidateStartTiles.All(tilePos => !IsOccupied(tilePos, rooms, corridors));
+
+                if (areValidCandidates)
+                    startTilesList.Add(candidateStartTiles);
+            }
+
+            return startTilesList;
+        }
+
+        private static List<List<Point>> GetLeftOrRightStartTiles(
+            Room room,
+            List<Room> rooms,
+            List<Corridor> corridors,
+            int corridorWidth,
+            List<int> indexList,
+            bool leftOrRight
+        )
+        {
+            var deltaX = leftOrRight ? -1 : 1;
+            var initialStartTile = leftOrRight ? room.TilePos : room.TilePos.Add(x: room.Size.Width - 1);
+            var startTilesList = new List<List<Point>>();
+            for (var y = 0; y < room.Size.Height - corridorWidth; y++)
+            {
+                var currentInitialTile = initialStartTile.Add(x: deltaX, y: y);
+                var candidateStartTiles = indexList.Select(idx => currentInitialTile.Add(y: idx)).ToList();
+                var areValidCandidates = candidateStartTiles.All(tilePos => !IsOccupied(tilePos, rooms, corridors));
+
+                if (areValidCandidates)
+                    startTilesList.Add(candidateStartTiles);
+            }
+
+            return startTilesList;
+        }
+
+        #endregion
+
+        #region Expansion
+        private static List<Room> ExpandCorridor(
             MapGenerationParams mapParams,
             List<Corridor> corridors,
-            Corridor newCorridor,
+            Corridor corridor,
+            int corridorWidth,
+            List<int> wideIndexList,
+            List<Point> startTiles,
             Direction direction,
             List<Room> rooms
         )
         {
-            var currentTile = (x: newCorridor.StartX, y: newCorridor.StartY);
-            var whileLoops = 0;
+            var currentTiles = startTiles;
+            var straightPathLength = 0;
             while (true)
             {
-                whileLoops++;
-                if (whileLoops > EXPAND_CORRIDOR_MAX_LOOPS)
-                    throw new InvalidMapException("Expanding corridor");
+                var areCurrentTilesValid = currentTiles
+                    .All(tilePos =>
+                        mapParams.IsTileInBounds(tilePos)
+                        && !corridor.Tiles.Contains(tilePos)
+                    );
 
-                if (currentTile.x < 1
-                    || currentTile.x > mapParams.Width - 2
-                    || currentTile.y < 1
-                    || currentTile.y > mapParams.Height - 2)
-                    break;
+                if (!areCurrentTilesValid)
+                    return null;
 
-                if (newCorridor.Tiles.Contains(currentTile)
-                    || corridors.Any(c => c.Tiles.Contains(currentTile)))
-                    break;
+                corridor.Tiles.AddRange(currentTiles);
 
-                newCorridor.Tiles.Add(currentTile);
+                var endRooms = CheckEndRooms(rooms, corridors, corridor, currentTiles, direction, wideIndexList);
+                if (endRooms.Any())
+                    return endRooms;
 
-                var endRooms = rooms.Where(room => room.HasTile(currentTile.x, currentTile.y)).ToList();
-                if (endRooms.Count > 0)
+                var canTurn = straightPathLength > corridorWidth;
+                var hasTurned = false;
+                if (canTurn && mapParams.CorridorTurnCheck())
                 {
-                    if (endRooms.Count > 1)
-                        throw new Exception("More than 1 room with the same tile");
-
-                    var endRoom = endRooms.Single();
-                    newCorridor.EndRoom = endRoom;
-                    newCorridor.EndX = newCorridor.Tiles.Last().x;
-                    newCorridor.EndY = newCorridor.Tiles.Last().y;
-                    break;
+                    var (newCurrentTiles, turnToDirection) = TurnCorridor(direction, wideIndexList, currentTiles);
+                    hasTurned = newCurrentTiles != null;
+                    if (hasTurned)
+                    {
+                        direction = turnToDirection;
+                        currentTiles = newCurrentTiles;
+                        straightPathLength = 0;
+                    }
                 }
 
-                switch (direction)
-                {
-                    case Direction.UP:
-                        currentTile.y -= 1;
-                        break;
-                    case Direction.RIGHT:
-                        currentTile.x += 1;
-                        break;
-                    case Direction.DOWN:
-                        currentTile.y += 1;
-                        break;
-                    case Direction.LEFT:
-                        currentTile.x -= 1;
-                        break;
-                }
+                if (!hasTurned)
+                    straightPathLength++;
 
-                if (Luck.NextDouble() < mapParams.CorridorTurnProbability)
-                {
-                    if (direction == Direction.UP || direction == Direction.DOWN)
-                        direction = (Luck.NextDouble() > 0.5 ? Direction.LEFT : Direction.RIGHT);
-                    else
-                        direction = (Luck.NextDouble() > 0.5 ? Direction.UP : Direction.DOWN);
-                }
+                currentTiles = currentTiles.Select(NextTileFn[direction]).ToList();
             }
         }
+
+        private static (List<Point> newCurrentTiles, Direction turnToDirection) TurnCorridor(
+            Direction currentDirection,
+            List<int> wideIndexList,
+            List<Point> currentTiles
+        )
+        {
+            var turnToDirection = (currentDirection == Direction.UP || currentDirection == Direction.DOWN)
+                ? (Luck.NextDouble() > 0.5 ? Direction.LEFT : Direction.RIGHT)
+                : (Luck.NextDouble() > 0.5 ? Direction.UP : Direction.DOWN);
+
+            var turnedTiles = GetTurnedTiles(currentDirection, wideIndexList, currentTiles, turnToDirection);
+
+            return (turnedTiles, turnToDirection);
+        }
+
+        private static List<Point> GetTurnedTiles(
+            Direction currentDirection,
+            List<int> wideIndexList,
+            List<Point> currentTiles,
+            Direction turnToDirection
+        )
+        {
+            var sortedCurrentTiles = currentTiles.OrderBy(tile => tile.X).ThenBy(tile => tile.Y);
+            var initialTile = (turnToDirection == Direction.LEFT || turnToDirection == Direction.UP)
+                ? sortedCurrentTiles.First()
+                : sortedCurrentTiles.Last();
+
+            var getTurnedTile = GetTurnedTileFn[currentDirection](initialTile);
+
+            return wideIndexList.Select(getTurnedTile).ToList();
+        }
+
+        private static List<Room> CheckEndRooms(
+            List<Room> rooms,
+            List<Corridor> corridors,
+            Corridor corridor,
+            List<Point> currentTiles,
+            Direction direction,
+            List<int> wideIndexList
+        )
+        {
+            var (turnedTilesDir1, turnedTilesDir2) =
+                (direction == Direction.UP || direction == Direction.DOWN)
+                    ? (Direction.LEFT, Direction.RIGHT)
+                    : (Direction.UP, Direction.DOWN);
+
+            var turnedTiles1 =
+                    GetTurnedTiles(direction, wideIndexList, currentTiles, turnedTilesDir1)
+                        .Select(NextTileFn[turnedTilesDir1])
+                        .ToList();
+
+            var turnedTiles2 =
+                    GetTurnedTiles(direction, wideIndexList, currentTiles, turnedTilesDir2)
+                        .Select(NextTileFn[turnedTilesDir2])
+                        .ToList();
+
+            var pipas1 = rooms
+                .Where(room =>
+                    !corridor.Rooms.Contains(room)
+                    && (
+                        currentTiles.Select(NextTileFn[direction]).Any(room.HasTile)
+                        || turnedTiles1.Any(room.HasTile)
+                        || turnedTiles2.Any(room.HasTile)
+                    )
+                ).ToList();
+
+            var endRooms = rooms
+                .Where(room =>
+                    !corridor.Rooms.Contains(room)
+                    && (
+                        currentTiles.Select(NextTileFn[direction]).Any(room.HasTile)
+                        || turnedTiles1.Any(room.HasTile)
+                        || turnedTiles2.Any(room.HasTile)
+                    )
+                )
+                .Concat(
+                    corridors.Where(
+                        otherCorr => currentTiles.Select(NextTileFn[direction]).Any(otherCorr.Tiles.Contains)
+                    ).Concat(
+                        corridors.Where(otherCorr => currentTiles.Any(otherCorr.Tiles.Contains))
+                    ).SelectMany(
+                        corridor => corridor.Rooms
+                    )
+                )
+                .Distinct()
+                .ToList();
+
+            return endRooms;
+        }
+
+        #endregion
+
+        #region Checks
+        private static bool IsOccupied(
+            Point tile,
+            List<Room> rooms,
+            List<Corridor> corridors,
+            Corridor corridor = null
+        ) =>
+            rooms.Any(room => room.HasTile(tile))
+                || corridors.Any(corridor => corridor.Tiles.Contains(tile))
+                || (corridor != null && corridor.Tiles.Contains(tile));
 
         private static bool AreAllConnected(List<Room> rooms)
         {
@@ -165,11 +335,13 @@ namespace Rogueskiv.MapGeneration
         {
             room.Visited = true;
             room.Corridors
-                .SelectMany(corridor => new List<Room> { corridor.StartRoom, corridor.EndRoom })
+                .SelectMany(corridor => corridor.Rooms)
                 .Distinct()
                 .Where(room => !room.Visited)
                 .ToList()
                 .ForEach(VisitRoom);
         }
+
+        #endregion
     }
 }

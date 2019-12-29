@@ -43,8 +43,8 @@ namespace Seedwork.Ux
 
         private void OnWindowResize(Size screenSize)
         {
+            Center = Center.Add(screenSize.Substract(ScreenSize).Divide(2).ToPoint());
             ScreenSize = screenSize;
-            Center = ScreenSize.Divide(2).ToPoint();
         }
 
         public void Dispose()

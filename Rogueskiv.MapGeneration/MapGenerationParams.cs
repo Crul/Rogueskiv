@@ -1,14 +1,22 @@
-﻿namespace Rogueskiv.MapGeneration
+﻿using Seedwork.Crosscutting;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+
+namespace Rogueskiv.MapGeneration
 {
     public class MapGenerationParams
     {
         public int Width { get; }
         public int Height { get; }
-        public float RoomExpandProbability { get; }
-        public float CorridorTurnProbability { get; }
         public float MinDensity { get; }
         public int InitialRooms { get; }
         public int MinRoomSize { get; }
+
+        private readonly float RoomExpandProbability;
+        private readonly float CorridorTurnProbability;
+        // TODO refactor XxxxxProbWeights
+        private readonly List<(int width, float weight)> CorridorWidthProbWeights;
 
         public MapGenerationParams(
             int width,
@@ -17,7 +25,8 @@
             float corridorTurnProbability,
             float minDensity,
             int initialRooms,
-            int minRoomSize
+            int minRoomSize,
+            List<(int width, float weight)> corridorWidthProbWeights
         )
         {
             Width = width;
@@ -27,6 +36,23 @@
             MinDensity = minDensity;
             InitialRooms = initialRooms;
             MinRoomSize = minRoomSize;
+            CorridorWidthProbWeights = corridorWidthProbWeights;
         }
+
+        public bool RoomExpandCheck() => Luck.NextDouble() < RoomExpandProbability;
+
+        public bool CorridorTurnCheck() => Luck.NextDouble() < CorridorTurnProbability;
+
+        public bool IsTileInBounds(Point tile) =>
+            tile.X > 0
+            && tile.X < Width - 1
+            && tile.Y > 0
+            && tile.Y < Height - 1;
+
+        public int GetRandomCorridorWidth() =>
+            CorridorWidthProbWeights
+                .OrderByDescending(cwpw => cwpw.weight * Luck.NextDouble())
+                .First()
+                .width;
     }
 }

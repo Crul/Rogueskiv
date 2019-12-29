@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Rogueskiv.MapGeneration
 {
     class Corridor
     {
-        public Room StartRoom { get; set; }
-        public int StartX { get; set; }
-        public int StartY { get; set; }
-        public Room EndRoom { get; set; }
-        public int EndX { get; set; }
-        public int EndY { get; set; }
-        public List<(int x, int y)> Tiles { get; set; }
-        public Corridor() => Tiles = new List<(int x, int y)>();
+        public List<Point> Tiles { get; set; }
+        public List<Room> Rooms { get; set; }
+
+        public Corridor()
+        {
+            Tiles = new List<Point>();
+            Rooms = new List<Room>();
+        }
     }
 }

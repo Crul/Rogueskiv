@@ -6,7 +6,7 @@ namespace Rogueskiv.Core.Components
     {
         public const int VISUAL_RANGE_INCREASE = 1;
 
-        public TorchComp(PointF position) : base(position)
+        public TorchComp(Point tilePos) : base(tilePos)
         { }
     }
 }

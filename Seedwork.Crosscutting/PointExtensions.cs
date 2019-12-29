@@ -20,11 +20,20 @@ namespace Seedwork.Crosscutting
         public static Point Add(this Point point, int x = 0, int y = 0)
             => new Point(point.X + x, point.Y + y);
 
+        public static Size Add(this Size size, int width = 0, int height = 0)
+            => new Size(size.Width + width, size.Height + height);
+
         public static PointF Substract(this PointF pointF1, PointF pointF2)
             => new PointF(pointF1.X - pointF2.X, pointF1.Y - pointF2.Y);
 
         public static Point Substract(this Point point1, Point point2)
             => new Point(point1.X - point2.X, point1.Y - point2.Y);
+
+        public static Point Substract(this Point point, int x = 0, int y = 0)
+            => new Point(point.X - x, point.Y - y);
+
+        public static Size Substract(this Size size1, Size size2)
+            => new Size(size1.Width - size2.Width, size1.Height - size2.Height);
 
         public static PointF Multiply(this PointF point, float value)
             => new PointF(point.X * value, point.Y * value);
@@ -38,8 +47,8 @@ namespace Seedwork.Crosscutting
         public static Size Multiply(this Size size, float value)
             => new Size((int)(size.Width * value), (int)(size.Height * value));
 
-        public static Point Divide(this PointF pointF, int value)
-            => new Point((int)Math.Floor(pointF.X / value), (int)Math.Floor(pointF.Y / value));
+        public static PointF Divide(this PointF pointF, float value)
+            => new PointF(pointF.X / value, pointF.Y / value);
 
         public static Size Divide(this Size size, int value)
             => new Size(size.Width / value, size.Height / value);

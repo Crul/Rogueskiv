@@ -13,19 +13,18 @@ namespace Rogueskiv.Core.Components.Position
             set
             {
                 position = value;
-                TilePos = position.Divide(BoardComp.TILE_SIZE);
+                TilePos = position.Divide(BoardComp.TILE_SIZE).ToPoint();
             }
         }
 
         public Point TilePos { get; private set; }
 
-        public virtual bool Visible { get; set; } = false;
+        public virtual bool AllowRevealedByMap => true;
 
-        protected PositionComp(PointF position) =>
-            Position = position;
+        protected PositionComp(Point tilePos)
+            : this(tilePos.Multiply(BoardComp.TILE_SIZE).Add(BoardComp.TILE_SIZE / 2)) { }
 
-        protected PositionComp(Point tilePos) =>
-            Position = tilePos.Multiply(BoardComp.TILE_SIZE);
+        protected PositionComp(PointF position) => Position = position;
 
         public void SetPosition(float? x = null, float? y = null) =>
              Position = new PointF(x ?? Position.X, y ?? Position.Y);

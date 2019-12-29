@@ -4,7 +4,6 @@ using Rogueskiv.Core.Components.Position;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
-using Seedwork.Crosscutting;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,10 +12,9 @@ namespace Rogueskiv.Core.Systems
     class FOVSys : BaseSystem
     {
         private Game Game;
+        private PlayerComp PlayerComp;
         private CurrentPositionComp PlayerPosComp;
         private FOVComp FOVComp;
-        private BoardComp BoardComp;
-        private List<TileComp> TileComps;
 
         public override void Init(Game game)
         {
@@ -27,40 +25,16 @@ namespace Rogueskiv.Core.Systems
                 .GetWithComponent<PlayerComp>()
                 .Single();
 
+            PlayerComp = playerEntity.GetComponent<PlayerComp>();
             PlayerPosComp = playerEntity.GetComponent<CurrentPositionComp>();
 
             FOVComp = Game.Entities.GetSingleComponent<FOVComp>();
-            TileComps = Game.Entities.GetComponents<TileComp>();
-            BoardComp = Game.Entities.GetSingleComponent<BoardComp>();
+            var boardComp = Game.Entities.GetSingleComponent<BoardComp>();
 
-            var playerComp = playerEntity.GetComponent<PlayerComp>();
-            FOVComp.Init(BoardComp, playerComp);
+            FOVComp.Init(boardComp, PlayerComp);
         }
 
-        public override void Update(EntityList entities, List<int> controls)
-        {
-            FOVComp.SetPlayerPos(PlayerPosComp);
-
-            var otherPositions = entities.GetComponents<CurrentPositionComp>();
-
-            TileComps
-                .Select(t => (PositionComp)t)
-                .Concat(otherPositions)
-                .ToList()
-                .ForEach(comp => comp.Visible = FOVComp.IsVisible(comp));
-
-            FOVComp.Reset();
-            TileComps.ForEach(SetFOVInfo);
-        }
-
-        private void SetFOVInfo(TileComp tileComp)
-        {
-            (int tileX, int tileY) = (tileComp.TilePos.X, tileComp.TilePos.Y);
-
-            var tileFOVInfo = FOVComp.GetTileFOVInfo(tileX, tileY);
-            tileFOVInfo.Hidden = tileComp.Visible && !tileComp.VisibleByPlayer;
-            tileFOVInfo.VisibleByPlayer = tileComp.VisibleByPlayer;
-            tileFOVInfo.DistanceFromPlayer = Distance.Get(tileComp.Position, PlayerPosComp.Position);
-        }
+        public override void Update(EntityList entities, List<int> controls) =>
+            FOVComp.SetPlayerPos(PlayerComp, PlayerPosComp);
     }
 }

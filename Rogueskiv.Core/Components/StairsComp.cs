@@ -3,23 +3,9 @@ using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    public abstract class StairsComp : CurrentPositionComp
+    public abstract class StairsComp : TilePositionComp
     {
-        // TODO DRY TileComp
-        public bool HasBeenSeen { get; set; }
-        public bool VisibleByPlayer { get; private set; }
-
-        public override bool Visible
-        {
-            get => HasBeenSeen;
-            set
-            {
-                VisibleByPlayer = value;
-                HasBeenSeen = HasBeenSeen || value;
-            }
-        }
-
-        protected StairsComp(PointF position) : base(position)
+        protected StairsComp(Point tilePos) : base(tilePos)
         { }
     }
 }
