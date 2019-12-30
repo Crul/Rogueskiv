@@ -10,43 +10,44 @@ namespace Rogueskiv.Menus.MenuOptions
     class MenuSys : BaseSystem
     {
         private Game Game;
-        private bool Moved = false;
+        private List<Controls> LastControls = new List<Controls>();
 
         public override void Init(Game game) => Game = game;
 
         public override void Update(EntityList entities, List<int> controls)
         {
-            var controlList = controls.ToList();
-            if (controlList.Count == 0)
+            if (controls.Count == 0)
             {
-                Moved = false;
+                LastControls.Clear();
                 return;
             }
 
-            if (Moved) return;
+            UpdateMenuOptions(entities, controls);
 
+            LastControls = controls.Select(c => (Controls)c).ToList();
+        }
+
+        private void UpdateMenuOptions(EntityList entities, List<int> controls)
+        {
             var menuOptions = entities.GetComponents<MenuOptionComp>()
                 .OrderBy(mo => mo.Order)
                 .ToList();
 
             var activeMenuOption = menuOptions.Single(mo => mo.Active);
-            if (controlList.Contains((int)Controls.ENTER) || controlList.Contains((int)Controls.ENTER2))
+            if (controls.Contains((int)Controls.ENTER) || controls.Contains((int)Controls.ENTER2))
             {
                 Game.EndGame(activeMenuOption.Result);
                 return;
             }
 
             var move = 0;
-            if (controlList.Contains((int)Controls.UP))
+            if (ControlPressed(controls, Controls.UP))
                 move -= 1;
-            if (controlList.Contains((int)Controls.DOWN))
+            if (ControlPressed(controls, Controls.DOWN))
                 move += 1;
 
             if (move == 0)
-            {
-                Moved = false;
                 return;
-            }
 
             var newActiveIndex = Maths.Modulo(
                 menuOptions.IndexOf(activeMenuOption) + move,
@@ -55,7 +56,9 @@ namespace Rogueskiv.Menus.MenuOptions
 
             activeMenuOption.Active = false;
             menuOptions[newActiveIndex].Active = true;
-            Moved = true;
         }
+
+        private bool ControlPressed(List<int> controls, Controls control) =>
+            controls.Contains((int)control) && !LastControls.Contains(control);
     }
 }
