@@ -35,12 +35,13 @@ namespace Seedwork.Ux.Renderers
             SDL_Color textColor,
             Point position,
             TextAlign align,
-            Action<Point> renderBgr = null
+            Action<Point> renderBgr = null,
+            Point? minPosition = null
         )
         {
             PreRender(text, textColor);
             renderBgr?.Invoke(position);
-            Render(position, align);
+            Render(position, align, minPosition);
         }
 
         private void PreRender(string text, SDL_Color textColor)
@@ -57,7 +58,7 @@ namespace Seedwork.Ux.Renderers
             SDL_FreeSurface(renderedText);
         }
 
-        private void Render(Point position, TextAlign align)
+        private void Render(Point position, TextAlign align, Point? minPosition = null)
         {
             // TODO TextSpriteProvider ?
             var src = new SDL_Rect()
@@ -89,6 +90,12 @@ namespace Seedwork.Ux.Renderers
                     break;
             }
 
+
+            if (minPosition.HasValue)
+            {
+                dest.x = Math.Max(minPosition.Value.X, dest.x);
+                dest.y = Math.Max(minPosition.Value.Y, dest.y);
+            }
 
             SDL_RenderCopy(UxContext.WRenderer, TextureCache, ref src, ref dest);
         }

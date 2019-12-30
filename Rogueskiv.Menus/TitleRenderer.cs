@@ -11,6 +11,8 @@ namespace Rogueskiv.Menus
         private const int MARGIN_X = 120;
         private const int MARGIN_Y = 60;
 
+        private readonly Point MinPosition = new Point(30, MARGIN_Y);
+
         private readonly SDL_Color TitleColor =
             new SDL_Color() { r = 0x7C, g = 0xD4, b = 0xDA, a = 0xFF };
 
@@ -29,7 +31,13 @@ namespace Rogueskiv.Menus
                 x: UxContext.ScreenSize.Width - MARGIN_X,
                 y: MARGIN_Y
             );
-            TextRenderer.Render(UxContext.Title, TitleColor, titlePosition, TextAlign.TOP_RIGHT);
+            TextRenderer.Render(
+                UxContext.Title,
+                TitleColor,
+                titlePosition,
+                TextAlign.TOP_RIGHT,
+                minPosition: MinPosition
+            );
         }
 
         public void Dispose()
