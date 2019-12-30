@@ -29,6 +29,7 @@ namespace Rogueskiv.Ux.Renderers
 
             var textLines = GetText(popUpComp).Split(Environment.NewLine).ToList();
             var position = GetPosition(popUpComp);
+            position.Y -= textLines.Count * LINE_HEIGHT / 2;
             var textColor = GetColor(popUpComp);
             var aligment = GetAligment();
 
@@ -43,7 +44,8 @@ namespace Rogueskiv.Ux.Renderers
             textLines.Skip(1).ToList().ForEach(textLine =>
             {
                 position = position.Add(y: LINE_HEIGHT);
-                TextRenderer.Render(textLine, textColor, position, aligment);
+                if (!string.IsNullOrEmpty(textLine))
+                    TextRenderer.Render(textLine, textColor, position, aligment);
             });
         }
 
@@ -58,10 +60,17 @@ namespace Rogueskiv.Ux.Renderers
             var resultCode = Game.Result?.ResultCode;
 
             if (resultCode == RogueskivGameResults.DeathResult.ResultCode)
-                return "YOU'RE DEAD";
+                return $"YOU'RE DEAD{Environment.NewLine}Press Q to go to the menu.";
 
             if (resultCode == RogueskivGameResults.WinResult.ResultCode)
-                return "YOU WIN";
+                return $"YOU WIN!"
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}I know it's not the most epic win screen,"
+                    + $"{Environment.NewLine}but you know, this is work in progress."
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Anyway, YOU DID IT!!! ^_^"
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Press Q to go to the menu.";
 
             return component.Text;
         }
@@ -74,7 +83,7 @@ namespace Rogueskiv.Ux.Renderers
             var bgr = new SDL_Rect()
             {
                 x = PADDING,
-                y = position.Y - PADDING - TextRenderer.SurfaceCache.h / 2,
+                y = position.Y - PADDING,
                 w = UxContext.ScreenSize.Width - 2 * PADDING,
                 h = TextRenderer.SurfaceCache.h * textLines + 2 * PADDING
             };
