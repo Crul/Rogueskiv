@@ -15,13 +15,13 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
-        public int Floor { get; }
+        public int Floor { get => GameConfig.Floor; }
+        public int GameSeed { get => GameConfig.GameSeed; }
 
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
         private readonly TimerComp TimerComp;
-
-        private readonly string PAUSE_TEXT = $"PAUSE{Environment.NewLine}Press ESC to continue or Q to quit";
+        private readonly IRogueskivGameConfig GameConfig;
 
         public RogueskivGame(
             GameStageCode stageCode,
@@ -64,7 +64,7 @@ namespace Rogueskiv.Core
             )
         {
             Pause = true;
-            Floor = gameConfig.Floor;
+            GameConfig = gameConfig;
             BoardComp = Entities.GetSingleComponent<BoardComp>();
             TimerComp = Entities.GetSingleComponent<TimerComp>();
         }
@@ -104,7 +104,11 @@ namespace Rogueskiv.Core
             {
                 Pause = false;
                 HasStarted = true;
-                Entities.GetSingleComponent<PopUpComp>().Text = PAUSE_TEXT;
+                var pauseText = $"PAUSE"
+                    + $"{Environment.NewLine}Press ESC to continue or Q to quit"
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Seed: {GameConfig.GameSeed}";
+                Entities.GetSingleComponent<PopUpComp>().Text = pauseText;
                 if (!TimerComp.HasStarted) TimerComp.Start();
             }
 

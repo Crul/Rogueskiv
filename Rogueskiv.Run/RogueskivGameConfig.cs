@@ -13,6 +13,7 @@ namespace Rogueskiv.Run
         private readonly RogueskivAppConfig RogueskivConfig;
         private readonly float FloorFactor;
 
+        public int GameSeed { get; }
         public int Floor { get; }
         public bool IsLastFloor { get; }
         public IMapGenerationParams MapGenerationParams { get; }
@@ -48,6 +49,7 @@ namespace Rogueskiv.Run
         public RogueskivGameConfig(RogueskivAppConfig rogueskivConfig, IGameContext gameContext, int floor)
         {
             RogueskivConfig = rogueskivConfig;
+            GameSeed = gameContext.GameSeed;
             Floor = floor;
             IsLastFloor = floor == RogueskivConfig.FloorCount;
             FloorFactor = (float)floor / RogueskivConfig.FloorCount;

@@ -1,6 +1,5 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.Components;
-using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
 using Seedwork.Ux;
@@ -17,9 +16,9 @@ namespace Rogueskiv.Ux.Renderers
         private const int PADDING = 20;
         private const byte BGR_OPACITY = 0xF0;
         private const int LINE_HEIGHT = 24;
-        private readonly IRenderizable Game;
+        private readonly RogueskivGame Game;
 
-        public PopUpRenderer(UxContext uxContext, IRenderizable game, IntPtr font)
+        public PopUpRenderer(UxContext uxContext, RogueskivGame game, IntPtr font)
             : base(uxContext, font) => Game = game;
 
         protected override void Render(IEntity entity, PopUpComp popUpComp, float interpolation)
@@ -60,7 +59,10 @@ namespace Rogueskiv.Ux.Renderers
             var resultCode = Game.Result?.ResultCode;
 
             if (resultCode == RogueskivGameResults.DeathResult.ResultCode)
-                return $"YOU'RE DEAD{Environment.NewLine}Press Q to go to the menu.";
+                return $"YOU'RE DEAD"
+                    + $"{Environment.NewLine}Press Q to go to the menu."
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Seed: {Game.GameSeed}";
 
             if (resultCode == RogueskivGameResults.WinResult.ResultCode)
                 return $"YOU WIN!"
@@ -70,7 +72,9 @@ namespace Rogueskiv.Ux.Renderers
                     + $"{Environment.NewLine}"
                     + $"{Environment.NewLine}Anyway, YOU DID IT!!! ^_^"
                     + $"{Environment.NewLine}"
-                    + $"{Environment.NewLine}Press Q to go to the menu.";
+                    + $"{Environment.NewLine}Press Q to go to the menu."
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Seed: {Game.GameSeed}";
 
             return component.Text;
         }

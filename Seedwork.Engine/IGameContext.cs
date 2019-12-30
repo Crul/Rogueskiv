@@ -2,6 +2,7 @@
 {
     public interface IGameContext
     {
+        int GameSeed { get; }
         int GameFPS { get; }
         long GameTicks { get; }
         int UxFPS { get; }
