@@ -17,6 +17,8 @@ namespace Rogueskiv.Run
         // IUxConfig
         public bool Maximized { get; set; }
         public Size ScreenSize { get; set; }
+        public bool InGameTimeVisible { get; set; }
+        public bool RealTimeVisible { get; set; }
 
         // IRogueskivUxConfig
         public string FontFile { get; } = Path.Join("fonts", "Hack", "Hack-Regular.ttf");

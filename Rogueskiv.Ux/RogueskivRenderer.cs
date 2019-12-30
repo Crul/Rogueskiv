@@ -59,7 +59,16 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
             CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
-            CompRenderers[typeof(TimerComp)] = new TimerRenderer(uxContext, gameContext, Font);
+
+            if (uxConfig.InGameTimeVisible || uxConfig.RealTimeVisible)
+                CompRenderers[typeof(TimerComp)] = new TimerRenderer(
+                    uxContext,
+                    gameContext,
+                    Font,
+                    inGameTimeVisible: uxConfig.InGameTimeVisible,
+                    realTimeVisible: uxConfig.RealTimeVisible
+                );
+
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 

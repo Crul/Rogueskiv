@@ -5,6 +5,8 @@ screenSize:
     height: 480
 maxGameStepsWithoutRender: 5
 cameraMovementFriction: 20
+inGameTimeVisible: true
+realTimeVisible: false
 
 # game
 floorCount: 26
