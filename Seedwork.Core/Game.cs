@@ -20,8 +20,8 @@ namespace Seedwork.Core
         public bool Quit { get; protected set; }
 
         private bool PauseControlPressedBefore = false;
-        private readonly int PauseControl;
-        private readonly int QuitControl;
+        protected readonly int PauseControl;
+        protected readonly int QuitControl;
         private int EntityIdCounter;
 
         public Game(

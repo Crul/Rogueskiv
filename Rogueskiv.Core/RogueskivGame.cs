@@ -105,6 +105,9 @@ namespace Rogueskiv.Core
                 if (!TimerComp.HasStarted) TimerComp.Start();
             }
 
+            if (!Pause && Controls.Contains(QuitControl)) // only allow exit on pause
+                Controls.Remove(QuitControl);
+
             base.Update();
         }
 
