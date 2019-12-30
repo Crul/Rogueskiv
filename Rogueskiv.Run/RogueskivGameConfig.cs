@@ -19,7 +19,7 @@ namespace Rogueskiv.Run
 
         public int PlayerRadius => RogueskivConfig.PlayerRadius;
         public int InitialPlayerHealth => RogueskivConfig.InitialPlayerHealth;
-        public int InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
+        public float InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
         public float PlayerBounceAmortiguationFactor => RogueskivConfig.PlayerBounceAmortiguationFactor;
         public float PlayerFrictionFactor => RogueskivConfig.PlayerFrictionFactor;
         public float PlayerAcceleration { get; }
@@ -43,7 +43,7 @@ namespace Rogueskiv.Run
         public float EnemyCollisionBounce => RogueskivConfig.EnemyCollisionBounce;
         public int MaxItemPickingTime { get; }
         public int FoodHealthIncrease => RogueskivConfig.FoodHealthIncrease;
-        public int TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
+        public float TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
 
         public RogueskivGameConfig(RogueskivAppConfig rogueskivConfig, IGameContext gameContext, int floor)
         {

@@ -8,7 +8,7 @@ namespace Rogueskiv.Core.Systems
 
         int PlayerRadius { get; }
         int InitialPlayerHealth { get; }
-        int InitialPlayerVisualRange { get; }
+        float InitialPlayerVisualRange { get; }
         float PlayerAcceleration { get; }
         float PlayerMaxSpeed { get; }
         float PlayerStopSpeed { get; }
@@ -33,6 +33,6 @@ namespace Rogueskiv.Core.Systems
 
         int MaxItemPickingTime { get; }
         int FoodHealthIncrease { get; }
-        int TorchVisualRangeIncrease { get; }
+        float TorchVisualRangeIncrease { get; }
     }
 }

@@ -31,7 +31,7 @@ minDownStairsSpawnFactor: 0.8
 
 maxItemPickingTime: 600
 foodHealthIncrease: 3
-torchVisualRangeIncrease: 1
+torchVisualRangeIncrease: 0.5
 
 # enemies
 enemyCollisionDamage: 1

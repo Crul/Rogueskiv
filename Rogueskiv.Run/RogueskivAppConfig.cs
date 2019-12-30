@@ -37,7 +37,7 @@ namespace Rogueskiv.Run
         // ISpawnConfig
         public int PlayerRadius { get; set; }
         public int InitialPlayerHealth { get; set; }
-        public int InitialPlayerVisualRange { get; set; }
+        public float InitialPlayerVisualRange { get; set; }
         public float PlayerBounceAmortiguationFactor { get; set; }
         public float PlayerFrictionFactor { get; set; }
         public float PlayerAcceleration { get; set; }
@@ -62,6 +62,6 @@ namespace Rogueskiv.Run
 
         public int MaxItemPickingTime { get; set; }
         public int FoodHealthIncrease { get; set; }
-        public int TorchVisualRangeIncrease { get; set; }
+        public float TorchVisualRangeIncrease { get; set; }
     }
 }
