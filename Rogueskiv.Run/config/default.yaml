@@ -17,7 +17,7 @@ playerStopSpeed: 0.5
 initialPlayerHealth: 10
 initialPlayerVisualRange: 5
 playerFrictionFactor: 0.05
-playerBounceAmortiguationFactor:  0.6666
+playerBounceAmortiguationFactor: 0.4  # it's the inverse (TODO rename to playerbounceMomentumConservation ?)
 
 # items
 minFoodSpawnDistanceFactor: 16
