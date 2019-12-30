@@ -1,5 +1,4 @@
-﻿using Seedwork.Core;
-using Seedwork.Core.Entities;
+﻿using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Crosscutting;
 using System.Collections.Generic;
@@ -9,10 +8,7 @@ namespace Rogueskiv.Menus.MenuOptions
 {
     class MenuSys : BaseSystem
     {
-        private Game Game;
         private List<Controls> LastControls = new List<Controls>();
-
-        public override void Init(Game game) => Game = game;
 
         public override void Update(EntityList entities, List<int> controls)
         {
@@ -34,25 +30,32 @@ namespace Rogueskiv.Menus.MenuOptions
                 .ToList();
 
             var activeMenuOption = menuOptions.Single(mo => mo.Active);
-            if (controls.Contains((int)Controls.ENTER) || controls.Contains((int)Controls.ENTER2))
+            if (ControlPressed(controls, Controls.ENTER))
             {
-                Game.EndGame(activeMenuOption.Result);
+                activeMenuOption.Execute(this);
                 return;
             }
 
-            var move = 0;
-            if (ControlPressed(controls, Controls.UP))
-                move -= 1;
-            if (ControlPressed(controls, Controls.DOWN))
-                move += 1;
+            int newActiveIndex;
+            if (ControlPressed(controls, Controls.QUIT))
+                newActiveIndex = menuOptions.Count - 1;
 
-            if (move == 0)
-                return;
+            else
+            {
+                var move = 0;
+                if (ControlPressed(controls, Controls.UP))
+                    move -= 1;
+                if (ControlPressed(controls, Controls.DOWN))
+                    move += 1;
 
-            var newActiveIndex = Maths.Modulo(
-                menuOptions.IndexOf(activeMenuOption) + move,
-                menuOptions.Count
-            );
+                if (move == 0)
+                    return;
+
+                newActiveIndex = Maths.Modulo(
+                    menuOptions.IndexOf(activeMenuOption) + move,
+                    menuOptions.Count
+                );
+            }
 
             activeMenuOption.Active = false;
             menuOptions[newActiveIndex].Active = true;

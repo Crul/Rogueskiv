@@ -8,8 +8,8 @@ namespace Rogueskiv.Menus.MenuOptions
 {
     class MenuOptionRenderer : TextCompRenderer<MenuOptionComp>
     {
-        private const int MARGIN_LEFT = 150;
-        private const int MARGIN_TOP = 150;
+        private const int MARGIN_LEFT = 100;
+        private const int MARGIN_TOP = 136;
         private const int LINE_HEIGHT = 50;
 
         public MenuOptionRenderer(UxContext uxContext, IntPtr font)
@@ -25,5 +25,7 @@ namespace Rogueskiv.Menus.MenuOptions
 
         protected override Point GetPosition(MenuOptionComp component) =>
             new Point(MARGIN_LEFT, MARGIN_TOP + (component.Order * LINE_HEIGHT));
+
+        protected override TextAlign GetAligment() => TextAlign.TOP_LEFT;
     }
 }

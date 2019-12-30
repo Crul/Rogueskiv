@@ -5,10 +5,7 @@
         NONE,
         UP,
         DOWN,
-        LEFT,
-        RIGHT,
         ENTER,
-        ENTER2,
         QUIT
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Rogueskiv.Menus.MenuOptions;
 using Seedwork.Core;
-using Seedwork.Core.Components;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
 using System.Collections.Generic;
@@ -11,15 +10,13 @@ namespace Rogueskiv.Menus
     {
         public RogueskivMenu(GameStageCode stageCode)
             : base(
-                quitControl: (int)Menus.Controls.QUIT,
+                quitControl: (int)Menus.Controls.NONE,
                 stageCode: stageCode,
-                entitiesComponents: new List<List<IComponent>>
-                {
-                    new List<IComponent> { new MenuOptionComp(0, "Play", RogueskivMenuResults.PlayResult) },
-                    new List<IComponent> { new MenuOptionComp(1, "Quit", RogueskivMenuResults.QuitResult) },
-                },
                 systems: new List<ISystem> { new MenuSys() }
             )
-        { }
+        {
+            AddEntity(new MenuOptionComp(0, "Play", menuSys => EndGame(RogueskivMenuResults.PlayResult)));
+            AddEntity(new MenuOptionComp(1, "Quit", menuSys => EndGame(RogueskivMenuResults.QuitResult)));
+        }
     }
 }
