@@ -5,6 +5,7 @@ using Rogueskiv.Ux.Renderers;
 using SDL2;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
 using System.Drawing;
@@ -27,7 +28,12 @@ namespace Rogueskiv.Ux
 #pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore IDE0069 // Disposable fields should be disposed
 
-        public RogueskivRenderer(UxContext uxContext, IRenderizable game, IRogueskivUxConfig uxConfig)
+        public RogueskivRenderer(
+            UxContext uxContext,
+            IGameContext gameContext,
+            IRenderizable game,
+            IRogueskivUxConfig uxConfig
+        )
             : base(uxContext, game)
         {
             UxContext = uxContext;
@@ -53,6 +59,7 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
             CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
+            CompRenderers[typeof(TimerComp)] = new TimerRenderer(uxContext, gameContext, Font);
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 

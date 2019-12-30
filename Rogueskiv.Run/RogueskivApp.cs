@@ -84,7 +84,7 @@ namespace Rogueskiv.Run
             var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
             var gameConfig = new RogueskivGameConfig(AppConfig, gameContext, CurrentFloor);
             var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
-            var renderer = new RogueskivRenderer(uxContext, game, AppConfig);
+            var renderer = new RogueskivRenderer(uxContext, gameContext, game, AppConfig);
             var userInput = new RogueskivInputHandler(uxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 

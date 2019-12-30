@@ -16,6 +16,7 @@ namespace Rogueskiv.Core
     {
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
+        private readonly TimerComp TimerComp;
 
         public RogueskivGame(
             GameStageCode stageCode,
@@ -27,11 +28,13 @@ namespace Rogueskiv.Core
                 stageCode: stageCode,
                 entitiesComponents: new List<List<IComponent>>
                 {
+                    new List<IComponent> { new TimerComp(previousFloorResult?.Data.GetSingleComponent<TimerComp>()) },
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
                     new List<IComponent> { new PopUpComp() { Text = GetStartText(gameConfig.Floor) } },
                 },
                 systems: new List<ISystem> {
+                    new TimerSys(),
                     string.IsNullOrEmpty(boardData)
                         ? new BoardSys(gameConfig.MapGenerationParams)
                         : new BoardSys(boardData),
@@ -57,6 +60,7 @@ namespace Rogueskiv.Core
         {
             Pause = true;
             BoardComp = Entities.GetSingleComponent<BoardComp>();
+            TimerComp = Entities.GetSingleComponent<TimerComp>();
         }
 
         private static string GetStartText(int floor) =>
@@ -65,6 +69,10 @@ namespace Rogueskiv.Core
         public override void Restart(IGameResult<IEntity> previousFloorResult)
         {
             base.Restart(previousFloorResult);
+
+            var timerComp = Entities.GetSingleComponent<TimerComp>();
+            var previousTimerComp = previousFloorResult.Data.GetSingleComponent<TimerComp>();
+            timerComp.InGameTime = previousTimerComp.InGameTime;
 
             var playerEntity = Entities.GetWithComponent<PlayerComp>().Single();
             var previousPlayerEntity = previousFloorResult
@@ -91,9 +99,16 @@ namespace Rogueskiv.Core
                 Pause = false;
                 HasStarted = true;
                 Entities.GetSingleComponent<PopUpComp>().Text = "PAUSE";
+                if (!TimerComp.HasStarted) TimerComp.Start();
             }
 
             base.Update();
+        }
+
+        public override void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
+        {
+            gameResult.Data.Add(Entities.GetWithComponent<TimerComp>().Single());
+            base.EndGame(gameResult, pauseBeforeQuit);
         }
 
         public override void RemoveEntity(EntityId id)

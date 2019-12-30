@@ -24,7 +24,11 @@ namespace Seedwork.Ux.Renderers
             var text = GetText(comp);
             var textColor = GetColor(comp);
             var position = GetPosition(comp);
+            Render(text, textColor, position);
+        }
 
+        protected virtual void Render(string text, SDL_Color textColor, Point position)
+        {
             if (HasDataChanged(text, textColor, position))
             {
                 SetCache(text, textColor, position);
