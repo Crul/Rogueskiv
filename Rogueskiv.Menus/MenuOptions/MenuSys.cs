@@ -10,7 +10,25 @@ namespace Rogueskiv.Menus.MenuOptions
 {
     class MenuSys : BaseSystem
     {
-        public string CustomSeedText { get; private set; } = "";
+        private int CustomSeed;
+        public string CustomSeedText
+        {
+            get => CustomSeed.ToString();
+
+            private set
+            {
+                if (string.IsNullOrEmpty(value))
+                    CustomSeed = 0;
+
+                else
+                {
+                    var backup = CustomSeed;
+                    if (!int.TryParse(value, out CustomSeed))
+                        CustomSeed = backup;
+                }
+            }
+        }
+
         public bool AskingForCustomSeed { get; private set; } = false;
 
         private Game Game;
@@ -36,7 +54,7 @@ namespace Rogueskiv.Menus.MenuOptions
 
         internal void OnTextInput(string text)
         {
-            if (AskingForCustomSeed && int.TryParse(text, out _))
+            if (AskingForCustomSeed)
                 CustomSeedText += text;
         }
 
@@ -82,8 +100,7 @@ namespace Rogueskiv.Menus.MenuOptions
         {
             if (ControlPressed(controls, Controls.ENTER))
             {
-                if (!string.IsNullOrEmpty(CustomSeedText))
-                    RogueskivMenuResults.PlayResult.GameSeed = int.Parse(CustomSeedText);
+                RogueskivMenuResults.PlayResult.GameSeed = CustomSeed;
 
                 Game.EndGame(RogueskivMenuResults.PlayResult);
                 return;
@@ -91,7 +108,7 @@ namespace Rogueskiv.Menus.MenuOptions
 
             if (ControlPressed(controls, Controls.QUIT))
             {
-                CustomSeedText = string.Empty;
+                CustomSeed = 0;
                 AskingForCustomSeed = false;
                 SDL_StopTextInput();
                 return;
