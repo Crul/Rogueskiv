@@ -12,17 +12,20 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class BoardRenderer : CompRenderer<BoardComp>
+    class BoardRenderer : IRenderer
     {
+        private readonly UxContext UxContext;
         private IntPtr BoardBufferTexture;
         private FOVComp FOVComp;
         private Size BoardSize;
 
         public BoardRenderer(UxContext uxContext, IRenderizable game, IntPtr boardTexture)
-            : base(uxContext) =>
+        {
+            UxContext = uxContext;
             CreateBuffer(game, boardTexture);
+        }
 
-        protected override void Render(IEntity entity, BoardComp comp, float interpolation) =>
+        public void Render() =>
             FOVComp.ForAllSubTiles(tileFOVInfo =>
             {
                 if (tileFOVInfo.Visible)
@@ -39,7 +42,7 @@ namespace Rogueskiv.Ux.Renderers
                 h = BoardComp.TILE_SIZE / 2
             };
 
-            var screenPos = GetScreenPosition(tileFOVInfo.Position);
+            var screenPos = tileFOVInfo.Position.Add(UxContext.Center).ToPoint();
             var outputRect = new SDL_Rect()
             {
                 x = screenPos.X,
@@ -93,9 +96,14 @@ namespace Rogueskiv.Ux.Renderers
             SDL_SetRenderTarget(UxContext.WRenderer, IntPtr.Zero);
         }
 
-        protected override void Dispose(bool cleanManagedResources)
+        public void Dispose()
         {
-            base.Dispose(cleanManagedResources);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool cleanManagedResources)
+        {
             if (cleanManagedResources)
                 SDL_DestroyTexture(BoardBufferTexture);
         }
