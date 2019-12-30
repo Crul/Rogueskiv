@@ -1,6 +1,4 @@
 ﻿using SDL2;
-using Seedwork.Core.Components;
-using Seedwork.Core.Entities;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -8,39 +6,46 @@ using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
 {
-    public abstract class TextRenderer<T> : CompRenderer<T>
-        where T : IComponent
+    public class TextRenderer : IDisposable
     {
+        private readonly UxContext UxContext;
         private readonly IntPtr Font;
-        protected SDL_Surface SurfaceCache;
         private IntPtr TextureCache;
-        private (string text, (byte r, byte g, byte b, byte a), Point) DataCache;
+        private (string text, (byte r, byte g, byte b, byte a)) DataCache;
 
-        protected TextRenderer(UxContext uxContext, IntPtr font)
-            : base(uxContext) => Font = font;
+        public SDL_Surface SurfaceCache { get; private set; }
 
-        protected override void Render(IEntity entity, T comp, float interpolation)
+        public TextRenderer(UxContext uxContext, IntPtr font)
         {
-            var text = GetText(comp);
-            var textColor = GetColor(comp);
-            var position = GetPosition(comp);
-            Render(text, textColor, position);
+            UxContext = uxContext;
+            Font = font;
         }
 
-        protected virtual void Render(string text, SDL_Color textColor, Point position)
+        public void Render(
+            string text, SDL_Color textColor, Point position, Action<Point> renderBgr = null
+        )
         {
-            if (HasDataChanged(text, textColor, position))
-            {
-                SetCache(text, textColor, position);
-                SDL_DestroyTexture(TextureCache);
-                var renderedText = SDL_ttf.TTF_RenderText_Blended(Font, text, textColor);
-                SurfaceCache = (SDL_Surface)Marshal.PtrToStructure(renderedText, typeof(SDL_Surface));
-                TextureCache = SDL_CreateTextureFromSurface(UxContext.WRenderer, renderedText);
-                SDL_FreeSurface(renderedText);
-            }
+            PreRender(text, textColor);
+            renderBgr?.Invoke(position);
+            Render(position);
+        }
 
-            RenderBgr(position);
+        private void PreRender(string text, SDL_Color textColor)
+        {
+            if (!HasDataChanged(text, textColor))
+                return;
 
+            SetCache(text, textColor);
+
+            SDL_DestroyTexture(TextureCache);
+            var renderedText = SDL_ttf.TTF_RenderText_Blended(Font, text, textColor);
+            SurfaceCache = (SDL_Surface)Marshal.PtrToStructure(renderedText, typeof(SDL_Surface));
+            TextureCache = SDL_CreateTextureFromSurface(UxContext.WRenderer, renderedText);
+            SDL_FreeSurface(renderedText);
+        }
+
+        private void Render(Point position)
+        {
             // TODO TextSpriteProvider ?
             var src = new SDL_Rect()
             {
@@ -60,21 +65,20 @@ namespace Seedwork.Ux.Renderers
             SDL_RenderCopy(UxContext.WRenderer, TextureCache, ref src, ref dest);
         }
 
-        protected abstract string GetText(T component);
-        protected abstract SDL_Color GetColor(T component);
-        protected abstract Point GetPosition(T component);
+        private bool HasDataChanged(string text, SDL_Color color) =>
+            DataCache != (text, (color.r, color.g, color.b, color.a));
 
-        protected virtual void RenderBgr(Point position) { }
+        private void SetCache(string text, SDL_Color color) =>
+            DataCache = (text, (color.r, color.g, color.b, color.a));
 
-        private bool HasDataChanged(string text, SDL_Color color, Point position) =>
-            DataCache != (text, (color.r, color.g, color.b, color.a), position);
-
-        private void SetCache(string text, SDL_Color color, Point position) =>
-            DataCache = (text, (color.r, color.g, color.b, color.a), position);
-
-        protected override void Dispose(bool cleanManagedResources)
+        public void Dispose()
         {
-            base.Dispose(cleanManagedResources);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool cleanManagedResources)
+        {
             if (cleanManagedResources)
                 SDL_DestroyTexture(TextureCache);
         }

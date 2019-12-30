@@ -10,7 +10,7 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class TimerRenderer : TextRenderer<TimerComp>
+    class TimerRenderer : TextCompRenderer<TimerComp>
     {
         private const int WIDTH = 120;
         private const int HEIGHT = 24;
@@ -46,7 +46,7 @@ namespace Rogueskiv.Ux.Renderers
                 if (RealTimeVisible)
                     igtText = $"IGT: {igtText}";
 
-                Render(igtText, TEXT_COLOR, position);
+                TextRenderer.Render(igtText, TEXT_COLOR, position);
                 position = position.Add(y: HEIGHT);
             }
 
@@ -56,7 +56,7 @@ namespace Rogueskiv.Ux.Renderers
                 if (InGameTimeVisible)
                     rtaText = $"RTA: {rtaText}";
 
-                Render(rtaText, TEXT_COLOR, position);
+                TextRenderer.Render(rtaText, TEXT_COLOR, position);
             }
         }
 

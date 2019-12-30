@@ -10,13 +10,17 @@ namespace Rogueskiv.Menus
     // TODO do not render if no changes ?
     public class RogueskivMenuRenderer : GameRenderer
     {
-        private const int FONT_SIZE = 28;
+        private const int TITLE_FONT_SIZE = 48;
+        private const int MENU_FONT_SIZE = 30;
+        private readonly IntPtr TitleFont;
         private readonly IntPtr MenuFont;
 
         public RogueskivMenuRenderer(UxContext uxContext, IRenderizable game, string fontFile)
             : base(uxContext, game)
         {
-            MenuFont = SDL_ttf.TTF_OpenFont(fontFile, FONT_SIZE);
+            TitleFont = SDL_ttf.TTF_OpenFont(fontFile, TITLE_FONT_SIZE);
+            Renderers.Add(new TitleRenderer(uxContext, TitleFont));
+            MenuFont = SDL_ttf.TTF_OpenFont(fontFile, MENU_FONT_SIZE);
             CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
         }
 
@@ -29,7 +33,11 @@ namespace Rogueskiv.Menus
         protected override void Dispose(bool cleanManagedResources)
         {
             base.Dispose(cleanManagedResources);
-            SDL_ttf.TTF_CloseFont(MenuFont);
+            if (cleanManagedResources)
+            {
+                SDL_ttf.TTF_CloseFont(TitleFont);
+                SDL_ttf.TTF_CloseFont(MenuFont);
+            }
         }
     }
 }

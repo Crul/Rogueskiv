@@ -6,8 +6,12 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Menus.MenuOptions
 {
-    class MenuOptionRenderer : TextRenderer<MenuOptionComp>
+    class MenuOptionRenderer : TextCompRenderer<MenuOptionComp>
     {
+        private const int MARGIN_LEFT = 150;
+        private const int MARGIN_TOP = 150;
+        private const int LINE_HEIGHT = 50;
+
         public MenuOptionRenderer(UxContext uxContext, IntPtr font)
             : base(uxContext, font)
         { }
@@ -20,6 +24,6 @@ namespace Rogueskiv.Menus.MenuOptions
                 : new SDL_Color { r = 0x99, g = 0x99, b = 0x99, a = 0xFF };
 
         protected override Point GetPosition(MenuOptionComp component) =>
-            new Point(100, 100 + (component.Order * 50));
+            new Point(MARGIN_LEFT, MARGIN_TOP + (component.Order * LINE_HEIGHT));
     }
 }
