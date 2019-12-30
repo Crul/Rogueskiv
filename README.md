@@ -30,7 +30,6 @@ Rogueskiv makes use of the following projects:
 - [SDL2-CS](https://github.com/flibitijibibo/SDL2-CS) by [Ethan Lee](http://www.flibitijibibo.com/) ([zlib license](https://github.com/flibitijibibo/SDL2-CS/blob/master/LICENSE))
 - [FOVRecurse](https://github.com/AndyStobirski/RogueLike) by [Andy Stobirski](http://www.evilscience.co.uk/) (no license)
 - [Hack typeface](https://sourcefoundry.org/hack/) by [Christopher Simpkins and contributors](https://github.com/source-foundry/Hack/blob/master/docs/CONTRIBUTORS.md) ([MIT license](https://github.com/source-foundry/Hack/blob/master/LICENSE.md))
-- [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) by [SixLabors](https://sixlabors.com/) ([Apache License 2.0](https://github.com/SixLabors/ImageSharp/blob/master/LICENSE))
 - Part of the graphic tiles used in this program is the public domain roguelike tileset "RLTiles".  
   You can find the original tileset at: <http://rltiles.sf.net>
 - [Stone Texture II](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii) by [Daniel Smith](http://artistfire.deviantart.com/) ([CC0 Public Domain](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii#image_text))
