@@ -6,8 +6,17 @@ using static SDL2.SDL;
 
 namespace Seedwork.Ux.Renderers
 {
+    public enum TextAlign
+    {
+        TOP_LEFT,
+        TOP_RIGHT,
+        CENTER,
+        BOTTOM_LEFT,
+    }
+
     public class TextRenderer : IDisposable
     {
+
         private readonly UxContext UxContext;
         private readonly IntPtr Font;
         private IntPtr TextureCache;
@@ -22,12 +31,16 @@ namespace Seedwork.Ux.Renderers
         }
 
         public void Render(
-            string text, SDL_Color textColor, Point position, Action<Point> renderBgr = null
+            string text,
+            SDL_Color textColor,
+            Point position,
+            TextAlign align,
+            Action<Point> renderBgr = null
         )
         {
             PreRender(text, textColor);
             renderBgr?.Invoke(position);
-            Render(position);
+            Render(position, align);
         }
 
         private void PreRender(string text, SDL_Color textColor)
@@ -44,7 +57,7 @@ namespace Seedwork.Ux.Renderers
             SDL_FreeSurface(renderedText);
         }
 
-        private void Render(Point position)
+        private void Render(Point position, TextAlign align)
         {
             // TODO TextSpriteProvider ?
             var src = new SDL_Rect()
@@ -56,11 +69,26 @@ namespace Seedwork.Ux.Renderers
             };
             var dest = new SDL_Rect()
             {
-                x = position.X - SurfaceCache.w / 2,
-                y = position.Y - SurfaceCache.h / 2,
+                x = position.X,
+                y = position.Y,
                 w = SurfaceCache.w,
                 h = SurfaceCache.h
             };
+
+            switch (align)
+            {
+                case TextAlign.TOP_RIGHT:
+                    dest.x -= SurfaceCache.w;
+                    break;
+                case TextAlign.CENTER:
+                    dest.x -= SurfaceCache.w / 2;
+                    dest.y -= SurfaceCache.h / 2;
+                    break;
+                case TextAlign.BOTTOM_LEFT:
+                    dest.y -= SurfaceCache.h;
+                    break;
+            }
+
 
             SDL_RenderCopy(UxContext.WRenderer, TextureCache, ref src, ref dest);
         }

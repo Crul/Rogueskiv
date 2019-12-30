@@ -12,7 +12,6 @@ namespace Rogueskiv.Ux.Renderers
 {
     class TimerRenderer : TextCompRenderer<TimerComp>
     {
-        private const int WIDTH = 120;
         private const int HEIGHT = 24;
         private const int MARGIN = 25;
         private readonly SDL_Color TEXT_COLOR = new SDL_Color() { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF };
@@ -37,7 +36,7 @@ namespace Rogueskiv.Ux.Renderers
         {
             var realTime = timerComp.GetRealTime();
             var format = GetTimeFormat(realTime);
-            var position = new Point(x: UxContext.ScreenSize.Width - (MARGIN + WIDTH), y: MARGIN);
+            var position = new Point(x: UxContext.ScreenSize.Width - MARGIN, y: MARGIN);
 
             if (InGameTimeVisible)
             {
@@ -46,7 +45,7 @@ namespace Rogueskiv.Ux.Renderers
                 if (RealTimeVisible)
                     igtText = $"IGT: {igtText}";
 
-                TextRenderer.Render(igtText, TEXT_COLOR, position);
+                TextRenderer.Render(igtText, TEXT_COLOR, position, TextAlign.TOP_RIGHT);
                 position = position.Add(y: HEIGHT);
             }
 
@@ -56,7 +55,7 @@ namespace Rogueskiv.Ux.Renderers
                 if (InGameTimeVisible)
                     rtaText = $"RTA: {rtaText}";
 
-                TextRenderer.Render(rtaText, TEXT_COLOR, position);
+                TextRenderer.Render(rtaText, TEXT_COLOR, position, TextAlign.TOP_RIGHT);
             }
         }
 

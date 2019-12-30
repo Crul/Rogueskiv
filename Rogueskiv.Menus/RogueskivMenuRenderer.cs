@@ -12,15 +12,20 @@ namespace Rogueskiv.Menus
     {
         private const int TITLE_FONT_SIZE = 48;
         private const int MENU_FONT_SIZE = 30;
+        private const int SMALL_FONT_SIZE = 16;
         private readonly IntPtr TitleFont;
         private readonly IntPtr MenuFont;
+        private readonly IntPtr SmallFont;
 
         public RogueskivMenuRenderer(UxContext uxContext, IRenderizable game, string fontFile)
             : base(uxContext, game)
         {
             TitleFont = SDL_ttf.TTF_OpenFont(fontFile, TITLE_FONT_SIZE);
-            Renderers.Add(new TitleRenderer(uxContext, TitleFont));
             MenuFont = SDL_ttf.TTF_OpenFont(fontFile, MENU_FONT_SIZE);
+            SmallFont = SDL_ttf.TTF_OpenFont(fontFile, SMALL_FONT_SIZE);
+
+            Renderers.Add(new TitleRenderer(uxContext, TitleFont));
+            Renderers.Add(new InstructionsRenderer(uxContext, SmallFont));
             CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
         }
 
@@ -37,6 +42,7 @@ namespace Rogueskiv.Menus
             {
                 SDL_ttf.TTF_CloseFont(TitleFont);
                 SDL_ttf.TTF_CloseFont(MenuFont);
+                SDL_ttf.TTF_CloseFont(SmallFont);
             }
         }
     }

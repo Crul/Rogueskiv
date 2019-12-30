@@ -8,7 +8,7 @@ namespace Rogueskiv.Menus
 {
     class TitleRenderer : IRenderer
     {
-        private const int MARGIN_X = 240;
+        private const int MARGIN_X = 120;
         private const int MARGIN_Y = 60;
 
         private readonly SDL_Color TitleColor =
@@ -29,7 +29,7 @@ namespace Rogueskiv.Menus
                 x: UxContext.ScreenSize.Width - MARGIN_X,
                 y: MARGIN_Y
             );
-            TextRenderer.Render(UxContext.Title, TitleColor, titlePosition);
+            TextRenderer.Render(UxContext.Title, TitleColor, titlePosition, TextAlign.TOP_RIGHT);
         }
 
         public void Dispose()

@@ -7,7 +7,7 @@ namespace Rogueskiv.Menus
 {
     public class RogueskivMenuInputHandler : InputHandler<RogueskivMenu>
     {
-        private const int QUIT_KEY = (int)SDL_Keycode.SDLK_q;
+        private const int QUIT_KEY = (int)SDL_Keycode.SDLK_ESCAPE;
 
         public RogueskivMenuInputHandler(
             UxContext uxContext, RogueskivMenu game, IGameRenderer gameRenderer
@@ -19,6 +19,7 @@ namespace Rogueskiv.Menus
                 keyControls: new Dictionary<int, int>
                 {
                     { (int)QUIT_KEY,                  (int)Controls.QUIT },
+                    { (int)SDL_Keycode.SDLK_q,        (int)Controls.QUIT },
                     { (int)SDL_Keycode.SDLK_UP,       (int)Controls.UP },
                     { (int)SDL_Keycode.SDLK_DOWN,     (int)Controls.DOWN },
                     { (int)SDL_Keycode.SDLK_LEFT,     (int)Controls.LEFT },

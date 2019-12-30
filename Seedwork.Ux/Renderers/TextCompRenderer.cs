@@ -19,12 +19,14 @@ namespace Seedwork.Ux.Renderers
             var text = GetText(comp);
             var textColor = GetColor(comp);
             var position = GetPosition(comp);
-            TextRenderer.Render(text, textColor, position, RenderBgr);
+            var aligment = GetAligment();
+            TextRenderer.Render(text, textColor, position, aligment, RenderBgr);
         }
 
         protected abstract string GetText(T component);
         protected abstract SDL_Color GetColor(T component);
         protected abstract Point GetPosition(T component);
+        protected virtual TextAlign GetAligment() => TextAlign.CENTER;
 
         protected virtual void RenderBgr(Point position) { }
 
