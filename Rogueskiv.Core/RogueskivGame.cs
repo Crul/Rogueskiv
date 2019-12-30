@@ -7,6 +7,7 @@ using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +18,8 @@ namespace Rogueskiv.Core
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
         private readonly TimerComp TimerComp;
+
+        private readonly string PAUSE_TEXT = $"PAUSE{Environment.NewLine}Press ESC to continue or Q to quit";
 
         public RogueskivGame(
             GameStageCode stageCode,
@@ -64,7 +67,7 @@ namespace Rogueskiv.Core
         }
 
         private static string GetStartText(int floor) =>
-            $"FLOOR {floor} - Press any arrow to " + (floor == 1 ? "start" : "continue");
+            $"FLOOR {floor}{Environment.NewLine}Press any arrow to " + (floor == 1 ? "start" : "continue");
 
         public override void Restart(IGameResult<IEntity> previousFloorResult)
         {
@@ -98,7 +101,7 @@ namespace Rogueskiv.Core
             {
                 Pause = false;
                 HasStarted = true;
-                Entities.GetSingleComponent<PopUpComp>().Text = "PAUSE";
+                Entities.GetSingleComponent<PopUpComp>().Text = PAUSE_TEXT;
                 if (!TimerComp.HasStarted) TimerComp.Start();
             }
 
