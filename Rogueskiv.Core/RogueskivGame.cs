@@ -15,6 +15,8 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        public int Floor { get; }
+
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
         private readonly TimerComp TimerComp;
@@ -62,6 +64,7 @@ namespace Rogueskiv.Core
             )
         {
             Pause = true;
+            Floor = gameConfig.Floor;
             BoardComp = Entities.GetSingleComponent<BoardComp>();
             TimerComp = Entities.GetSingleComponent<TimerComp>();
         }

@@ -1,6 +1,8 @@
-﻿namespace Rogueskiv.Ux
+﻿using Seedwork.Ux;
+
+namespace Rogueskiv.Ux
 {
-    public interface IRogueskivUxConfig
+    public interface IRogueskivUxConfig : IUxConfig
     {
         string FontFile { get; }
         int CameraMovementFriction { get; }

@@ -1,8 +1,8 @@
-﻿using Rogueskiv.Core.Components;
+﻿using Rogueskiv.Core;
+using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
-using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
@@ -26,10 +26,9 @@ namespace Rogueskiv.Ux
         public RogueskivRenderer(
             UxContext uxContext,
             IGameContext gameContext,
-            IRenderizable game,
+            RogueskivGame game,
             IRogueskivUxConfig uxConfig
-        )
-            : base(uxContext, game)
+        ) : base(uxContext, game)
         {
             UxContext = uxContext;
             UxConfig = uxConfig;
@@ -53,16 +52,14 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
             CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
-
-            if (uxConfig.InGameTimeVisible || uxConfig.RealTimeVisible)
-                CompRenderers[typeof(TimerComp)] = new TimerRenderer(
-                    uxContext,
-                    gameContext,
-                    Font,
-                    inGameTimeVisible: uxConfig.InGameTimeVisible,
-                    realTimeVisible: uxConfig.RealTimeVisible
-                );
-
+            CompRenderers[typeof(TimerComp)] = new GameInfoRenderer(
+                uxContext,
+                gameContext,
+                Font,
+                game.Floor,
+                inGameTimeVisible: uxConfig.InGameTimeVisible,
+                realTimeVisible: uxConfig.RealTimeVisible
+            );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 

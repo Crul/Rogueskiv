@@ -10,29 +10,42 @@ using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
-    class TimerRenderer : TextCompRenderer<TimerComp>
+    class GameInfoRenderer : TextCompRenderer<TimerComp>
     {
         private const int HEIGHT = 24;
         private const int MARGIN = 25;
         private readonly SDL_Color TEXT_COLOR = new SDL_Color() { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF };
+
+        private readonly int Floor;
         private readonly long GameTicks;
         private readonly bool InGameTimeVisible;
         private readonly bool RealTimeVisible;
 
-        public TimerRenderer(
+        public GameInfoRenderer(
             UxContext uxContext,
             IGameContext gameContext,
             IntPtr font,
+            int floor,
             bool inGameTimeVisible,
             bool realTimeVisible
         ) : base(uxContext, font)
         {
+            Floor = floor;
             GameTicks = gameContext.GameTicks;
             InGameTimeVisible = inGameTimeVisible;
             RealTimeVisible = realTimeVisible;
         }
 
         protected override void Render(IEntity entity, TimerComp timerComp, float interpolation)
+        {
+            var floorText = $"FLOOR {Floor}";
+            var position = new Point(MARGIN, MARGIN);
+            TextRenderer.Render(floorText, TEXT_COLOR, position, TextAlign.TOP_LEFT);
+
+            RenderTimers(timerComp);
+        }
+
+        private void RenderTimers(TimerComp timerComp)
         {
             var realTime = timerComp.GetRealTime();
             var format = GetTimeFormat(realTime);

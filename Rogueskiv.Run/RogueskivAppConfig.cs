@@ -1,13 +1,12 @@
 ﻿using Rogueskiv.Ux;
 using Seedwork.Crosscutting;
-using Seedwork.Ux;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
 namespace Rogueskiv.Run
 {
-    class RogueskivAppConfig : IUxConfig, IRogueskivUxConfig
+    class RogueskivAppConfig : IRogueskivUxConfig
     {
         public int FloorCount { get; set; }
 
