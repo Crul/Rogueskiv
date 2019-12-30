@@ -39,6 +39,9 @@ namespace Seedwork.Ux.Renderers
             Point? minPosition = null
         )
         {
+            if (string.IsNullOrEmpty(text))
+                return;
+
             PreRender(text, textColor);
             renderBgr?.Invoke(position);
             Render(position, align, minPosition);

@@ -2,6 +2,7 @@
 using Seedwork.Engine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using static SDL2.SDL;
 
 namespace Seedwork.Ux
@@ -19,7 +20,7 @@ namespace Seedwork.Ux
 
         private readonly IDictionary<int, int> KeyControls;
 
-        private readonly IDictionary<int, bool> KeyPressStates;
+        protected readonly IDictionary<int, bool> KeyPressStates;
 
         public InputHandler(
             UxContext uxContext,
@@ -70,17 +71,42 @@ namespace Seedwork.Ux
                     OnKeyEvent(ev.key.keysym.sym, false);
                     return;
 
+                case SDL_EventType.SDL_TEXTINPUT:
+                    OnTextInput(GetText(ev.text));
+                    return;
+
                 case SDL_EventType.SDL_RENDER_TARGETS_RESET:
                     GameRenderer.RecreateTextures();
                     return;
             }
         }
 
-        private void OnKeyEvent(SDL_Keycode key, bool pressed)
+        protected virtual void OnKeyEvent(SDL_Keycode key, bool pressed)
         {
             var intKey = (int)key;
             if (KeyPressStates.ContainsKey(intKey))
                 KeyPressStates[intKey] = pressed;
+        }
+
+        protected virtual void OnTextInput(string text) { }
+
+        private static string GetText(SDL_TextInputEvent textEvent)
+        {
+            unsafe
+            {
+                var i = 0;
+                var data = new byte[SDL_TEXTINPUTEVENT_TEXT_SIZE];
+                for (; i < SDL_TEXTINPUTEVENT_TEXT_SIZE; i++)
+                {
+                    var b = textEvent.text[i];
+                    if (b == '\0')
+                        break;
+
+                    data[i] = b;
+                }
+
+                return Encoding.UTF8.GetString(data, 0, i);
+            }
         }
 
         public void Reset() =>

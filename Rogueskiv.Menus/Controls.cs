@@ -6,6 +6,9 @@
         UP,
         DOWN,
         ENTER,
-        QUIT
+        QUIT,
+        BACKSPACE,
+        COPY,
+        PASTE
     }
 }

@@ -37,8 +37,9 @@ namespace Seedwork.Core
             QuitControl = quitControl;
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
-            Systems = systems ?? new List<ISystem>();
-            Systems.ToList().ForEach(sys => sys.Init(this));
+            Systems = new List<ISystem>();
+            if (systems != null)
+                systems.ForEach(AddSystem);
         }
 
         public virtual void Update()
@@ -78,8 +79,13 @@ namespace Seedwork.Core
 
         public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
 
-        public void RemoveSystem(ISystem system) =>
-            Systems.Remove(system);
+        protected void AddSystem(ISystem system)
+        {
+            Systems.Add(system);
+            system.Init(this);
+        }
+
+        public void RemoveSystem(ISystem system) => Systems.Remove(system);
 
         private void SetPause()
         {

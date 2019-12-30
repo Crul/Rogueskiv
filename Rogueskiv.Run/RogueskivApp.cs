@@ -12,6 +12,7 @@ namespace Rogueskiv.Run
     class RogueskivApp : IDisposable
     {
         private readonly UxContext UxContext;
+        private readonly GameContext GameContext;
         private readonly RogueskivAppConfig AppConfig;
         private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
         private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
@@ -23,6 +24,7 @@ namespace Rogueskiv.Run
         {
             AppConfig = appConfig;
             UxContext = new UxContext("Rogueskiv", AppConfig);
+            GameContext = new GameContext(appConfig.MaxGameStepsWithoutRender);
             LoadingScreenRenderer = new LoadingScreenRenderer(UxContext, AppConfig.FontFile);
         }
 
@@ -41,7 +43,7 @@ namespace Rogueskiv.Run
         {
             GameStages.Add(
                 (GameStageCodes.Menu, RogueskivMenuResults.PlayResult.ResultCode),
-                result => CreateGameStage()
+                result => CreateGameStage(gameSeed: ((PlayGameResult)result).GameSeed)
             );
             GameStages.Add(
                 (GameStageCodes.Game, RogueskivGameResults.FloorDown.ResultCode),
@@ -84,18 +86,22 @@ namespace Rogueskiv.Run
             return donwFloorEngine;
         }
 
-        private GameEngine<IEntity> CreateGameStage(IGameResult<IEntity> result = null)
+        private GameEngine<IEntity> CreateGameStage(
+            IGameResult<IEntity> result = null,
+            int? gameSeed = null
+        )
         {
             LoadingScreenRenderer.Render();
 
-            CurrentFloor = FloorEngines.Count + 1;
+            if (gameSeed.HasValue)
+                GameContext.SetSeed(gameSeed.Value);
 
-            var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
-            var gameConfig = new RogueskivGameConfig(AppConfig, gameContext, CurrentFloor);
+            CurrentFloor = FloorEngines.Count + 1;
+            var gameConfig = new RogueskivGameConfig(AppConfig, GameContext, CurrentFloor);
             var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
-            var renderer = new RogueskivRenderer(UxContext, gameContext, game, AppConfig);
+            var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
-            var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
+            var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
 
             FloorEngines.Add(engine);
 

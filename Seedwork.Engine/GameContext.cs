@@ -6,7 +6,7 @@ namespace Seedwork.Engine
     {
         private const int TICKS_IN_A_SECOND = 10000000;
 
-        public int GameSeed { get; }
+        public int GameSeed { get; private set; }
         public int GameFPS { get; }
         public long GameTicks { get; }
         public int UxFPS { get; }
@@ -22,5 +22,7 @@ namespace Seedwork.Engine
             UxTicks = TICKS_IN_A_SECOND / uxFPS;
             MaxGameStepsWithoutRender = maxGameStepsWithoutRender;
         }
+
+        public void SetSeed(int seed) => GameSeed = Luck.Reset(seed);
     }
 }

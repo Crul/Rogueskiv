@@ -1,14 +1,22 @@
-﻿using Seedwork.Core.Entities;
+﻿using Seedwork.Core;
+using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Crosscutting;
 using System.Collections.Generic;
 using System.Linq;
+using static SDL2.SDL;
 
 namespace Rogueskiv.Menus.MenuOptions
 {
     class MenuSys : BaseSystem
     {
+        public string CustomSeedText { get; private set; } = "";
+        public bool AskingForCustomSeed { get; private set; } = false;
+
+        private Game Game;
         private List<Controls> LastControls = new List<Controls>();
+
+        public override void Init(Game game) => Game = game;
 
         public override void Update(EntityList entities, List<int> controls)
         {
@@ -18,9 +26,18 @@ namespace Rogueskiv.Menus.MenuOptions
                 return;
             }
 
-            UpdateMenuOptions(entities, controls);
+            if (AskingForCustomSeed)
+                UpdateCustomSeedInput(controls);
+            else
+                UpdateMenuOptions(entities, controls);
 
             LastControls = controls.Select(c => (Controls)c).ToList();
+        }
+
+        internal void OnTextInput(string text)
+        {
+            if (AskingForCustomSeed && int.TryParse(text, out _))
+                CustomSeedText += text;
         }
 
         private void UpdateMenuOptions(EntityList entities, List<int> controls)
@@ -59,6 +76,52 @@ namespace Rogueskiv.Menus.MenuOptions
 
             activeMenuOption.Active = false;
             menuOptions[newActiveIndex].Active = true;
+        }
+
+        private void UpdateCustomSeedInput(List<int> controls)
+        {
+            if (ControlPressed(controls, Controls.ENTER))
+            {
+                if (!string.IsNullOrEmpty(CustomSeedText))
+                    RogueskivMenuResults.PlayResult.GameSeed = int.Parse(CustomSeedText);
+
+                Game.EndGame(RogueskivMenuResults.PlayResult);
+                return;
+            }
+
+            if (ControlPressed(controls, Controls.QUIT))
+            {
+                CustomSeedText = string.Empty;
+                AskingForCustomSeed = false;
+                SDL_StopTextInput();
+                return;
+            }
+
+            if (ControlPressed(controls, Controls.COPY))
+            {
+                SDL_SetClipboardText(CustomSeedText);
+                return;
+            }
+
+            if (ControlPressed(controls, Controls.PASTE))
+            {
+                CustomSeedText = SDL_GetClipboardText();
+                return;
+            }
+
+            if (ControlPressed(controls, Controls.BACKSPACE))
+            {
+                if (!string.IsNullOrEmpty(CustomSeedText))
+                    CustomSeedText = CustomSeedText[0..^1];
+
+                return;
+            }
+        }
+
+        public void AskForCustomSeed()
+        {
+            AskingForCustomSeed = true;
+            SDL_StartTextInput();
         }
 
         private bool ControlPressed(List<int> controls, Controls control) =>

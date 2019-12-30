@@ -1,6 +1,5 @@
 ﻿using Rogueskiv.Menus.MenuOptions;
 using SDL2;
-using Seedwork.Core;
 using Seedwork.Ux;
 using System;
 using static SDL2.SDL;
@@ -17,7 +16,7 @@ namespace Rogueskiv.Menus
         private readonly IntPtr MenuFont;
         private readonly IntPtr SmallFont;
 
-        public RogueskivMenuRenderer(UxContext uxContext, IRenderizable game, string fontFile)
+        public RogueskivMenuRenderer(UxContext uxContext, RogueskivMenu game, string fontFile)
             : base(uxContext, game)
         {
             TitleFont = SDL_ttf.TTF_OpenFont(fontFile, TITLE_FONT_SIZE);
@@ -26,7 +25,8 @@ namespace Rogueskiv.Menus
 
             Renderers.Add(new TitleRenderer(uxContext, TitleFont));
             Renderers.Add(new InstructionsRenderer(uxContext, SmallFont));
-            CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, MenuFont);
+            Renderers.Add(new CustomSeedInputRenderer(uxContext, game, MenuFont));
+            CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, game, MenuFont);
         }
 
         protected override void RenderGame(float interpolation)

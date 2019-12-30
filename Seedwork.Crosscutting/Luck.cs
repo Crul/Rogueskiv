@@ -6,12 +6,12 @@ namespace Seedwork.Crosscutting
     {
         private static Random Random = new Random();
 
-        public static int Reset()
+        public static int Reset(int? seed = null)
         {
-            var seed = Random.Next();
-            SetSeed(seed);
+            var seedValue = seed ?? Random.Next();
+            SetSeed(seedValue);
 
-            return seed;
+            return seedValue;
         }
 
         public static void SetSeed(int seed) => Random = new Random(seed);
