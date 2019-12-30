@@ -40,6 +40,7 @@ namespace Rogueskiv.Run
         public float MinDownStairsSpawnFactor => RogueskivConfig.MinDownStairsSpawnFactor;
 
         public int EnemyCollisionDamage => RogueskivConfig.EnemyCollisionDamage;
+        public float EnemyCollisionBounce => RogueskivConfig.EnemyCollisionBounce;
         public int MaxItemPickingTime { get; }
         public int FoodHealthIncrease => RogueskivConfig.FoodHealthIncrease;
         public int TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;

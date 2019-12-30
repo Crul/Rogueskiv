@@ -15,6 +15,7 @@ namespace Rogueskiv.Core.Systems
 
         int EnemyNumber { get; }
         int EnemyCollisionDamage { get; }
+        float EnemyCollisionBounce { get; }
         int MinEnemySpeed { get; }
         int MaxEnemySpeed { get; }
         List<(int numAngles, float weight)> EnemyNumAnglesProbWeights { get; }

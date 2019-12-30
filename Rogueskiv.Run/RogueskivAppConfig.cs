@@ -44,6 +44,7 @@ namespace Rogueskiv.Run
 
         public Range<int> EnemyNumberRange { get; set; }
         public int EnemyCollisionDamage { get; set; }
+        public float EnemyCollisionBounce { get; set; }
         public Range<int> MinEnemySpeedRange { get; set; }
         public Range<int> MaxEnemySpeedRange { get; set; }
         public List<RangedWeightedValue<int>> EnemyAnglesProbWeightRanges { get; set; }

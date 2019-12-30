@@ -46,7 +46,7 @@ namespace Rogueskiv.Core
                     new TorchSys(gameConfig.MaxItemPickingTime, gameConfig.TorchVisualRangeIncrease),
                     new RevealMapSys(gameConfig.MaxItemPickingTime),
                     new AmuletSys(gameConfig.MaxItemPickingTime),
-                    new CollisionSys(gameConfig.EnemyCollisionDamage),
+                    new CollisionSys(gameConfig.EnemyCollisionDamage, gameConfig.EnemyCollisionBounce),
                     new FOVSys(),
                     new StairsSys(),
                     new DeathSys()

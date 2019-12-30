@@ -33,6 +33,7 @@ torchVisualRangeIncrease: 1
 
 # enemies
 enemyCollisionDamage: 1
+enemyCollisionBounce: 10
 minSpaceToSpawnEnemy: 1
 minEnemySpawnDistance: 5
 enemyRadius: 6
