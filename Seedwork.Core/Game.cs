@@ -44,7 +44,7 @@ namespace Seedwork.Core
 
         public virtual void Update()
         {
-            Quit = Controls.Contains(QuitControl);
+            Quit = Quit || Controls.Contains(QuitControl);
             SetPause();
 
             if (!Pause && !Quit)

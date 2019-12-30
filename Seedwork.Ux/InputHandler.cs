@@ -16,27 +16,31 @@ namespace Seedwork.Ux
 
         private readonly IGameRenderer GameRenderer;
 
-        private readonly int QuitKey;
+        private readonly IDictionary<int, int> ControlsByKeys;
 
-        private readonly IDictionary<int, int> KeyControls;
+        protected readonly IDictionary<int, bool> ControlStates;
 
-        protected readonly IDictionary<int, bool> KeyPressStates;
+        private readonly int CloseWindowControl;
+        private bool CloseWindowKeyPressed;
 
         public InputHandler(
             UxContext uxContext,
             T game,
             IGameRenderer gameRenderer,
-            IDictionary<int, int> keyControls,
-            int quitKey
+            IDictionary<int, int> controlsByKeys,
+            int closeWindowControl
         )
         {
             UxContext = uxContext;
             Game = game;
             GameRenderer = gameRenderer;
-            KeyControls = keyControls;
-            KeyPressStates = KeyControls
-                .ToDictionary(kc => kc.Key, _ => false);
-            QuitKey = quitKey;
+            ControlsByKeys = controlsByKeys;
+            ControlStates = ControlsByKeys
+                .Select(kc => kc.Value)
+                .Distinct()
+                .ToDictionary(kc => kc, _ => false);
+
+            CloseWindowControl = closeWindowControl;
         }
 
         public void ProcessEvents()
@@ -44,10 +48,16 @@ namespace Seedwork.Ux
             while (SDL_PollEvent(out SDL_Event ev) != 0)
                 ProcessEvent(ev);
 
-            Game.Controls = KeyPressStates
-                .Where(keyState => keyState.Value)
-                .Select(keyState => KeyControls[keyState.Key])
+            Game.Controls = ControlStates
+                .Where(controlState => controlState.Value)
+                .Select(controlState => controlState.Key)
                 .ToList();
+
+            if (CloseWindowKeyPressed)
+            {
+                Game.Controls.Add(CloseWindowControl);
+                CloseWindowKeyPressed = false;
+            }
         }
 
         private void ProcessEvent(SDL_Event ev)
@@ -60,7 +70,7 @@ namespace Seedwork.Ux
                     return;
 
                 case SDL_EventType.SDL_QUIT:
-                    KeyPressStates[QuitKey] = true;
+                    CloseWindowKeyPressed = true;
                     return;
 
                 case SDL_EventType.SDL_KEYDOWN:
@@ -84,8 +94,8 @@ namespace Seedwork.Ux
         protected virtual void OnKeyEvent(SDL_Keycode key, bool pressed)
         {
             var intKey = (int)key;
-            if (KeyPressStates.ContainsKey(intKey))
-                KeyPressStates[intKey] = pressed;
+            if (ControlsByKeys.ContainsKey(intKey))
+                ControlStates[ControlsByKeys[intKey]] = pressed;
         }
 
         protected virtual void OnTextInput(string text) { }
@@ -110,6 +120,6 @@ namespace Seedwork.Ux
         }
 
         public void Reset() =>
-            KeyPressStates.Keys.ToList().ForEach(k => KeyPressStates[k] = false);
+            ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = false);
     }
 }

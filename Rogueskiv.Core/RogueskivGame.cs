@@ -98,6 +98,8 @@ namespace Rogueskiv.Core
             playerHealthComp.Health = previousPlayerHealtComp.Health;
         }
 
+        private bool HasCloseWindowBeenPressedLastTime = false;
+
         public override void Update()
         {
             if (!HasStarted && Controls.Any())
@@ -114,6 +116,15 @@ namespace Rogueskiv.Core
 
             if (!Pause && Controls.Contains(QuitControl)) // only allow exit on pause
                 Controls.Remove(QuitControl);
+
+            var isCloseWindowBeenPressed = (Controls.Contains((int)Core.Controls.CLOSE_WINDOW));
+            if (isCloseWindowBeenPressed && !HasCloseWindowBeenPressedLastTime)
+                if (Pause)
+                    Quit = true;
+                else
+                    Pause = true;
+
+            HasCloseWindowBeenPressedLastTime = isCloseWindowBeenPressed;
 
             base.Update();
         }

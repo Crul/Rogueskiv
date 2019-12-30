@@ -3,6 +3,7 @@
     public enum Controls
     {
         NONE,
+        CLOSE_WINDOW,
         UP,
         DOWN,
         ENTER,

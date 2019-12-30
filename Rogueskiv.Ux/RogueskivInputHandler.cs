@@ -8,8 +8,6 @@ namespace Rogueskiv.Ux
 {
     public class RogueskivInputHandler : InputHandler<RogueskivGame>
     {
-        private const int QUIT_KEY = (int)SDL_Keycode.SDLK_q;
-
         public RogueskivInputHandler(
             UxContext uxContext, RogueskivGame game, IGameRenderer gameRenderer
         )
@@ -17,16 +15,16 @@ namespace Rogueskiv.Ux
                 uxContext,
                 game,
                 gameRenderer,
-                keyControls: new Dictionary<int, int>
+                controlsByKeys: new Dictionary<int, int>
                 {
-                    { (int)QUIT_KEY,               (int)Controls.QUIT },
+                    { (int)SDL_Keycode.SDLK_q,     (int)Controls.QUIT },
                     { (int)SDL_Keycode.SDLK_ESCAPE,(int)Controls.PAUSE },
                     { (int)SDL_Keycode.SDLK_UP,    (int)Controls.UP },
                     { (int)SDL_Keycode.SDLK_DOWN,  (int)Controls.DOWN },
                     { (int)SDL_Keycode.SDLK_LEFT,  (int)Controls.LEFT },
                     { (int)SDL_Keycode.SDLK_RIGHT, (int)Controls.RIGHT },
                 },
-                quitKey: QUIT_KEY
+                closeWindowControl: (int)Controls.CLOSE_WINDOW
             )
         { }
     }

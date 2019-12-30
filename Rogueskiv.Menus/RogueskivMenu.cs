@@ -25,5 +25,11 @@ namespace Rogueskiv.Menus
         }
 
         public void OnTextInput(string text) => MenuSystem.OnTextInput(text);
+
+        public override void Update()
+        {
+            Quit = Controls.Contains((int)Menus.Controls.CLOSE_WINDOW);
+            base.Update();
+        }
     }
 }
