@@ -17,8 +17,8 @@ namespace Seedwork.Ux.Renderers
     public class TextRenderer : IDisposable
     {
 
-        private readonly UxContext UxContext;
-        private readonly IntPtr Font;
+        protected readonly UxContext UxContext;
+        protected readonly IntPtr Font;
         private IntPtr TextureCache;
         private (string text, (byte r, byte g, byte b, byte a)) DataCache;
 
