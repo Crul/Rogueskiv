@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components
@@ -7,5 +8,7 @@ namespace Rogueskiv.Core.Components
     {
         protected StairsComp(Point tilePos) : base(tilePos)
         { }
+
+        public abstract IGameEvent GetGameEvent();
     }
 }

@@ -45,7 +45,10 @@ namespace Seedwork.Engine
                 {
                     Game.Update();
                     if (Game.Quit)
+                    {
+                        Renderer.Render(0);
                         return;
+                    }
 
                     nextGameTick += GameContext.GameTicks;
                     stepsWithoutRender++;

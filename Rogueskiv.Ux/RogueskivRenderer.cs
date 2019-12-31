@@ -74,6 +74,8 @@ namespace Rogueskiv.Ux
             EffectPlayers.Add(new FoodPickedEffectPlayer(game));
             EffectPlayers.Add(new WinEffectPlayer(game));
             EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
+            EffectPlayers.Add(new StairsUpEffectPlayer(game));
+            EffectPlayers.Add(new StairsDownEffectPlayer(game));
         }
 
         public override void Reset() =>
