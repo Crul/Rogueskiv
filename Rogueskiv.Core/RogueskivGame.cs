@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
 using Rogueskiv.Core.Systems;
 using Seedwork.Core;
 using Seedwork.Core.Components;
@@ -17,6 +18,8 @@ namespace Rogueskiv.Core
     {
         public int Floor { get => GameConfig.Floor; }
         public int GameSeed { get => GameConfig.GameSeed; }
+
+        public List<IGameEvent> GameEvents { get; }
 
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
@@ -65,6 +68,7 @@ namespace Rogueskiv.Core
         {
             Pause = true;
             GameConfig = gameConfig;
+            GameEvents = new List<IGameEvent>();
             BoardComp = Entities.GetSingleComponent<BoardComp>();
             TimerComp = Entities.GetSingleComponent<TimerComp>();
         }

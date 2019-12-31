@@ -11,6 +11,7 @@ namespace Rogueskiv.Core.Components
         public float FrictionFactor { get; }
         public float BounceAmortiguationFactor { get; }
         public bool SimpleBounce { get; }
+        public bool HasBounced { get; set; }
 
         public MovementComp(
             float frictionFactor,

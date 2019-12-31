@@ -1,12 +1,14 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Ux.EffectPlayers;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,10 +20,13 @@ namespace Rogueskiv.Ux
     {
         private const int FONT_SIZE = 18;
         private readonly UxContext UxContext;
+        private readonly RogueskivGame RogueskivGame;
         private readonly IRogueskivUxConfig UxConfig;
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
+
+        private readonly List<IEffectPlayer> EffectPlayers = new List<IEffectPlayer>();
 
         public RogueskivRenderer(
             UxContext uxContext,
@@ -30,6 +35,7 @@ namespace Rogueskiv.Ux
             IRogueskivUxConfig uxConfig
         ) : base(uxContext, game)
         {
+            RogueskivGame = game;
             UxContext = uxContext;
             UxConfig = uxConfig;
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
@@ -61,6 +67,8 @@ namespace Rogueskiv.Ux
                 realTimeVisible: uxConfig.RealTimeVisible
             );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
+
+            EffectPlayers.Add(new BounceEffectPlayer(game));
         }
 
         public override void Reset() =>
@@ -70,6 +78,8 @@ namespace Rogueskiv.Ux
         {
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
+            EffectPlayers.ForEach(ep => ep.Play());
+            RogueskivGame.GameEvents.Clear();
         }
 
         public override void RecreateTextures()
@@ -86,6 +96,7 @@ namespace Rogueskiv.Ux
             {
                 SDL_ttf.TTF_CloseFont(Font);
                 SDL_DestroyTexture(BoardTexture);
+                EffectPlayers.ForEach(ep => ep.Dispose());
             }
         }
     }
