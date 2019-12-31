@@ -11,7 +11,7 @@ namespace Rogueskiv.Core.Systems
     abstract class PickingSys<T> : BaseSystem
         where T : PickableComp
     {
-        protected Game Game { get; private set; }
+        protected RogueskivGame Game { get; private set; }
 
         private PlayerComp PlayerComp;
         private PositionComp PlayerPositionComp;
@@ -26,7 +26,7 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            Game = game;
+            Game = (RogueskivGame)game;
             var playerEntity = game.Entities.GetWithComponent<PlayerComp>().Single();
             PlayerComp = playerEntity.GetComponent<PlayerComp>();
             PlayerPositionComp = playerEntity.GetComponent<CurrentPositionComp>();
@@ -94,6 +94,9 @@ namespace Rogueskiv.Core.Systems
             {
                 pickedComp.StartPicking(PickingTime);
                 PlayerComp.PickingComps.Add(pickedComp);
+                var gameEvent = pickedComp.GetGameEvent();
+                if (gameEvent != null)
+                    Game.GameEvents.Add(gameEvent);
             });
 
         protected virtual void EndPicking(

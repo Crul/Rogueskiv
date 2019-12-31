@@ -69,6 +69,7 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
 
             EffectPlayers.Add(new BounceEffectPlayer(game));
+            EffectPlayers.Add(new TorchPickedEffectPlayer(game));
         }
 
         public override void Reset() =>

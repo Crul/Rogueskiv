@@ -37,6 +37,7 @@ Rogueskiv makes use of the following projects:
 - [YamlDotNet](https://github.com/aaubry/YamlDotNet) by [Antoine Aubry](https://www.aaubry.net/) ([MIT License](https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt))
 - Sounds:
   - [two large cobblestone blocks](https://freesound.org/people/jobel0092/sounds/268055/) by [jobel0092](https://freesound.org/people/jobel0092/) ([Creative Commons 0 License](https://freesound.org/people/jobel0092/sounds/268055/#sound_license))
+  - [Torch.wav](https://freesound.org/people/DanielVega/sounds/479338/) by [DanielVega](https://freesound.org/people/DanielVega/) ([Creative Commons 0 License](https://freesound.org/people/DanielVega/sounds/479338/#sound_license))
 
 ## License (AGPL-3.0)
 
