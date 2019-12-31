@@ -112,7 +112,12 @@ namespace Rogueskiv.Core
                 Pause = false;
                 HasStarted = true;
                 var pauseText = $"PAUSE"
-                    + $"{Environment.NewLine}Press ESC to continue or Q to quit"
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Controls:"
+                    + $"{Environment.NewLine}ESC = continue playing"
+                    + $"{Environment.NewLine}  Q = quit to menu    "
+                    + $"{Environment.NewLine}  M = toggle music    "
+                    + $"{Environment.NewLine}  S = toggle sounds   "
                     + $"{Environment.NewLine}"
                     + $"{Environment.NewLine}Seed: {GameConfig.GameSeed}";
                 Entities.GetSingleComponent<PopUpComp>().Text = pauseText;
