@@ -19,6 +19,7 @@ Download and extract into `Seedwork.Ux/dlls/`:
 - [(win32-x64) SDL2 2.0.10 Runtime Binaries](https://www.libsdl.org/release/SDL2-2.0.10-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/download-2.0.php). File: SDL2.dll
 - [(win32-x64) SDL_Image 2.0.5 Runtime Binaries](https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/projects/SDL_image/). Files: SDL2_image.dll, libjpeg-9.dll, libpng16-16.dll, libtiff-5.dll, libwebp-7.dll, zlib1.dll.
 - [(win32-x64) SDL_ttf 2.01.5 Runtime Binaries](https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.15-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/projects/SDL_ttf/). Files: SDL2_ttf.dll, libfreetype-6.dll
+- [(win32-x64) SDL_mixer 2.0.4 Runtime Binaries](https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.4-win32-x64.zip) at [libsdl.org](https://www.libsdl.org/projects/SDL_mixer/). Files: SDL2_mixer.dll, libFLAC-8.dll, libmodplug-1.dll, libmpg123-0.dll, libogg-0.dll, libopus-0.dll, libopusfile-0.dll, libvorbis-0.dll, libvorbisfile-3.dll
 
 Tested only in Windows 10.
 
