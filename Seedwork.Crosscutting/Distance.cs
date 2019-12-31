@@ -9,6 +9,8 @@ namespace Seedwork.Crosscutting
         private const double FAST_DIST_MAX_FACTOR = 1007d / 1024d;
         private const double FAST_DIST_MIN_FACTOR = 441d / 1024d;
 
+        public static float Get(PointF p1) => Get(p1, new Point(0, 0));
+
         public static float Get(PointF p1, PointF p2) => Get(p1.X - p2.X, p1.Y - p2.Y);
 
         private static float Get(float deltaX, float deltaY)
