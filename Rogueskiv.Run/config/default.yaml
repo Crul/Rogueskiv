@@ -36,7 +36,7 @@ minAmuletSpawnFactor: 0.9
 minDownStairsSpawnFactor: 0.8
 
 maxItemPickingTime: 600
-foodHealthIncrease: 3
+foodHealthIncrease: 2
 torchVisualRangeIncrease: 0.5
 
 # enemies
