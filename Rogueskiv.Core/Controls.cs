@@ -9,6 +9,7 @@
         LEFT,
         RIGHT,
         QUIT,
-        PAUSE
+        PAUSE,
+        TOGGLE_SOUNDS,
     }
 }

@@ -103,6 +103,7 @@ namespace Rogueskiv.Core
         }
 
         private bool HasCloseWindowBeenPressedLastTime = false;
+        private bool HasToggleSoundsLastTime = false;
 
         public override void Update()
         {
@@ -121,7 +122,7 @@ namespace Rogueskiv.Core
             if (!Pause && Controls.Contains(QuitControl)) // only allow exit on pause
                 Controls.Remove(QuitControl);
 
-            var isCloseWindowBeenPressed = (Controls.Contains((int)Core.Controls.CLOSE_WINDOW));
+            var isCloseWindowBeenPressed = Controls.Contains((int)Core.Controls.CLOSE_WINDOW);
             if (isCloseWindowBeenPressed && !HasCloseWindowBeenPressedLastTime)
                 if (Pause)
                     Quit = true;
@@ -129,6 +130,12 @@ namespace Rogueskiv.Core
                     Pause = true;
 
             HasCloseWindowBeenPressedLastTime = isCloseWindowBeenPressed;
+
+            var isToggleSoundPressed = Controls.Contains((int)Core.Controls.TOGGLE_SOUNDS);
+            if (!HasToggleSoundsLastTime && isToggleSoundPressed)
+                GameEvents.Add(new ToggleSoundEvent());
+
+            HasToggleSoundsLastTime = isToggleSoundPressed;
 
             base.Update();
         }

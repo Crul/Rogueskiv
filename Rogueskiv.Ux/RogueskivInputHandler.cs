@@ -23,6 +23,7 @@ namespace Rogueskiv.Ux
                     { (int)SDL_Keycode.SDLK_DOWN,  (int)Controls.DOWN },
                     { (int)SDL_Keycode.SDLK_LEFT,  (int)Controls.LEFT },
                     { (int)SDL_Keycode.SDLK_RIGHT, (int)Controls.RIGHT },
+                    { (int)SDL_Keycode.SDLK_s,     (int)Controls.TOGGLE_SOUNDS },
                 },
                 closeWindowControl: (int)Controls.CLOSE_WINDOW
             )

@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
 using Rogueskiv.Ux.EffectPlayers;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
@@ -86,10 +87,20 @@ namespace Rogueskiv.Ux
 
         protected override void RenderGame(float interpolation)
         {
+            if (RogueskivGame.GameEvents.Any(ev => ev is ToggleSoundEvent))
+            {
+                UxConfig.SoundsOn = !UxConfig.SoundsOn;
+                if (!UxConfig.SoundsOn)
+                    SDL_mixer.Mix_HaltChannel(-1);
+            }
+
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
-            PlayerMovementEffectPlayer.Play();
-            EffectPlayers.ForEach(ep => ep.Play());
+            if (UxConfig.SoundsOn)
+            {
+                PlayerMovementEffectPlayer.Play();
+                EffectPlayers.ForEach(ep => ep.Play());
+            }
             RogueskivGame.GameEvents.Clear();
         }
 

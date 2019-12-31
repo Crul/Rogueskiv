@@ -6,6 +6,9 @@ cameraMovementFriction: 20
 inGameTimeVisible: true
 realTimeVisible: false
 
+# sound
+soundsOn: true
+
 # game
 floorCount: 26
 
