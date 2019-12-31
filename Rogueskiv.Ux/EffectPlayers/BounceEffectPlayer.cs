@@ -6,9 +6,7 @@ namespace Rogueskiv.Ux.EffectPlayers
 {
     class BounceEffectPlayer : EventEffectPlayer<PlayerHitWallEvent>
     {
-        public BounceEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(game, "rock_hit", channel)
-        { }
+        public BounceEffectPlayer(RogueskivGame game) : base(game, "rock_hit") { }
 
         protected override int GetVolume(PlayerHitWallEvent playerHitWallEvent)
         {

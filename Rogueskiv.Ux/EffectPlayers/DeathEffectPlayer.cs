@@ -5,8 +5,6 @@ namespace Rogueskiv.Ux.EffectPlayers
 {
     class DeathEffectPlayer : EventEffectPlayer<DeathEvent>
     {
-        public DeathEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(game, "death", channel)
-        { }
+        public DeathEffectPlayer(RogueskivGame game) : base(game, "death") { }
     }
 }

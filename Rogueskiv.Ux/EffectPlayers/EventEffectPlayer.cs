@@ -10,8 +10,8 @@ namespace Rogueskiv.Ux.EffectPlayers
     {
         private readonly RogueskivGame Game;
 
-        protected EventEffectPlayer(RogueskivGame game, string audioFilename, int channel = -1)
-            : base(audioFilename, channel) =>
+        protected EventEffectPlayer(RogueskivGame game, string audioFilename)
+            : base(audioFilename) =>
             Game = game;
 
         protected virtual int GetVolume(T gameEvent) => SDL_mixer.MIX_MAX_VOLUME;
