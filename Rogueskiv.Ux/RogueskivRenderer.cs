@@ -71,6 +71,7 @@ namespace Rogueskiv.Ux
             EffectPlayers.Add(new BounceEffectPlayer(game));
             EffectPlayers.Add(new TorchPickedEffectPlayer(game));
             EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
+            EffectPlayers.Add(new FoodPickedEffectPlayer(game));
         }
 
         public override void Reset() =>

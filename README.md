@@ -39,6 +39,7 @@ Rogueskiv makes use of the following projects:
   - [two large cobblestone blocks](https://freesound.org/people/jobel0092/sounds/268055/) by [jobel0092](https://freesound.org/people/jobel0092/) ([Creative Commons 0 License](https://freesound.org/people/jobel0092/sounds/268055/#sound_license))
   - [Torch.wav](https://freesound.org/people/DanielVega/sounds/479338/) by [DanielVega](https://freesound.org/people/DanielVega/) ([Creative Commons 0 License](https://freesound.org/people/DanielVega/sounds/479338/#sound_license))
   - [crumpling Paper fx](https://freesound.org/people/jammaj/sounds/408992/) by [jammaj](https://freesound.org/people/jammaj/) ([Attribution Noncommercial License](https://freesound.org/people/jammaj/sounds/408992/#sound_license))
+  - [Chewing Cereal](https://freesound.org/people/Luthien22/sounds/467625/) by [Luthien22](https://freesound.org/people/Luthien22/) ([Creative Commons 0 License](https://freesound.org/people/Luthien22/sounds/467625/#sound_license))
 
 ## License (AGPL-3.0)
 

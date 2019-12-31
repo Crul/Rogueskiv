@@ -8,6 +8,6 @@ namespace Rogueskiv.Core.Components
         public FoodComp(int maxPickingTime, Point tilePos)
             : base(maxPickingTime, tilePos) { }
 
-        public override IGameEvent GetGameEvent() => null;
+        public override IGameEvent GetGameEvent() => new FoodPickedEvent();
     }
 }
