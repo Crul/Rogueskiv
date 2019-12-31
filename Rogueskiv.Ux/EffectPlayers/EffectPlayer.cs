@@ -1,38 +1,25 @@
-﻿using Rogueskiv.Core;
-using Rogueskiv.Core.GameEvents;
-using SDL2;
+﻿using SDL2;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
-    abstract class EffectPlayer<T> : IEffectPlayer
-        where T : IGameEvent
+    public abstract class EffectPlayer : IEffectPlayer
     {
         private readonly IntPtr AudioChunk;
         private readonly int Channel;
-        private readonly RogueskivGame Game;
 
-        public EffectPlayer(RogueskivGame game, string audioFilename, int channel = -1)
+        protected EffectPlayer(string audioFilename, int channel = -1)
         {
             AudioChunk = SDL_mixer.Mix_LoadWAV(Path.Combine("audio", $"{audioFilename}.mp3"));
             Channel = channel;
-            Game = game;
         }
 
-        protected virtual int GetVolume(T gameEvent) => SDL_mixer.MIX_MAX_VOLUME;
+        public abstract void Play();
 
-        public void Play()
+        protected void PlayChunk(int volume)
         {
-            var gameEvents = Game.GameEvents.Where(ev => ev is T).ToList();
-            if (gameEvents.Any())
-                PlayEffect((T)gameEvents.First());
-        }
-
-        private void PlayEffect(T gameEvent)
-        {
-            SDL_mixer.Mix_VolumeChunk(AudioChunk, GetVolume(gameEvent));  // TODO only if volume has changed ?
+            SDL_mixer.Mix_VolumeChunk(AudioChunk, volume);  // TODO only if volume has changed ?
             SDL_mixer.Mix_PlayChannel(Channel, AudioChunk, 0);
         }
 

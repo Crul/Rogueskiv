@@ -3,7 +3,7 @@ using Rogueskiv.Core.GameEvents;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
-    class WinEffectPlayer : EffectPlayer<WinEvent>
+    class WinEffectPlayer : EventEffectPlayer<WinEvent>
     {
         public WinEffectPlayer(RogueskivGame game, int channel = -1)
             : base(game, "win", channel)

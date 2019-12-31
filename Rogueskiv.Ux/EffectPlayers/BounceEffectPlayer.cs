@@ -4,7 +4,7 @@ using System;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
-    class BounceEffectPlayer : EffectPlayer<PlayerHitWallEvent>
+    class BounceEffectPlayer : EventEffectPlayer<PlayerHitWallEvent>
     {
         public BounceEffectPlayer(RogueskivGame game, int channel = -1)
             : base(game, "rock_hit", channel)

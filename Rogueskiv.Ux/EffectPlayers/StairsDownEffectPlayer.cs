@@ -3,7 +3,7 @@ using Rogueskiv.Core.GameEvents;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
-    class StairsDownEffectPlayer : EffectPlayer<StairsDownEvent>
+    class StairsDownEffectPlayer : EventEffectPlayer<StairsDownEvent>
     {
         public StairsDownEffectPlayer(RogueskivGame game, int channel = -1)
             : base(game, "stairs_down", channel)

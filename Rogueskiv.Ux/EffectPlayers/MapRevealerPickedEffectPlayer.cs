@@ -3,7 +3,7 @@ using Rogueskiv.Core.GameEvents;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
-    class MapRevealerPickedEffectPlayer : EffectPlayer<MapRevealerPickedEvent>
+    class MapRevealerPickedEffectPlayer : EventEffectPlayer<MapRevealerPickedEvent>
     {
         public MapRevealerPickedEffectPlayer(RogueskivGame game, int channel = -1)
             : base(game, "map_revealer_picked", channel)
