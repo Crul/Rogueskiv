@@ -73,6 +73,7 @@ namespace Rogueskiv.Ux
             EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
             EffectPlayers.Add(new FoodPickedEffectPlayer(game));
             EffectPlayers.Add(new WinEffectPlayer(game));
+            EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
         }
 
         public override void Reset() =>
