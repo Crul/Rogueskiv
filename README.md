@@ -43,6 +43,7 @@ Rogueskiv makes use of the following projects:
   - [Jingle_Win_01](https://freesound.org/people/LittleRobotSoundFactory/sounds/270545/) by [LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/) ([Attribution License](https://freesound.org/people/LittleRobotSoundFactory/sounds/270545/#sound_license))
   - [Extinguishing a candle](https://freesound.org/people/14GPanskaLetko_Dominik/sounds/419290/) by [14GPanskaLetko_Dominik](https://freesound.org/people/14GPanskaLetko_Dominik) ([Attribution License](https://freesound.org/people/14GPanskaLetko_Dominik/sounds/419290/#sound_license))
   - [Quickly Walking Up Stairs](https://freesound.org/people/deleted_user_7146007/sounds/383889/) by [deleted_user_7146007 (sic)](https://freesound.org/people/deleted_user_7146007) ([Creative Commons 0 License](https://freesound.org/people/deleted_user_7146007/sounds/383889/#sound_license))
+  - [Man Dying](https://freesound.org/people/Under7dude/sounds/163442/) by [Under7dude](https://freesound.org/people/Under7dude/) ([Creative Commons 0 License](https://freesound.org/people/Under7dude/sounds/163442/#sound_license))
 
 ## License (AGPL-3.0)
 

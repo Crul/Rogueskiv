@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Core.Components;
+using Rogueskiv.Core.GameEvents;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
@@ -8,12 +9,12 @@ namespace Rogueskiv.Core.Systems
 {
     class DeathSys : BaseSystem
     {
-        private Game Game;
+        private RogueskivGame Game;
         private HealthComp PlayerHealthComp;
 
         public override void Init(Game game)
         {
-            Game = game;
+            Game = (RogueskivGame)game;
             PlayerHealthComp = Game.Entities.GetSingleComponent<HealthComp>();
         }
 
@@ -21,6 +22,8 @@ namespace Rogueskiv.Core.Systems
         {
             if (PlayerHealthComp.Health > 0)
                 return;
+
+            Game.GameEvents.Add(new DeathEvent());
 
             if (Game.Result?.ResultCode == RogueskivGameResults.DeathResult.ResultCode)
                 Game.EndGame(Game.Result);

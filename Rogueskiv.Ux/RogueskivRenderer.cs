@@ -76,6 +76,7 @@ namespace Rogueskiv.Ux
             EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
             EffectPlayers.Add(new StairsUpEffectPlayer(game));
             EffectPlayers.Add(new StairsDownEffectPlayer(game));
+            EffectPlayers.Add(new DeathEffectPlayer(game));
         }
 
         public override void Reset() =>
