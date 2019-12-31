@@ -2,6 +2,7 @@
 using Rogueskiv.Core.GameEvents;
 using SDL2;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Rogueskiv.Ux.EffectPlayers
@@ -13,9 +14,9 @@ namespace Rogueskiv.Ux.EffectPlayers
         private readonly int Channel;
         private readonly RogueskivGame Game;
 
-        public EffectPlayer(RogueskivGame game, string audioFilePath, int channel = -1)
+        public EffectPlayer(RogueskivGame game, string audioFilename, int channel = -1)
         {
-            AudioChunk = SDL_mixer.Mix_LoadWAV(audioFilePath);
+            AudioChunk = SDL_mixer.Mix_LoadWAV(Path.Combine("audio", $"{audioFilename}.mp3"));
             Channel = channel;
             Game = game;
         }

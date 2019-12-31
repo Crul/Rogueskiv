@@ -1,14 +1,13 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.GameEvents;
 using System;
-using System.IO;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
     class BounceEffectPlayer : EffectPlayer<PlayerHitWallEvent>
     {
         public BounceEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(game, Path.Combine("audio", "rock_hit.mp3"), channel)
+            : base(game, "rock_hit", channel)
         { }
 
         protected override int GetVolume(PlayerHitWallEvent playerHitWallEvent)
