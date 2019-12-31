@@ -44,6 +44,7 @@ Rogueskiv makes use of the following projects:
   - [Extinguishing a candle](https://freesound.org/people/14GPanskaLetko_Dominik/sounds/419290/) by [14GPanskaLetko_Dominik](https://freesound.org/people/14GPanskaLetko_Dominik) ([Attribution License](https://freesound.org/people/14GPanskaLetko_Dominik/sounds/419290/#sound_license))
   - [Quickly Walking Up Stairs](https://freesound.org/people/deleted_user_7146007/sounds/383889/) by [deleted_user_7146007 (sic)](https://freesound.org/people/deleted_user_7146007) ([Creative Commons 0 License](https://freesound.org/people/deleted_user_7146007/sounds/383889/#sound_license))
   - [Man Dying](https://freesound.org/people/Under7dude/sounds/163442/) by [Under7dude](https://freesound.org/people/Under7dude/) ([Creative Commons 0 License](https://freesound.org/people/Under7dude/sounds/163442/#sound_license))
+  - [stone_mechanisem_loop_02](https://freesound.org/people/Claire.H/sounds/182344/) by [Claire.H](https://freesound.org/people/Claire.H/) ([Attribution License](https://freesound.org/people/Claire.H/sounds/182344/#sound_license))
 
 ## License (AGPL-3.0)
 

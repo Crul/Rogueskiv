@@ -25,6 +25,7 @@ namespace Rogueskiv.Ux
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
+        private readonly PlayerMovementEffectPlayer PlayerMovementEffectPlayer;
 
         private readonly List<IEffectPlayer> EffectPlayers = new List<IEffectPlayer>();
 
@@ -68,6 +69,7 @@ namespace Rogueskiv.Ux
             );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
 
+            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(game);
             EffectPlayers.Add(new BounceEffectPlayer(game));
             EffectPlayers.Add(new TorchPickedEffectPlayer(game));
             EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
@@ -86,6 +88,7 @@ namespace Rogueskiv.Ux
         {
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
+            PlayerMovementEffectPlayer.Play();
             EffectPlayers.ForEach(ep => ep.Play());
             RogueskivGame.GameEvents.Clear();
         }
@@ -105,6 +108,7 @@ namespace Rogueskiv.Ux
                 SDL_ttf.TTF_CloseFont(Font);
                 SDL_DestroyTexture(BoardTexture);
                 EffectPlayers.ForEach(ep => ep.Dispose());
+                PlayerMovementEffectPlayer.Dispose();
             }
         }
     }

@@ -7,7 +7,7 @@ namespace Rogueskiv.Ux.EffectPlayers
     public abstract class EffectPlayer : IEffectPlayer
     {
         private readonly IntPtr AudioChunk;
-        private readonly int Channel;
+        private int Channel;
 
         protected EffectPlayer(string audioFilename, int channel = -1)
         {
@@ -19,9 +19,27 @@ namespace Rogueskiv.Ux.EffectPlayers
 
         protected void PlayChunk(int volume)
         {
-            SDL_mixer.Mix_VolumeChunk(AudioChunk, volume);  // TODO only if volume has changed ?
-            SDL_mixer.Mix_PlayChannel(Channel, AudioChunk, 0);
+            SetVolume(volume); // TODO only if volume has changed ?
+            Channel = SDL_mixer.Mix_PlayChannel(Channel, AudioChunk, 0);
         }
+
+        protected void PauseChunk()
+        {
+            if (Channel < 0)
+                return;
+
+            var isPaused = SDL_mixer.Mix_Paused(Channel) == 1;
+            if (!isPaused)
+                SDL_mixer.Mix_Pause(Channel);
+        }
+
+        protected void SetVolume(int volume) =>
+            SDL_mixer.Mix_VolumeChunk(AudioChunk, volume);
+
+        protected bool IsPlaying() =>
+            Channel >= 0
+            && SDL_mixer.Mix_Playing(Channel) == 1
+            && SDL_mixer.Mix_Paused(Channel) == 0;
 
         public void Dispose()
         {

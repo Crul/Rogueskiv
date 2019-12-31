@@ -13,7 +13,7 @@ namespace Rogueskiv.Ux.EffectPlayers
         protected override int GetVolume(PlayerHitWallEvent playerHitWallEvent)
         {
             var speedFactor = Math.Min(playerHitWallEvent.SpeedFactor, 1);
-            var volume = (int)(0.1f * Math.Pow(speedFactor, 3) * base.GetVolume(playerHitWallEvent));
+            var volume = (int)(0.3f * Math.Pow(speedFactor, 2) * base.GetVolume(playerHitWallEvent));
 
             return volume;
         }

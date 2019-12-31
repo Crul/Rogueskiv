@@ -10,6 +10,6 @@ namespace Rogueskiv.Ux.EffectPlayers
         { }
 
         protected override int GetVolume(TorchPickedEvent gameEvent) =>
-            base.GetVolume(gameEvent) / 10;
+            base.GetVolume(gameEvent) / 5;
     }
 }

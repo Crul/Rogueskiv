@@ -10,6 +10,6 @@ namespace Rogueskiv.Ux.EffectPlayers
         { }
 
         protected override int GetVolume(FoodPickedEvent gameEvent) =>
-            base.GetVolume(gameEvent) / 3;
+            base.GetVolume(gameEvent) / 2;
     }
 }
