@@ -24,8 +24,10 @@ namespace Rogueskiv.Menus
                     { (int)SDL_Keycode.SDLK_RETURN,   (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_KP_ENTER, (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE},
+                    { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC},
                 },
-                closeWindowControl: (int)Controls.CLOSE_WINDOW
+                closeWindowControl: (int)Controls.CLOSE_WINDOW,
+                toggleMusicControl: (int)Controls.TOGGLE_MUSIC
             )
         {
             Game = game;

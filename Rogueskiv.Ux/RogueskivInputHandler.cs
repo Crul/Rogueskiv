@@ -24,8 +24,10 @@ namespace Rogueskiv.Ux
                     { (int)SDL_Keycode.SDLK_LEFT,  (int)Controls.LEFT },
                     { (int)SDL_Keycode.SDLK_RIGHT, (int)Controls.RIGHT },
                     { (int)SDL_Keycode.SDLK_s,     (int)Controls.TOGGLE_SOUNDS },
+                    { (int)SDL_Keycode.SDLK_m,     (int)Controls.TOGGLE_MUSIC },
                 },
-                closeWindowControl: (int)Controls.CLOSE_WINDOW
+                closeWindowControl: (int)Controls.CLOSE_WINDOW,
+                toggleMusicControl: (int)Controls.TOGGLE_MUSIC
             )
         { }
     }

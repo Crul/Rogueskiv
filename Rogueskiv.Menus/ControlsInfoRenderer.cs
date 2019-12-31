@@ -20,6 +20,7 @@ namespace Rogueskiv.Menus
             "- Cursors to move",
             "- ESC to pause or exit",
             "- S to toggle sound",
+            "- M to toggle music",
         };
 
         private readonly SDL_Color InstructionsColor =

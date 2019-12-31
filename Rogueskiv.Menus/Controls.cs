@@ -4,12 +4,13 @@
     {
         NONE,
         CLOSE_WINDOW,
+        QUIT,
+        TOGGLE_MUSIC,
         UP,
         DOWN,
         ENTER,
-        QUIT,
         BACKSPACE,
         COPY,
-        PASTE
+        PASTE,
     }
 }

@@ -23,12 +23,16 @@ namespace Seedwork.Ux
         private readonly int CloseWindowControl;
         private bool CloseWindowKeyPressed;
 
+        private readonly int ToggleMusicControl;
+        private bool ToggleMusicKeyPressedLastTime;
+
         public InputHandler(
             UxContext uxContext,
             T game,
             IGameRenderer gameRenderer,
             IDictionary<int, int> controlsByKeys,
-            int closeWindowControl
+            int closeWindowControl,
+            int toggleMusicControl
         )
         {
             UxContext = uxContext;
@@ -41,6 +45,7 @@ namespace Seedwork.Ux
                 .ToDictionary(kc => kc, _ => false);
 
             CloseWindowControl = closeWindowControl;
+            ToggleMusicControl = toggleMusicControl;
         }
 
         public void ProcessEvents()
@@ -95,10 +100,22 @@ namespace Seedwork.Ux
         {
             var intKey = (int)key;
             if (ControlsByKeys.ContainsKey(intKey))
+            {
                 ControlStates[ControlsByKeys[intKey]] = pressed;
+                HandleToggleMusic();
+            }
         }
 
         protected virtual void OnTextInput(string text) { }
+
+        private void HandleToggleMusic()
+        {
+            var isPressedMusicControl = ControlStates[ToggleMusicControl];
+            if (!ToggleMusicKeyPressedLastTime && isPressedMusicControl)
+                UxContext.ToggleMusic();
+
+            ToggleMusicKeyPressedLastTime = isPressedMusicControl;
+        }
 
         private static string GetText(SDL_TextInputEvent textEvent)
         {

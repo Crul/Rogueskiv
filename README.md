@@ -35,7 +35,9 @@ Rogueskiv makes use of the following projects:
   You can find the original tileset at: <http://rltiles.sf.net>
 - [Stone Texture II](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii) by [Daniel Smith](http://artistfire.deviantart.com/) ([CC0 Public Domain](https://www.publicdomainpictures.net/en/view-image.php?image=67696&picture=stone-texture-ii#image_text))
 - [YamlDotNet](https://github.com/aaubry/YamlDotNet) by [Antoine Aubry](https://www.aaubry.net/) ([MIT License](https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt))
-- Sounds:
+- Music and sounds:
+  - [Mystic Calm Style Loop - Mystic Cave](https://soundcloud.com/s35musicloops/s35musicloops-mystic-cave-by) by [Mell o'Deque / S35 Multimedia](http://www.s35.pl/) ([CC BY-NC-SA 3.0 License](https://soundcloud.com/s35musicloops/s35musicloops-mystic-cave-by))
+  - [Gaping Gill [AO OSD 63]](https://soundcloud.com/synkrotron/gaping-gill-ao-osd-63) by [synkrotron (andy morris)](https://soundcloud.com/synkrotron) ([CC BY-NC-SA 3.0 License](https://soundcloud.com/synkrotron/gaping-gill-ao-osd-63))
   - [two large cobblestone blocks](https://freesound.org/people/jobel0092/sounds/268055/) by [jobel0092](https://freesound.org/people/jobel0092/) ([Creative Commons 0 License](https://freesound.org/people/jobel0092/sounds/268055/#sound_license))
   - [Torch.wav](https://freesound.org/people/DanielVega/sounds/479338/) by [DanielVega](https://freesound.org/people/DanielVega/) ([Creative Commons 0 License](https://freesound.org/people/DanielVega/sounds/479338/#sound_license))
   - [crumpling Paper fx](https://freesound.org/people/jammaj/sounds/408992/) by [jammaj](https://freesound.org/people/jammaj/) ([Attribution Noncommercial License](https://freesound.org/people/jammaj/sounds/408992/#sound_license))
