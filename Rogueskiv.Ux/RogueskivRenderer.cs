@@ -70,6 +70,7 @@ namespace Rogueskiv.Ux
 
             EffectPlayers.Add(new BounceEffectPlayer(game));
             EffectPlayers.Add(new TorchPickedEffectPlayer(game));
+            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
         }
 
         public override void Reset() =>

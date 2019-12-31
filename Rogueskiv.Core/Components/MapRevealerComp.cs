@@ -8,6 +8,6 @@ namespace Rogueskiv.Core.Components
         public MapRevealerComp(int maxPickingTime, Point tilePos)
             : base(maxPickingTime, tilePos) { }
 
-        public override IGameEvent GetGameEvent() => null;
+        public override IGameEvent GetGameEvent() => new MapRevealerPickedEvent();
     }
 }
