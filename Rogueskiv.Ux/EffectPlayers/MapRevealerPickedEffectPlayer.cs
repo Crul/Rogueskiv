@@ -10,6 +10,6 @@ namespace Rogueskiv.Ux.EffectPlayers
         { }
 
         protected override int GetVolume(MapRevealerPickedEvent gameEvent) =>
-            base.GetVolume(gameEvent) / 15;
+            base.GetVolume(gameEvent) / 2;
     }
 }

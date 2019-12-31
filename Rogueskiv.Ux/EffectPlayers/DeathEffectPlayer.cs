@@ -8,8 +8,5 @@ namespace Rogueskiv.Ux.EffectPlayers
         public DeathEffectPlayer(RogueskivGame game, int channel = -1)
             : base(game, "death", channel)
         { }
-
-        protected override int GetVolume(DeathEvent gameEvent) =>
-            base.GetVolume(gameEvent) / 10;
     }
 }

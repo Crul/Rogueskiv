@@ -10,6 +10,6 @@ namespace Rogueskiv.Ux.EffectPlayers
         { }
 
         protected override int GetVolume(StairsUpEvent gameEvent) =>
-            base.GetVolume(gameEvent) / 10;
+            base.GetVolume(gameEvent) / 5;
     }
 }

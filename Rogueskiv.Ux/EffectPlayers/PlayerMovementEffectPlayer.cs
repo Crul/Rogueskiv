@@ -39,7 +39,7 @@ namespace Rogueskiv.Ux.EffectPlayers
                     PlayerLastPositionComp.Position.Substract(PlayerPositionComp.Position)
                 );
                 var speedFactor = lastMovementDistance / PlayerMovementComp.MaxSpeed;
-                var volumeTarget = (speedFactor * SDL_mixer.MIX_MAX_VOLUME * 0.4f);
+                var volumeTarget = (speedFactor * SDL_mixer.MIX_MAX_VOLUME * 0.6f);
                 volume = (int)(LastVolume + (volumeTarget - LastVolume) * VOLUME_CHANGE_RATE);
             }
 
