@@ -8,6 +8,6 @@ namespace Rogueskiv.Core.Components
         public AmuletComp(int pickingTime, Point tilePos)
             : base(pickingTime, tilePos) { }
 
-        public override IGameEvent GetGameEvent() => null;
+        public override IGameEvent GetGameEvent() => new WinEvent();
     }
 }

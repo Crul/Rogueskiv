@@ -40,6 +40,7 @@ Rogueskiv makes use of the following projects:
   - [Torch.wav](https://freesound.org/people/DanielVega/sounds/479338/) by [DanielVega](https://freesound.org/people/DanielVega/) ([Creative Commons 0 License](https://freesound.org/people/DanielVega/sounds/479338/#sound_license))
   - [crumpling Paper fx](https://freesound.org/people/jammaj/sounds/408992/) by [jammaj](https://freesound.org/people/jammaj/) ([Attribution Noncommercial License](https://freesound.org/people/jammaj/sounds/408992/#sound_license))
   - [Chewing Cereal](https://freesound.org/people/Luthien22/sounds/467625/) by [Luthien22](https://freesound.org/people/Luthien22/) ([Creative Commons 0 License](https://freesound.org/people/Luthien22/sounds/467625/#sound_license))
+  - [Jingle_Win_01](https://freesound.org/people/LittleRobotSoundFactory/sounds/270545/) by [LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/) ([Attribution License](https://freesound.org/people/LittleRobotSoundFactory/sounds/270545/#sound_license))
 
 ## License (AGPL-3.0)
 
