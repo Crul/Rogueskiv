@@ -63,7 +63,14 @@ namespace Rogueskiv.Core.Components.Board
             if (lastTileEntityList.Contains(entityId))
                 lastTileEntityList.Remove(entityId);
 
-            EntitiesByTiles[currentTilePos].Add(entityId);
+            if (EntitiesByTiles.ContainsKey(currentTilePos))
+                EntitiesByTiles[currentTilePos].Add(entityId);
+            else
+            {
+                System.Console.WriteLine("Entity OUT OF BOUNDS"); // TODO
+                currentPosComp.Position = lastPosComp.Position;
+            }
+
         }
 
         public void RemoveEntity(EntityId entityId, PositionComp positionComp) =>
