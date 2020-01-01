@@ -42,10 +42,8 @@ namespace Rogueskiv.Ux.SoriteProviders
             Action<ISpriteProvider<CurrentPositionComp>> render)
         {
             var lastPositionComp = entity.GetComponent<LastPositionComp>();
-            var lastMovement = currentPositionComp
-                .Position
-                .Substract(lastPositionComp.Position)
-                .ToPoint();
+            var lastMovement = currentPositionComp.Position.ToPoint()
+                .Substract(lastPositionComp.Position.ToPoint());
 
             MoveTextureRect(lastMovement);
 
