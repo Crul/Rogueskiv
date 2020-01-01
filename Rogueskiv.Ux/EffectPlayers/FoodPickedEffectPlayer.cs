@@ -5,8 +5,6 @@ namespace Rogueskiv.Ux.EffectPlayers
 {
     class FoodPickedEffectPlayer : EventEffectPlayer<FoodPickedEvent>
     {
-        public FoodPickedEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(game, "food_picked", channel)
-        { }
+        public FoodPickedEffectPlayer(RogueskivGame game) : base(game, "food_picked") { }
     }
 }

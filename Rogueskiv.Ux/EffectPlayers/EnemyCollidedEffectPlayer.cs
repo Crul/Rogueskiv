@@ -5,8 +5,8 @@ namespace Rogueskiv.Ux.EffectPlayers
 {
     class EnemyCollidedEffectPlayer : EventEffectPlayer<EnemyCollidedEvent>
     {
-        public EnemyCollidedEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(game, "enemy_collided", channel)
+        public EnemyCollidedEffectPlayer(RogueskivGame game)
+            : base(game, "enemy_collided")
         { }
     }
 }

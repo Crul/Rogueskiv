@@ -13,7 +13,7 @@ namespace Rogueskiv.Ux.Renderers
 {
     class PopUpRenderer : TextCompRenderer<PopUpComp>
     {
-        private const int PADDING = 20;
+        private const int PADDING = 60;
         private const byte BGR_OPACITY = 0xF0;
         private const int LINE_HEIGHT = 24;
         private readonly RogueskivGame Game;

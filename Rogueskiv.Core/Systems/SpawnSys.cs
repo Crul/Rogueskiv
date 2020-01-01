@@ -47,8 +47,11 @@ namespace Rogueskiv.Core.Systems
                 .Where(tilePos => HasSpaceAround(tilePositions, tilePos))
                 .ToList();
 
+            var occupiedTiles = new List<Point>();
+
             var playerTile = tilesPosWithSpaceAround[Luck.Next(tilesPosWithSpaceAround.Count)];
             game.AddEntity(CreatePlayer(playerTile));
+            occupiedTiles.Add(playerTile);
 
             var tilePosAndDistances = GetDistancesFrom(boardComp, playerTile)
                 .Where(tile => tilePositions.Contains(tile.tilePos))
@@ -57,7 +60,7 @@ namespace Rogueskiv.Core.Systems
             var enemiesCount = 0;
             while (enemiesCount < SpawnConfig.EnemyNumber)
             {
-                var enemy = CreateEnemy(boardComp, tilePosAndDistances);
+                var enemy = CreateEnemy(boardComp, tilePosAndDistances, occupiedTiles);
                 if (enemy == null)
                     continue;
 
@@ -69,19 +72,19 @@ namespace Rogueskiv.Core.Systems
 
             // TODO avoid spawining 2 items in the same tile
 
-            game.AddEntity(CreateFood(tilePosAndDistances, maxDistance));
-            game.AddEntity(CreateTorch(tilePosAndDistances, maxDistance));
-            game.AddEntity(CreateMapRevealer(tilePosAndDistances, maxDistance));
+            game.AddEntity(CreateFood(tilePosAndDistances, occupiedTiles, maxDistance));
+            game.AddEntity(CreateTorch(tilePosAndDistances, occupiedTiles, maxDistance));
+            game.AddEntity(CreateMapRevealer(tilePosAndDistances, occupiedTiles, maxDistance));
 
             if (SpawnConfig.IsLastFloor)
-                game.AddEntity(CreateAmulet(tilePosAndDistances, maxDistance));
+                game.AddEntity(CreateAmulet(tilePosAndDistances, occupiedTiles, maxDistance));
             else
             {
                 var tilePosAndDistWithSpaceAround = tilePosAndDistances
                     .Where(tpad => tilesPosWithSpaceAround.Contains(tpad.tilePos))
                     .ToList();
 
-                game.AddEntity(CreateDownStairs(tilePosAndDistWithSpaceAround, maxDistance));
+                game.AddEntity(CreateDownStairs(tilePosAndDistWithSpaceAround, occupiedTiles, maxDistance));
             }
 
             var isFirstFloor = PreviousFloorResult == null;
@@ -176,13 +179,20 @@ namespace Rogueskiv.Core.Systems
 
         private List<IComponent> CreateEnemy(
             BoardComp boardComp,
-            List<(Point tilePos, int distance)> tilePositionsAndDistances
+            List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles
         )
         {
-            var enemyTilePos = GetRandomTilePos(tilePositionsAndDistances, SpawnConfig.MinEnemySpawnDistance);
+            var enemyTilePos = GetRandomTilePos(
+                tilePositionsAndDistances,
+                occupiedTiles,
+                SpawnConfig.MinEnemySpawnDistance
+            );
             var enemySpeed = GetEnemySpeed(boardComp, enemyTilePos);
             if (!enemySpeed.HasValue)
                 return null;
+
+            occupiedTiles.Add(enemyTilePos);
 
             return new List<IComponent>
             {
@@ -268,57 +278,67 @@ namespace Rogueskiv.Core.Systems
 
         private IComponent CreateFood(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles,
             int maxDistance
         )
         {
             var minDistance = (int)(SpawnConfig.MinFoodSpawnDistanceFactor * maxDistance);
-            var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
+            var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
+            occupiedTiles.Add(foodTilePos);
 
             return new FoodComp(SpawnConfig.MaxItemPickingTime, foodTilePos);
         }
 
         private IComponent CreateTorch(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles,
             int maxDistance
         )
         {
             var minDistance = (int)(SpawnConfig.MinTorchSpawnDistanceFactor * maxDistance);
-            var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
+            var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
+            occupiedTiles.Add(torchTilePos);
 
             return new TorchComp(SpawnConfig.MaxItemPickingTime, torchTilePos);
         }
 
         private IComponent CreateMapRevealer(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles,
             int maxDistance
         )
         {
             var minDistance = (int)(SpawnConfig.MinMapRevealerSpawnDistanceFactor * maxDistance);
-            var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
+            var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
+            occupiedTiles.Add(mapRevealerTilePos);
 
             return new MapRevealerComp(SpawnConfig.MaxItemPickingTime, mapRevealerTilePos);
         }
 
         private IComponent CreateAmulet(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles,
             int maxDistance
         )
         {
             var minDistance = (int)(SpawnConfig.MinAmuletSpawnFactor * maxDistance);
-            var amuletTilePos = GetRandomTilePos(tilePositionsAndDistances, minDistance);
+            var amuletTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
+            occupiedTiles.Add(amuletTilePos);
 
             return new AmuletComp(SpawnConfig.MaxItemPickingTime, amuletTilePos);
         }
 
         private IComponent CreateDownStairs(
             List<(Point tilePos, int distance)> tilePosAndDistWithSpaceAround,
+            List<Point> occupiedTiles,
             int maxDistance
         )
         {
             var minDistance = (int)(SpawnConfig.MinDownStairsSpawnFactor * maxDistance);
-            var tilePos = GetRandomTilePos(tilePosAndDistWithSpaceAround, minDistance);
+            var downStairsTilePos = GetRandomTilePos(tilePosAndDistWithSpaceAround, occupiedTiles, minDistance);
+            occupiedTiles.Add(downStairsTilePos);
 
-            return new DownStairsComp(tilePos);
+            return new DownStairsComp(downStairsTilePos);
         }
 
         private static IComponent CreateUpStairs(Point playerTilePos) =>
@@ -331,6 +351,7 @@ namespace Rogueskiv.Core.Systems
 
         private static Point GetRandomTilePos(
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
+            List<Point> occupiedTiles,
             int minDistance
         )
         {
@@ -342,9 +363,12 @@ namespace Rogueskiv.Core.Systems
 
             while (true)
             {
+                var nonOccupiedTiles = tilePositionsAndDistances
+                    .Where(tpd => !occupiedTiles.Contains(tpd.tilePos));
+
                 while (candidates.Count == 0)
                 {
-                    candidates = tilePositionsAndDistances
+                    candidates = nonOccupiedTiles
                         .Where(tcd => tcd.distance > minDistance)
                         .Select(tcd => tcd.tilePos)
                         .ToList();

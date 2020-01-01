@@ -20,8 +20,8 @@ namespace Rogueskiv.Ux.EffectPlayers
 
         private int LastVolume = 0;
 
-        public PlayerMovementEffectPlayer(RogueskivGame game, int channel = -1)
-            : base(audioFilename: "player_movement", channel)
+        public PlayerMovementEffectPlayer(RogueskivGame game)
+            : base(audioFilename: "player_movement")
         {
             Game = game;
             PlayerMovementComp = game.Entities.GetSingleComponent<PlayerComp, BoundedMovementComp>();
@@ -44,18 +44,35 @@ namespace Rogueskiv.Ux.EffectPlayers
             }
 
             if (volume == 0)
-                PauseChunk();
+                StopChannel();
             else
             {
                 if (IsPlaying())
                     SetVolume(volume);
                 else
-                    PlayChunk(volume);
+                    PlayChunk(volume, loops: -1);
             }
 
             // TODO stop chunk between levels... or reuse EfectPlayers ?
 
             LastVolume = volume;
         }
+
+        private void StopChannel()
+        {
+            if (Channel < 0)
+                return;
+
+            var isPlayimg = SDL_mixer.Mix_Playing(Channel) == 1;
+            if (isPlayimg)
+                SDL_mixer.Mix_HaltChannel(Channel);
+
+            Channel = -1;
+        }
+
+        private bool IsPlaying() =>
+            Channel >= 0
+            && SDL_mixer.Mix_Playing(Channel) == 1
+            && SDL_mixer.Mix_Paused(Channel) == 0;
     }
 }
