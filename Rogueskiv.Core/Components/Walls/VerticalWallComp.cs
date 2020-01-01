@@ -22,7 +22,7 @@ namespace Rogueskiv.Core.Components.Walls
             new PointF(x: BounceLimit, y: Position.Y);
 
         protected override PointF GetEndPosition(MovementComp movement) =>
-            GetStartPosition(movement).Add(y: Size + 2);
+            GetStartPosition(movement).Add(y: Size);
 
         protected override float GetFixedPosition(PointF position) => position.X;
         protected override float GetVariablePosition(PointF position) => position.Y;
