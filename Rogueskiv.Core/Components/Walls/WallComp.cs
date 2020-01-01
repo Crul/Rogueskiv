@@ -131,21 +131,15 @@ namespace Rogueskiv.Core.Components.Walls
             }
 
             PointF? advancedBouncePosition = null;
-            bool? startOrEnd = null;
             var isInStartCorner = (Math.Abs(minVarPos - variablePosCrossingWall) < movementComp.Radius);
             if (isInStartCorner)
-            {
-                startOrEnd = true;
                 advancedBouncePosition = GetStartPosition(movementComp);
-            }
+
             else
             {
                 var isInEndCorner = (Math.Abs(maxVarPos - variablePosCrossingWall) < movementComp.Radius);
                 if (isInEndCorner)
-                {
-                    startOrEnd = false;
                     advancedBouncePosition = GetEndPosition(movementComp);
-                }
             }
 
             if (advancedBouncePosition.HasValue)
@@ -154,44 +148,21 @@ namespace Rogueskiv.Core.Components.Walls
                     movementComp,
                     currentPositionComp,
                     lastPositionComp,
-                    advancedBouncePosition.Value,
-                    startOrEnd.Value
+                    advancedBouncePosition.Value
                 );
 
             return false;
         }
 
-        private void PreciseBounce(
+        private static void PreciseBounce(
             MovementComp movementComp,
             CurrentPositionComp currentPositionComp,
             LastPositionComp lastPositionComp,
-            PointF bouncePosition,
-            bool startOrEnd
+            PointF bouncePosition
         )
         {
-            var goingAwayFromCorner = false;
-            switch (GetConvexCorner(startOrEnd))
-            {
-                case WallCorner.TOP_LEFT:
-                    goingAwayFromCorner = (lastPositionComp.Position.X > currentPositionComp.Position.X)
-                        && (lastPositionComp.Position.Y > currentPositionComp.Position.Y);
-                    break;
-                case WallCorner.TOP_RIGHT:
-                    goingAwayFromCorner = (lastPositionComp.Position.X < currentPositionComp.Position.X)
-                        && (lastPositionComp.Position.Y > currentPositionComp.Position.Y);
-                    break;
-                case WallCorner.BOTTOM_LEFT:
-                    goingAwayFromCorner = (lastPositionComp.Position.X > currentPositionComp.Position.X)
-                        && (lastPositionComp.Position.Y < currentPositionComp.Position.Y);
-                    break;
-                case WallCorner.BOTTOM_RIGHT:
-                    goingAwayFromCorner = (lastPositionComp.Position.X < currentPositionComp.Position.X)
-                        && (lastPositionComp.Position.Y < currentPositionComp.Position.Y);
-                    break;
-            }
-
-            var distance = Distance.Get(lastPositionComp.Position, bouncePosition);
-            if (goingAwayFromCorner || distance > movementComp.Radius)
+            var distance = Distance.Get(currentPositionComp.Position, bouncePosition);
+            if (distance > movementComp.Radius)
                 return;
 
             // TODO get proper bouncing angle
