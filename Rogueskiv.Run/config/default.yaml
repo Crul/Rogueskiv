@@ -6,6 +6,14 @@ cameraMovementFriction: 20
 inGameTimeVisible: true
 realTimeVisible: false
 
+# sound
+soundsOn: true
+musicOn: true
+menuMusicFilePath: "audio/S35musicloops - Mystic Cave by Mellodeque.mp3"
+menuMusicVolume: 48
+gameMusicFilePath: "audio/GapingGill.mp3"
+gameMusicVolume: 10
+
 # game
 floorCount: 26
 

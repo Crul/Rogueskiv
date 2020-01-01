@@ -4,9 +4,10 @@ using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    class BoundedMovementComp : MovementComp
+    public class BoundedMovementComp : MovementComp
     {
-        private readonly float MaxSpeed;
+        public float MaxSpeed { get; }
+
         private readonly float StopSpeed;
         private PointF speed;
 

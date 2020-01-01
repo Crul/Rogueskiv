@@ -1,16 +1,17 @@
 ﻿using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components
 {
-    public class PickableComp : CurrentPositionComp
+    public abstract class PickableComp : CurrentPositionComp
     {
         public override bool AllowRevealedByMap => false;
         public bool IsBeingPicked { get; private set; } = false;
         public int PickingTime { get; private set; }
         public int MaxPickingTime { get; set; }
 
-        public PickableComp(int maxPickingTime, Point tilePos)
+        protected PickableComp(int maxPickingTime, Point tilePos)
             : base(tilePos) =>
             MaxPickingTime = maxPickingTime;
 
@@ -21,5 +22,7 @@ namespace Rogueskiv.Core.Components
         }
 
         public void TickPickingTime() => PickingTime--;
+
+        public abstract IGameEvent GetGameEvent();
     }
 }

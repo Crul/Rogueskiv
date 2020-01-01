@@ -13,7 +13,7 @@ namespace Rogueskiv.Core.Systems
 {
     class StairsSys : BaseSystem
     {
-        private Game Game;
+        private RogueskivGame Game;
         private UpStairsComp UpStairsComp;
         private DownStairsComp DownStairsComp;
         private IEntity PlayerEntity;
@@ -22,7 +22,7 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            Game = game;
+            Game = (RogueskivGame)game;
 
             var stairsComps = game.Entities.GetComponents<StairsComp>();
             UpStairsComp = (UpStairsComp)stairsComps.FirstOrDefault(s => s is UpStairsComp);
@@ -67,6 +67,7 @@ namespace Rogueskiv.Core.Systems
             gameresult.Data.Clear();
             gameresult.Data.Add(PlayerEntity);
 
+            Game.GameEvents.Add(stairsComp.GetGameEvent());
             Game.EndGame(gameresult, pauseBeforeQuit);
         }
 

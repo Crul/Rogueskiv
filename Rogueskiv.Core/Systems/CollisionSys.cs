@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
 using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
@@ -17,7 +18,7 @@ namespace Rogueskiv.Core.Systems
         private readonly int CollisionDamage;
         private readonly float CollisionBounce;
 
-        private Game Game;
+        private RogueskivGame Game;
         private BoardComp BoardComp;
         private EntityId PlayerId;
         private CurrentPositionComp PlayerPosComp;
@@ -32,7 +33,7 @@ namespace Rogueskiv.Core.Systems
 
         public override void Init(Game game)
         {
-            Game = game;
+            Game = (RogueskivGame)game;
 
             BoardComp = Game.Entities.GetSingleComponent<BoardComp>();
 
@@ -64,6 +65,8 @@ namespace Rogueskiv.Core.Systems
             var speedChangeY = CollisionBounce * speedChangeYSign;
 
             PlayerSys.AddSped(PlayerMovementComp, speedChangeX, speedChangeY);
+
+            Game.GameEvents.Add(new EnemyCollidedEvent());
         }
 
         private List<(EntityId entityId, PointF bounce)> GetCollisionsInfo(EntityList entities) =>

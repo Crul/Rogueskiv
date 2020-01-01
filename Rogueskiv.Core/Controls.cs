@@ -4,11 +4,13 @@
     {
         NONE,
         CLOSE_WINDOW,
+        QUIT,
+        PAUSE,
+        TOGGLE_MUSIC,
+        TOGGLE_SOUNDS,
         UP,
         DOWN,
         LEFT,
         RIGHT,
-        QUIT,
-        PAUSE
     }
 }

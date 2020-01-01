@@ -125,6 +125,8 @@ namespace Rogueskiv.Core.Components.Walls
 
                 ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
                 SimpleBounce(movementComp, currentPositionComp);
+                movementComp.HasBounced = true;
+
                 return true;
             }
 
@@ -209,6 +211,8 @@ namespace Rogueskiv.Core.Components.Walls
                 speed * cosAngle,
                 speed * sinAngle
             );
+
+            movementComp.HasBounced = true;
         }
 
         protected abstract PointF GetStartPosition(MovementComp movementComp);

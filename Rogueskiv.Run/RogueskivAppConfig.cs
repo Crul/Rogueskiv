@@ -9,6 +9,10 @@ namespace Rogueskiv.Run
     class RogueskivAppConfig : IRogueskivUxConfig
     {
         public int FloorCount { get; set; }
+        public string MenuMusicFilePath { get; set; }
+        public string GameMusicFilePath { get; set; }
+        public int MenuMusicVolume { get; set; }
+        public int GameMusicVolume { get; set; }
 
         // for GameContext
         public int MaxGameStepsWithoutRender { get; set; }
@@ -18,6 +22,8 @@ namespace Rogueskiv.Run
         public Size ScreenSize { get; set; }
         public bool InGameTimeVisible { get; set; }
         public bool RealTimeVisible { get; set; }
+        public bool SoundsOn { get; set; }
+        public bool MusicOn { get; set; }
 
         // IRogueskivUxConfig
         public string FontFile { get; } = Path.Join("fonts", "Hack", "Hack-Regular.ttf");

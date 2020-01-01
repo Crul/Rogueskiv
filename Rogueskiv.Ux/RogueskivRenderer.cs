@@ -1,12 +1,15 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
+using Rogueskiv.Core.GameEvents;
+using Rogueskiv.Ux.EffectPlayers;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,10 +21,14 @@ namespace Rogueskiv.Ux
     {
         private const int FONT_SIZE = 18;
         private readonly UxContext UxContext;
+        private readonly RogueskivGame RogueskivGame;
         private readonly IRogueskivUxConfig UxConfig;
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
+        private readonly PlayerMovementEffectPlayer PlayerMovementEffectPlayer;
+
+        private readonly List<IEffectPlayer> EffectPlayers = new List<IEffectPlayer>();
 
         public RogueskivRenderer(
             UxContext uxContext,
@@ -30,6 +37,7 @@ namespace Rogueskiv.Ux
             IRogueskivUxConfig uxConfig
         ) : base(uxContext, game)
         {
+            RogueskivGame = game;
             UxContext = uxContext;
             UxConfig = uxConfig;
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
@@ -61,6 +69,17 @@ namespace Rogueskiv.Ux
                 realTimeVisible: uxConfig.RealTimeVisible
             );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
+
+            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(game);
+            EffectPlayers.Add(new BounceEffectPlayer(game));
+            EffectPlayers.Add(new TorchPickedEffectPlayer(game));
+            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
+            EffectPlayers.Add(new FoodPickedEffectPlayer(game));
+            EffectPlayers.Add(new WinEffectPlayer(game));
+            EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
+            EffectPlayers.Add(new StairsUpEffectPlayer(game));
+            EffectPlayers.Add(new StairsDownEffectPlayer(game));
+            EffectPlayers.Add(new DeathEffectPlayer(game));
         }
 
         public override void Reset() =>
@@ -68,8 +87,21 @@ namespace Rogueskiv.Ux
 
         protected override void RenderGame(float interpolation)
         {
+            if (RogueskivGame.GameEvents.Any(ev => ev is ToggleSoundEvent))
+            {
+                UxConfig.SoundsOn = !UxConfig.SoundsOn;
+                if (!UxConfig.SoundsOn)
+                    SDL_mixer.Mix_HaltChannel(-1);
+            }
+
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
+            if (UxConfig.SoundsOn)
+            {
+                PlayerMovementEffectPlayer.Play();
+                EffectPlayers.ForEach(ep => ep.Play());
+            }
+            RogueskivGame.GameEvents.Clear();
         }
 
         public override void RecreateTextures()
@@ -86,6 +118,8 @@ namespace Rogueskiv.Ux
             {
                 SDL_ttf.TTF_CloseFont(Font);
                 SDL_DestroyTexture(BoardTexture);
+                EffectPlayers.ForEach(ep => ep.Dispose());
+                PlayerMovementEffectPlayer.Dispose();
             }
         }
     }

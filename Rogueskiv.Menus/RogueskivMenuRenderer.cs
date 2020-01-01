@@ -25,6 +25,7 @@ namespace Rogueskiv.Menus
 
             Renderers.Add(new TitleRenderer(uxContext, TitleFont));
             Renderers.Add(new InstructionsRenderer(uxContext, SmallFont));
+            Renderers.Add(new ControlsInfoRenderer(uxContext, game, SmallFont));
             Renderers.Add(new CustomSeedInputRenderer(uxContext, game, MenuFont));
             CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, game, MenuFont);
         }

@@ -6,5 +6,7 @@ namespace Seedwork.Ux
     {
         public Size ScreenSize { get; }
         public bool Maximized { get; }
+        public bool SoundsOn { get; set; }
+        public bool MusicOn { get; set; }
     }
 }

@@ -96,6 +96,9 @@ namespace Rogueskiv.Run
             if (gameSeed.HasValue)
                 GameContext.SetSeed(gameSeed.Value);
 
+            if (FloorEngines.Count == 0)
+                UxContext.PlayMusic(AppConfig.GameMusicFilePath, AppConfig.GameMusicVolume);
+
             CurrentFloor = FloorEngines.Count + 1;
             var gameConfig = new RogueskivGameConfig(AppConfig, GameContext, CurrentFloor);
             var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
@@ -113,6 +116,7 @@ namespace Rogueskiv.Run
             CurrentFloor = 1;
             FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
             FloorEngines.Clear();
+            UxContext.PlayMusic(AppConfig.MenuMusicFilePath, AppConfig.MenuMusicVolume);
 
             var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
             var game = new RogueskivMenu(GameStageCodes.Menu);
