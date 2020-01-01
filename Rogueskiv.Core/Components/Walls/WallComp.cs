@@ -120,14 +120,14 @@ namespace Rogueskiv.Core.Components.Walls
             if (isInFrontOrBehind)
             {
                 var hasTraversed = HasTraversed(currentPositionComp, lastPositionComp, movementComp);
-                if (!hasTraversed)
-                    return false;
+                if (hasTraversed)
+                {
+                    ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
+                    SimpleBounce(movementComp, currentPositionComp);
+                    movementComp.HasBounced = true;
 
-                ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
-                SimpleBounce(movementComp, currentPositionComp);
-                movementComp.HasBounced = true;
-
-                return true;
+                    return true;
+                }
             }
 
             PointF? advancedBouncePosition = null;
