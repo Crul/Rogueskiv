@@ -7,6 +7,7 @@ using Seedwork.Core.Components;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,8 +15,13 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        public int Floor { get => GameConfig.Floor; }
+        public int GameSeed { get => GameConfig.GameSeed; }
+
         private bool HasStarted = false;
         private readonly BoardComp BoardComp;
+        private readonly TimerComp TimerComp;
+        private readonly IRogueskivGameConfig GameConfig;
 
         public RogueskivGame(
             GameStageCode stageCode,
@@ -27,11 +33,13 @@ namespace Rogueskiv.Core
                 stageCode: stageCode,
                 entitiesComponents: new List<List<IComponent>>
                 {
+                    new List<IComponent> { new TimerComp(previousFloorResult?.Data.GetSingleComponent<TimerComp>()) },
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
                     new List<IComponent> { new PopUpComp() { Text = GetStartText(gameConfig.Floor) } },
                 },
                 systems: new List<ISystem> {
+                    new TimerSys(),
                     string.IsNullOrEmpty(boardData)
                         ? new BoardSys(gameConfig.MapGenerationParams)
                         : new BoardSys(boardData),
@@ -46,7 +54,7 @@ namespace Rogueskiv.Core
                     new TorchSys(gameConfig.MaxItemPickingTime, gameConfig.TorchVisualRangeIncrease),
                     new RevealMapSys(gameConfig.MaxItemPickingTime),
                     new AmuletSys(gameConfig.MaxItemPickingTime),
-                    new CollisionSys(gameConfig.EnemyCollisionDamage),
+                    new CollisionSys(gameConfig.EnemyCollisionDamage, gameConfig.EnemyCollisionBounce),
                     new FOVSys(),
                     new StairsSys(),
                     new DeathSys()
@@ -56,15 +64,21 @@ namespace Rogueskiv.Core
             )
         {
             Pause = true;
+            GameConfig = gameConfig;
             BoardComp = Entities.GetSingleComponent<BoardComp>();
+            TimerComp = Entities.GetSingleComponent<TimerComp>();
         }
 
         private static string GetStartText(int floor) =>
-            $"FLOOR {floor} - Press any arrow to " + (floor == 1 ? "start" : "continue");
+            $"FLOOR {floor}{Environment.NewLine}Press any arrow to " + (floor == 1 ? "start" : "continue");
 
         public override void Restart(IGameResult<IEntity> previousFloorResult)
         {
             base.Restart(previousFloorResult);
+
+            var timerComp = Entities.GetSingleComponent<TimerComp>();
+            var previousTimerComp = previousFloorResult.Data.GetSingleComponent<TimerComp>();
+            timerComp.InGameTime = previousTimerComp.InGameTime;
 
             var playerEntity = Entities.GetWithComponent<PlayerComp>().Single();
             var previousPlayerEntity = previousFloorResult
@@ -84,16 +98,41 @@ namespace Rogueskiv.Core
             playerHealthComp.Health = previousPlayerHealtComp.Health;
         }
 
+        private bool HasCloseWindowBeenPressedLastTime = false;
+
         public override void Update()
         {
             if (!HasStarted && Controls.Any())
             {
                 Pause = false;
                 HasStarted = true;
-                Entities.GetSingleComponent<PopUpComp>().Text = "PAUSE";
+                var pauseText = $"PAUSE"
+                    + $"{Environment.NewLine}Press ESC to continue or Q to quit"
+                    + $"{Environment.NewLine}"
+                    + $"{Environment.NewLine}Seed: {GameConfig.GameSeed}";
+                Entities.GetSingleComponent<PopUpComp>().Text = pauseText;
+                if (!TimerComp.HasStarted) TimerComp.Start();
             }
 
+            if (!Pause && Controls.Contains(QuitControl)) // only allow exit on pause
+                Controls.Remove(QuitControl);
+
+            var isCloseWindowBeenPressed = (Controls.Contains((int)Core.Controls.CLOSE_WINDOW));
+            if (isCloseWindowBeenPressed && !HasCloseWindowBeenPressedLastTime)
+                if (Pause)
+                    Quit = true;
+                else
+                    Pause = true;
+
+            HasCloseWindowBeenPressedLastTime = isCloseWindowBeenPressed;
+
             base.Update();
+        }
+
+        public override void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
+        {
+            gameResult.Data.Add(Entities.GetWithComponent<TimerComp>().Single());
+            base.EndGame(gameResult, pauseBeforeQuit);
         }
 
         public override void RemoveEntity(EntityId id)

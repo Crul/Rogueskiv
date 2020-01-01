@@ -31,7 +31,7 @@ namespace Rogueskiv.Core.Components
         }
 
         public void SetVisualRange(PlayerComp playerComp)
-            => FOVRecurse.VisualRange = playerComp.VisualRange;
+            => FOVRecurse.VisualRange = (int)playerComp.VisualRange;
 
         public void RevealAll(BoardComp boardComp) =>
             ForAllSubTiles((x, y) =>
@@ -85,7 +85,7 @@ namespace Rogueskiv.Core.Components
                 tileFOVInfo.Visible = FOVRecurse.IsPointVisible(tileFOVInfo.TileFOVPos);
                 tileFOVInfo.DistanceFactor =
                     Distance.Get(tileFOVInfo.Position, playerPosComp.Position)
-                    / (BoardComp.TILE_SIZE * playerComp.VisualRange);
+                    / (BoardComp.TILE_SIZE * (playerComp.VisualRange + 1));
             });
         }
 

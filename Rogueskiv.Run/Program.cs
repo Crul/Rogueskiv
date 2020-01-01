@@ -14,7 +14,8 @@ namespace Rogueskiv.Run
         static void Main(string[] args)
         {
             var rogueskivConfig = ParseConfigFileArg(args);
-            new RogueskivApp(rogueskivConfig).Run();
+            using var rogueskivApp = new RogueskivApp(rogueskivConfig);
+            rogueskivApp.Run();
         }
 
         private static RogueskivAppConfig ParseConfigFileArg(string[] args)

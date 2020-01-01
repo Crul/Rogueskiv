@@ -1,29 +1,35 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 
 namespace Seedwork.Crosscutting
 {
     public static class Masks
     {
-        public static List<Rectangle> GetFromImage(string imagePath)
+        public static List<Rectangle> GetCircleMask(int radius)
+        {
+            var size = radius * 2;
+            var img = new Bitmap(size, size);
+            using (var graphics = Graphics.FromImage(img))
+                graphics.FillEllipse(
+                    new SolidBrush(Color.White),
+                    -0.5f, -0.5f, size, size
+                );
+
+            return GetFromImage(img);
+        }
+
+        public static List<Rectangle> GetFromImage(Bitmap image)
         {
             // only working for circle images or alike
 
-            using var stream = File.OpenRead(imagePath);
-            var image = Image.Load<Rgba32>(stream);
-            var imageSize = image.Size();
-
             var mask = new List<Rectangle>();
-            var columns = Enumerable.Range(0, imageSize.Width).ToList();
+            var columns = Enumerable.Range(0, image.Width).ToList();
             var currentRowMask = new Rectangle(-1, -1, -1, -1);
-            for (var y = 0; y < imageSize.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 var nonBlackRowPixels = columns
-                    .Select(x => (x, pixel: image[x, y]))
+                    .Select(x => (x, pixel: image.GetPixel(x, y)))
                     .Where(info => info.pixel.R != 0)
                     .ToList();
 

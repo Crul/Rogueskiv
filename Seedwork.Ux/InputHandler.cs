@@ -2,6 +2,7 @@
 using Seedwork.Engine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using static SDL2.SDL;
 
 namespace Seedwork.Ux
@@ -15,27 +16,31 @@ namespace Seedwork.Ux
 
         private readonly IGameRenderer GameRenderer;
 
-        private readonly int QuitKey;
+        private readonly IDictionary<int, int> ControlsByKeys;
 
-        private readonly IDictionary<int, int> KeyControls;
+        protected readonly IDictionary<int, bool> ControlStates;
 
-        private readonly IDictionary<int, bool> KeyPressStates;
+        private readonly int CloseWindowControl;
+        private bool CloseWindowKeyPressed;
 
         public InputHandler(
             UxContext uxContext,
             T game,
             IGameRenderer gameRenderer,
-            IDictionary<int, int> keyControls,
-            int quitKey
+            IDictionary<int, int> controlsByKeys,
+            int closeWindowControl
         )
         {
             UxContext = uxContext;
             Game = game;
             GameRenderer = gameRenderer;
-            KeyControls = keyControls;
-            KeyPressStates = KeyControls
-                .ToDictionary(kc => kc.Key, _ => false);
-            QuitKey = quitKey;
+            ControlsByKeys = controlsByKeys;
+            ControlStates = ControlsByKeys
+                .Select(kc => kc.Value)
+                .Distinct()
+                .ToDictionary(kc => kc, _ => false);
+
+            CloseWindowControl = closeWindowControl;
         }
 
         public void ProcessEvents()
@@ -43,10 +48,16 @@ namespace Seedwork.Ux
             while (SDL_PollEvent(out SDL_Event ev) != 0)
                 ProcessEvent(ev);
 
-            Game.Controls = KeyPressStates
-                .Where(keyState => keyState.Value)
-                .Select(keyState => KeyControls[keyState.Key])
+            Game.Controls = ControlStates
+                .Where(controlState => controlState.Value)
+                .Select(controlState => controlState.Key)
                 .ToList();
+
+            if (CloseWindowKeyPressed)
+            {
+                Game.Controls.Add(CloseWindowControl);
+                CloseWindowKeyPressed = false;
+            }
         }
 
         private void ProcessEvent(SDL_Event ev)
@@ -59,7 +70,7 @@ namespace Seedwork.Ux
                     return;
 
                 case SDL_EventType.SDL_QUIT:
-                    KeyPressStates[QuitKey] = true;
+                    CloseWindowKeyPressed = true;
                     return;
 
                 case SDL_EventType.SDL_KEYDOWN:
@@ -70,20 +81,45 @@ namespace Seedwork.Ux
                     OnKeyEvent(ev.key.keysym.sym, false);
                     return;
 
+                case SDL_EventType.SDL_TEXTINPUT:
+                    OnTextInput(GetText(ev.text));
+                    return;
+
                 case SDL_EventType.SDL_RENDER_TARGETS_RESET:
                     GameRenderer.RecreateTextures();
                     return;
             }
         }
 
-        private void OnKeyEvent(SDL_Keycode key, bool pressed)
+        protected virtual void OnKeyEvent(SDL_Keycode key, bool pressed)
         {
             var intKey = (int)key;
-            if (KeyPressStates.ContainsKey(intKey))
-                KeyPressStates[intKey] = pressed;
+            if (ControlsByKeys.ContainsKey(intKey))
+                ControlStates[ControlsByKeys[intKey]] = pressed;
+        }
+
+        protected virtual void OnTextInput(string text) { }
+
+        private static string GetText(SDL_TextInputEvent textEvent)
+        {
+            unsafe
+            {
+                var i = 0;
+                var data = new byte[SDL_TEXTINPUTEVENT_TEXT_SIZE];
+                for (; i < SDL_TEXTINPUTEVENT_TEXT_SIZE; i++)
+                {
+                    var b = textEvent.text[i];
+                    if (b == '\0')
+                        break;
+
+                    data[i] = b;
+                }
+
+                return Encoding.UTF8.GetString(data, 0, i);
+            }
         }
 
         public void Reset() =>
-            KeyPressStates.Keys.ToList().ForEach(k => KeyPressStates[k] = false);
+            ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = false);
     }
 }

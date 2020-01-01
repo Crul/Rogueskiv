@@ -1,6 +1,5 @@
 ﻿using Seedwork.Core.Components;
-using Seedwork.Core.Entities;
-using Seedwork.Engine;
+using System;
 
 namespace Rogueskiv.Menus.MenuOptions
 {
@@ -8,14 +7,14 @@ namespace Rogueskiv.Menus.MenuOptions
     {
         public int Order { get; }
         public string Text { get; }
-        public IGameResult<IEntity> Result { get; }
+        public Action<MenuSys> Execute { get; }
         public bool Active { get; set; }
 
-        public MenuOptionComp(int order, string text, IGameResult<IEntity> result)
+        public MenuOptionComp(int order, string text, Action<MenuSys> executeAction)
         {
             Order = order;
             Text = text;
-            Result = result;
+            Execute = executeAction;
             Active = (order == 0);
         }
     }

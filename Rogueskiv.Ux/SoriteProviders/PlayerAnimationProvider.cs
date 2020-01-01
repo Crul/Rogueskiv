@@ -20,8 +20,7 @@ namespace Rogueskiv.Ux.SoriteProviders
         private SDL_Rect OutputRect;
         private Size OutputSize;
         private readonly int NonRepeatingTextureSize;
-        private readonly List<Rectangle> MaskTexture = Masks
-            .GetFromImage(Path.Combine("imgs", "player-texture-mask.png"));
+        private readonly List<Rectangle> MaskTexture;
 
         public PlayerAnimationProvider(UxContext uxContext, int playerRadius)
         {
@@ -30,6 +29,7 @@ namespace Rogueskiv.Ux.SoriteProviders
                 Path.Combine("imgs", "player-texture.png")
             );
             var playerDiameter = playerRadius * 2;
+            MaskTexture = Masks.GetCircleMask(playerRadius);
             TextureRect = new SDL_Rect { x = 0, y = 0, w = playerDiameter, h = playerDiameter };
             OutputSize = new Size(TextureRect.w, TextureRect.h);
             NonRepeatingTextureSize = 64 - TextureRect.w;

@@ -7,11 +7,11 @@ namespace Rogueskiv.Core.Systems
 {
     class TorchSys : PickingSys<TorchComp>
     {
-        private readonly int TorchVisualRangeIncrease;
+        private readonly float TorchVisualRangeIncrease;
         private PlayerComp PlayerComp;
         private FOVComp FOVComp;
 
-        public TorchSys(int pickingTime, int torchVisualRangeIncrease)
+        public TorchSys(int pickingTime, float torchVisualRangeIncrease)
             : base(pickingTime, isSingleCompPerFloor: true) =>
             TorchVisualRangeIncrease = torchVisualRangeIncrease;
 

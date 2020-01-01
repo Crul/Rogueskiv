@@ -20,8 +20,8 @@ namespace Seedwork.Core
         public bool Quit { get; protected set; }
 
         private bool PauseControlPressedBefore = false;
-        private readonly int PauseControl;
-        private readonly int QuitControl;
+        protected readonly int PauseControl;
+        protected readonly int QuitControl;
         private int EntityIdCounter;
 
         public Game(
@@ -37,13 +37,14 @@ namespace Seedwork.Core
             QuitControl = quitControl;
             Entities = new EntityList();
             entitiesComponents?.ForEach(e => AddEntity(e));
-            Systems = systems ?? new List<ISystem>();
-            Systems.ToList().ForEach(sys => sys.Init(this));
+            Systems = new List<ISystem>();
+            if (systems != null)
+                systems.ForEach(AddSystem);
         }
 
         public virtual void Update()
         {
-            Quit = Controls.Contains(QuitControl);
+            Quit = Quit || Controls.Contains(QuitControl);
             SetPause();
 
             if (!Pause && !Quit)
@@ -78,8 +79,13 @@ namespace Seedwork.Core
 
         public virtual void RemoveEntity(EntityId id) => Entities.Remove(id);
 
-        public void RemoveSystem(ISystem system) =>
-            Systems.Remove(system);
+        protected void AddSystem(ISystem system)
+        {
+            Systems.Add(system);
+            system.Init(this);
+        }
+
+        public void RemoveSystem(ISystem system) => Systems.Remove(system);
 
         private void SetPause()
         {

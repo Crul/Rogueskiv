@@ -1,11 +1,20 @@
 ﻿using Rogueskiv.Core.Components.Board;
 using Rogueskiv.Core.Components.Position;
+using Seedwork.Crosscutting;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
 namespace Rogueskiv.Core.Components.Walls
 {
+    public enum WallCorner
+    {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+    }
+
     public abstract class WallComp : TilePositionComp, IWallComp
     {
         public int Size { get; } // height for VerticalWalls, width for HorizontalWalls
@@ -13,6 +22,8 @@ namespace Rogueskiv.Core.Components.Walls
         protected abstract float VariablePosition { get; }
 
         protected float BounceLimit; // set by children
+
+        private const float PRECISE_BOUNCE_MARGIN_FACTOR = 1.05f;
 
         protected WallComp(Point tilePos, int size) : base(tilePos) =>
             Size = BoardComp.TILE_SIZE * size;
@@ -23,16 +34,10 @@ namespace Rogueskiv.Core.Components.Walls
             MovementComp movementComp,
             CurrentPositionComp currentPositionComp,
             LastPositionComp lastPositionComp
-        )
-        {
-            var hasTraversed = HasTraversed(currentPositionComp, lastPositionComp, movementComp);
-            if (!hasTraversed)
-                return false;
-
-            return movementComp.SimpleBounce
+        ) =>
+            movementComp.SimpleBounce
                 ? CheckSimpleBounce(movementComp, currentPositionComp, lastPositionComp)
                 : CheckPreciseBounce(movementComp, currentPositionComp, lastPositionComp);
-        }
 
         private bool CheckSimpleBounce(
             MovementComp movementComp,
@@ -40,6 +45,10 @@ namespace Rogueskiv.Core.Components.Walls
             LastPositionComp lastPositionComp
         )
         {
+            var hasTraversed = HasTraversed(currentPositionComp, lastPositionComp, movementComp);
+            if (!hasTraversed)
+                return false;
+
             // for HorizontalWalls: check if position.X when crossing the limit is between wall.minX and wall.maxX
             // for VerticalWalls  : check if position.Y when crossing the limit is between wall.minY and wall.maxY
 
@@ -97,7 +106,9 @@ namespace Rogueskiv.Core.Components.Walls
 
             var fixedMargin = GetFixedMargin(movementComp);
             var fromLastToWallFixedPos = BounceLimit - fixedMargin - lastFixedPos;
-            var variablePosCrossingWall = lastVarPos + deltaVar * (fromLastToWallFixedPos / deltaFixed);
+            var variablePosCrossingWall = deltaFixed != 0
+                ? lastVarPos + deltaVar * (fromLastToWallFixedPos / deltaFixed)
+                : 0; // TODO division by 0?
 
             var minVarPos = VariablePosition;
             var maxVarPos = VariablePosition + Size;
@@ -108,63 +119,96 @@ namespace Rogueskiv.Core.Components.Walls
             );
             if (isInFrontOrBehind)
             {
+                var hasTraversed = HasTraversed(currentPositionComp, lastPositionComp, movementComp);
+                if (!hasTraversed)
+                    return false;
+
                 ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
                 SimpleBounce(movementComp, currentPositionComp);
                 return true;
             }
 
-            var variableMarginSign = 1;
             PointF? advancedBouncePosition = null;
+            bool? startOrEnd = null;
             var isInStartCorner = (Math.Abs(minVarPos - variablePosCrossingWall) < movementComp.Radius);
             if (isInStartCorner)
+            {
+                startOrEnd = true;
                 advancedBouncePosition = GetStartPosition(movementComp);
+            }
             else
             {
-                variableMarginSign = -1;
                 var isInEndCorner = (Math.Abs(maxVarPos - variablePosCrossingWall) < movementComp.Radius);
                 if (isInEndCorner)
+                {
+                    startOrEnd = false;
                     advancedBouncePosition = GetEndPosition(movementComp);
+                }
             }
 
             if (advancedBouncePosition.HasValue)
                 // do not return true because no more checks needed (I hope)
-                AdvancedBounce(
-                    movementComp, currentPositionComp, lastPositionComp, advancedBouncePosition.Value,
-                    variableMarginSign
+                PreciseBounce(
+                    movementComp,
+                    currentPositionComp,
+                    lastPositionComp,
+                    advancedBouncePosition.Value,
+                    startOrEnd.Value
                 );
 
             return false;
         }
 
-        private void AdvancedBounce(
+        private void PreciseBounce(
             MovementComp movementComp,
             CurrentPositionComp currentPositionComp,
             LastPositionComp lastPositionComp,
             PointF bouncePosition,
-            int variableMarginSign = 1
-
+            bool startOrEnd
         )
         {
+            var goingAwayFromCorner = false;
+            switch (GetConvexCorner(startOrEnd))
+            {
+                case WallCorner.TOP_LEFT:
+                    goingAwayFromCorner = (lastPositionComp.Position.X > currentPositionComp.Position.X)
+                        && (lastPositionComp.Position.Y > currentPositionComp.Position.Y);
+                    break;
+                case WallCorner.TOP_RIGHT:
+                    goingAwayFromCorner = (lastPositionComp.Position.X < currentPositionComp.Position.X)
+                        && (lastPositionComp.Position.Y > currentPositionComp.Position.Y);
+                    break;
+                case WallCorner.BOTTOM_LEFT:
+                    goingAwayFromCorner = (lastPositionComp.Position.X > currentPositionComp.Position.X)
+                        && (lastPositionComp.Position.Y < currentPositionComp.Position.Y);
+                    break;
+                case WallCorner.BOTTOM_RIGHT:
+                    goingAwayFromCorner = (lastPositionComp.Position.X < currentPositionComp.Position.X)
+                        && (lastPositionComp.Position.Y < currentPositionComp.Position.Y);
+                    break;
+            }
+
+            var distance = Distance.Get(lastPositionComp.Position, bouncePosition);
+            if (goingAwayFromCorner || distance > movementComp.Radius)
+                return;
+
+            // TODO get proper bouncing angle
             var angle = Math.Atan2(
                 lastPositionComp.Position.Y - bouncePosition.Y,
                 lastPositionComp.Position.X - bouncePosition.X
             );
             var cosAngle = (float)Math.Cos(angle);
             var sinAngle = (float)Math.Sin(angle);
-            SimpleBounce(movementComp, currentPositionComp);
-            SetVariablePosition(currentPositionComp,
-                GetVariablePosition(bouncePosition) - (variableMarginSign * movementComp.Radius)
+            currentPositionComp.SetPosition(
+                bouncePosition.X + (cosAngle * movementComp.Radius * PRECISE_BOUNCE_MARGIN_FACTOR),
+                bouncePosition.Y + (sinAngle * movementComp.Radius * PRECISE_BOUNCE_MARGIN_FACTOR)
             );
 
-            var speed =
-                movementComp.BounceAmortiguationFactor
-                * (float)Math.Sqrt(
-                    movementComp.Speed.X * movementComp.Speed.X
-                    + movementComp.Speed.Y * movementComp.Speed.Y
-                );
-            var newSpeedX = speed * cosAngle;
-            var newSpeedY = speed * sinAngle;
-            movementComp.Speed = new PointF(newSpeedX, newSpeedY);
+            var speed = movementComp.BounceAmortiguationFactor * Distance.Get(movementComp.Speed);
+            movementComp.Speed = new PointF(
+                speed * cosAngle,
+                speed * sinAngle
+            );
         }
 
         protected abstract PointF GetStartPosition(MovementComp movementComp);
@@ -174,6 +218,7 @@ namespace Rogueskiv.Core.Components.Walls
         protected abstract float GetVariablePosition(PointF position);
         protected abstract void SetFixedPosition(PositionComp positionComp, float value);
         protected abstract void SetVariablePosition(PositionComp positionComp, float value);
+        protected abstract WallCorner GetConvexCorner(bool startOrEndCorner);
 
         protected abstract bool HasTraversed(
             CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp, MovementComp movementComp

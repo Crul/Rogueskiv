@@ -1,25 +1,35 @@
 ﻿using Rogueskiv.Menus.MenuOptions;
 using Seedwork.Core;
-using Seedwork.Core.Components;
-using Seedwork.Core.Systems;
 using Seedwork.Engine;
-using System.Collections.Generic;
 
 namespace Rogueskiv.Menus
 {
     public class RogueskivMenu : Game
     {
+        private readonly MenuSys MenuSystem;
+        public string CustomSeedText { get => MenuSystem.CustomSeedText; }
+        public bool AskingForCustomSeed { get => MenuSystem.AskingForCustomSeed; }
+
         public RogueskivMenu(GameStageCode stageCode)
             : base(
-                quitControl: (int)Menus.Controls.QUIT,
-                stageCode: stageCode,
-                entitiesComponents: new List<List<IComponent>>
-                {
-                    new List<IComponent> { new MenuOptionComp(0, "Play", RogueskivMenuResults.PlayResult) },
-                    new List<IComponent> { new MenuOptionComp(1, "Quit", RogueskivMenuResults.QuitResult) },
-                },
-                systems: new List<ISystem> { new MenuSys() }
+                quitControl: (int)Menus.Controls.NONE,
+                stageCode: stageCode
             )
-        { }
+        {
+            MenuSystem = new MenuSys();
+            AddSystem(MenuSystem);
+
+            AddEntity(new MenuOptionComp(0, "Play Random", menuSys => EndGame(RogueskivMenuResults.PlayResult)));
+            AddEntity(new MenuOptionComp(1, "Play Custom Seed", menuSys => menuSys.AskForCustomSeed()));
+            AddEntity(new MenuOptionComp(2, "Quit", menuSys => EndGame(RogueskivMenuResults.QuitResult)));
+        }
+
+        public void OnTextInput(string text) => MenuSystem.OnTextInput(text);
+
+        public override void Update()
+        {
+            Quit = Controls.Contains((int)Menus.Controls.CLOSE_WINDOW);
+            base.Update();
+        }
     }
 }

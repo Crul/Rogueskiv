@@ -13,13 +13,14 @@ namespace Rogueskiv.Run
         private readonly RogueskivAppConfig RogueskivConfig;
         private readonly float FloorFactor;
 
+        public int GameSeed { get; }
         public int Floor { get; }
         public bool IsLastFloor { get; }
         public IMapGenerationParams MapGenerationParams { get; }
 
         public int PlayerRadius => RogueskivConfig.PlayerRadius;
         public int InitialPlayerHealth => RogueskivConfig.InitialPlayerHealth;
-        public int InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
+        public float InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
         public float PlayerBounceAmortiguationFactor => RogueskivConfig.PlayerBounceAmortiguationFactor;
         public float PlayerFrictionFactor => RogueskivConfig.PlayerFrictionFactor;
         public float PlayerAcceleration { get; }
@@ -40,13 +41,15 @@ namespace Rogueskiv.Run
         public float MinDownStairsSpawnFactor => RogueskivConfig.MinDownStairsSpawnFactor;
 
         public int EnemyCollisionDamage => RogueskivConfig.EnemyCollisionDamage;
+        public float EnemyCollisionBounce => RogueskivConfig.EnemyCollisionBounce;
         public int MaxItemPickingTime { get; }
         public int FoodHealthIncrease => RogueskivConfig.FoodHealthIncrease;
-        public int TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
+        public float TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
 
         public RogueskivGameConfig(RogueskivAppConfig rogueskivConfig, IGameContext gameContext, int floor)
         {
             RogueskivConfig = rogueskivConfig;
+            GameSeed = gameContext.GameSeed;
             Floor = floor;
             IsLastFloor = floor == RogueskivConfig.FloorCount;
             FloorFactor = (float)floor / RogueskivConfig.FloorCount;

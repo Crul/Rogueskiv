@@ -3,45 +3,78 @@ using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
+using System;
+using System.Drawing;
+using System.IO;
+using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
 {
     class HealthRenderer : CompRenderer<HealthComp>
     {
-        private const int X_LEFT_POS = 20;
-        private const int Y_BOTTOM_POS = 20;
-        private const int MAX_WIDTH = 200;
-        private const int HEIGHT = 20;
+        private const int X_LEFT_POS = 36;
+        private const int Y_BOTTOM_POS = 36;
+        private const int MAX_BAR_WIDTH = 220;
+        private const int BAR_HEIGHT = 30;
+        private const int TEXTURE_WIDTH = 240;
+        private const int TEXTURE_HEIGHT = 34;
+
+        private readonly IntPtr Texture;
+        private SDL_Rect TextureRect;
+        private Size TextureSize;
 
         public HealthRenderer(UxContext uxContext)
-            : base(uxContext) { }
+            : base(uxContext)
+        {
+            Texture = SDL_image.IMG_LoadTexture(uxContext.WRenderer, Path.Combine("imgs", "player-health-bar.png"));
+            TextureSize = new Size(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            TextureRect = new SDL_Rect() { x = 0, y = 0, w = TextureSize.Width, h = TextureSize.Height };
+        }
+
 
         protected override void Render(IEntity entity, HealthComp healthComp, float interpolation)
         {
-            SDL.SDL_GetRenderDrawColor(UxContext.WRenderer, out byte r, out byte g, out byte b, out byte a);
+            SDL_GetRenderDrawColor(UxContext.WRenderer, out byte r, out byte g, out byte b, out byte a);
 
-            var healthBarWidht = (int)(MAX_WIDTH * healthComp.HealthFactor);
-            var yPos = UxContext.ScreenSize.Height - Y_BOTTOM_POS - HEIGHT;
+            var healthBarWidht = (int)(MAX_BAR_WIDTH * healthComp.HealthFactor);
+            var yPos = UxContext.ScreenSize.Height - Y_BOTTOM_POS - BAR_HEIGHT;
 
-            RenderRect(yPos, MAX_WIDTH, red: 0x99);
-            RenderRect(yPos, healthBarWidht, green: 0x99);
+            var barYPos = yPos + (TEXTURE_HEIGHT - BAR_HEIGHT) / 2;
+            RenderRect(barYPos, MAX_BAR_WIDTH, red: 0x99);
+            RenderRect(barYPos, healthBarWidht, green: 0x99);
 
-            SDL.SDL_SetRenderDrawColor(UxContext.WRenderer, r, g, b, a);
+            SDL_SetRenderDrawColor(UxContext.WRenderer, r, g, b, a);
+
+            var outputRect = new SDL_Rect()
+            {
+                x = X_LEFT_POS,
+                y = yPos,
+                w = TextureSize.Width,
+                h = TextureSize.Height
+            };
+            SDL_RenderCopy(UxContext.WRenderer, Texture, ref TextureRect, ref outputRect);
         }
 
         private void RenderRect(
             int yPos, int width, byte red = 0x00, byte green = 0x00, byte blue = 0x00
         )
         {
-            var rect = new SDL.SDL_Rect()
+            var rect = new SDL_Rect()
             {
-                x = X_LEFT_POS,
+                x = X_LEFT_POS + (TEXTURE_WIDTH - MAX_BAR_WIDTH) / 2,
                 y = yPos,
                 w = width,
-                h = HEIGHT
+                h = BAR_HEIGHT
             };
-            SDL.SDL_SetRenderDrawColor(UxContext.WRenderer, red, green, blue, 0xFF);
-            SDL.SDL_RenderFillRect(UxContext.WRenderer, ref rect);
+            SDL_SetRenderDrawColor(UxContext.WRenderer, red, green, blue, 0xFF);
+            SDL_RenderFillRect(UxContext.WRenderer, ref rect);
+        }
+        protected override void Dispose(bool cleanManagedResources)
+        {
+            base.Dispose(cleanManagedResources);
+            if (cleanManagedResources)
+                SDL_DestroyTexture(Texture);
+
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Seedwork.Ux
 {
     public class UxContext : IDisposable
     {
+        public string Title { get; }
         public Size ScreenSize { get; private set; }
         public Point Center { get; set; }
         public IntPtr Window { get; }
@@ -14,6 +15,8 @@ namespace Seedwork.Ux
 
         public UxContext(string windowTitle, IUxConfig uxConfig)
         {
+            Title = windowTitle;
+
             if (uxConfig != null)
                 OnWindowResize(uxConfig.ScreenSize);
 

@@ -1,14 +1,15 @@
-﻿using Rogueskiv.Core.Components;
-using Rogueskiv.Core.Components.Board;
+﻿using Rogueskiv.Core;
+using Rogueskiv.Core.Components;
 using Rogueskiv.Core.Components.Position;
 using Rogueskiv.Ux.Renderers;
 using SDL2;
-using Seedwork.Core;
 using Seedwork.Core.Entities;
+using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux
@@ -21,14 +22,13 @@ namespace Rogueskiv.Ux
         private readonly IPositionComp PlayerPositionComp;
         private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
-#pragma warning disable IDE0069 // Disposable fields should be disposed
-#pragma warning disable CA2213 // Disposable fields should be disposed
-        private readonly BoardRenderer BoardRenderer;
-#pragma warning restore CA2213 // Disposable fields should be disposed
-#pragma warning restore IDE0069 // Disposable fields should be disposed
 
-        public RogueskivRenderer(UxContext uxContext, IRenderizable game, IRogueskivUxConfig uxConfig)
-            : base(uxContext, game)
+        public RogueskivRenderer(
+            UxContext uxContext,
+            IGameContext gameContext,
+            RogueskivGame game,
+            IRogueskivUxConfig uxConfig
+        ) : base(uxContext, game)
         {
             UxContext = uxContext;
             UxConfig = uxConfig;
@@ -42,9 +42,8 @@ namespace Rogueskiv.Ux
 
             var bgrRenderer = new BgrRenderer(uxContext, Path.Combine("imgs", "bgr.png"), new Size(1920, 1440));
             Renderers.Add(bgrRenderer);
+            Renderers.Add(new BoardRenderer(uxContext, game, BoardTexture));
 
-            BoardRenderer = new BoardRenderer(uxContext, game, BoardTexture);
-            CompRenderers[typeof(BoardComp)] = BoardRenderer;
             CompRenderers[typeof(FoodComp)] = new FoodRenderer(this, uxContext, game, BoardTexture);
             CompRenderers[typeof(TorchComp)] = new TorchRenderer(this, uxContext, game, BoardTexture);
             CompRenderers[typeof(MapRevealerComp)] = new MapRevealerRenderer(this, uxContext, game, BoardTexture);
@@ -53,6 +52,14 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
             CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
+            CompRenderers[typeof(TimerComp)] = new GameInfoRenderer(
+                uxContext,
+                gameContext,
+                Font,
+                game.Floor,
+                inGameTimeVisible: uxConfig.InGameTimeVisible,
+                realTimeVisible: uxConfig.RealTimeVisible
+            );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
         }
 
@@ -68,7 +75,8 @@ namespace Rogueskiv.Ux
         public override void RecreateTextures()
         {
             base.RecreateTextures();
-            BoardRenderer.RecreateBuffer(Game, BoardTexture);
+            var boardRenderer = (BoardRenderer)Renderers.Where(r => r is BoardRenderer).Single();
+            boardRenderer.RecreateBuffer(Game, BoardTexture);
         }
 
         protected override void Dispose(bool cleanManagedResources)

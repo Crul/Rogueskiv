@@ -1,13 +1,12 @@
 ﻿using Rogueskiv.Ux;
 using Seedwork.Crosscutting;
-using Seedwork.Ux;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
 namespace Rogueskiv.Run
 {
-    class RogueskivAppConfig : IUxConfig, IRogueskivUxConfig
+    class RogueskivAppConfig : IRogueskivUxConfig
     {
         public int FloorCount { get; set; }
 
@@ -17,6 +16,8 @@ namespace Rogueskiv.Run
         // IUxConfig
         public bool Maximized { get; set; }
         public Size ScreenSize { get; set; }
+        public bool InGameTimeVisible { get; set; }
+        public bool RealTimeVisible { get; set; }
 
         // IRogueskivUxConfig
         public string FontFile { get; } = Path.Join("fonts", "Hack", "Hack-Regular.ttf");
@@ -35,7 +36,7 @@ namespace Rogueskiv.Run
         // ISpawnConfig
         public int PlayerRadius { get; set; }
         public int InitialPlayerHealth { get; set; }
-        public int InitialPlayerVisualRange { get; set; }
+        public float InitialPlayerVisualRange { get; set; }
         public float PlayerBounceAmortiguationFactor { get; set; }
         public float PlayerFrictionFactor { get; set; }
         public float PlayerAcceleration { get; set; }
@@ -44,6 +45,7 @@ namespace Rogueskiv.Run
 
         public Range<int> EnemyNumberRange { get; set; }
         public int EnemyCollisionDamage { get; set; }
+        public float EnemyCollisionBounce { get; set; }
         public Range<int> MinEnemySpeedRange { get; set; }
         public Range<int> MaxEnemySpeedRange { get; set; }
         public List<RangedWeightedValue<int>> EnemyAnglesProbWeightRanges { get; set; }
@@ -59,6 +61,6 @@ namespace Rogueskiv.Run
 
         public int MaxItemPickingTime { get; set; }
         public int FoodHealthIncrease { get; set; }
-        public int TorchVisualRangeIncrease { get; set; }
+        public float TorchVisualRangeIncrease { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Core.Systems;
 using Seedwork.Crosscutting;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Rogueskiv.Core.Systems
     class CollisionSys : BaseSystem
     {
         private readonly int CollisionDamage;
+        private readonly float CollisionBounce;
 
         private Game Game;
         private BoardComp BoardComp;
@@ -22,8 +24,11 @@ namespace Rogueskiv.Core.Systems
         private MovementComp PlayerMovementComp;
         private HealthComp PlayerHealthComp;
 
-        public CollisionSys(int collisionDamage) =>
+        public CollisionSys(int collisionDamage, float collisionBounce)
+        {
             CollisionDamage = collisionDamage;
+            CollisionBounce = collisionBounce;
+        }
 
         public override void Init(Game game)
         {
@@ -53,8 +58,11 @@ namespace Rogueskiv.Core.Systems
 
             PlayerHealthComp.Health -= CollisionDamage * collidedEntityIds.Count;
 
-            var speedChangeX = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.X);
-            var speedChangeY = 2 * collidedEntityIds.Sum(colInfo => colInfo.bounce.Y);
+            var speedChangeXSign = Math.Sign(collidedEntityIds.Sum(colInfo => colInfo.bounce.X));
+            var speedChangeYSign = Math.Sign(collidedEntityIds.Sum(colInfo => colInfo.bounce.Y));
+            var speedChangeX = CollisionBounce * speedChangeXSign;
+            var speedChangeY = CollisionBounce * speedChangeYSign;
+
             PlayerSys.AddSped(PlayerMovementComp, speedChangeX, speedChangeY);
         }
 

@@ -2,12 +2,14 @@
 {
     public enum Controls
     {
+        NONE,
+        CLOSE_WINDOW,
         UP,
         DOWN,
-        LEFT,
-        RIGHT,
         ENTER,
-        ENTER2,
-        QUIT
+        QUIT,
+        BACKSPACE,
+        COPY,
+        PASTE
     }
 }
