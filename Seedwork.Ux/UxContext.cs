@@ -17,6 +17,7 @@ namespace Seedwork.Ux
         private readonly IUxConfig UxConfig;
         private readonly TextureProvider TextureProvider;
         private readonly AudioProvider AudioProvider;
+        private readonly FontProvider FontProvider;
         private IntPtr? MusicPointer = null;
         private string MusicFilePath;
 
@@ -24,7 +25,8 @@ namespace Seedwork.Ux
             string windowTitle,
             IUxConfig uxConfig,
             string imagesPath,
-            string audiosPath
+            string audiosPath,
+            string fontsPath
         )
         {
             Title = windowTitle;
@@ -54,11 +56,14 @@ namespace Seedwork.Ux
 
             TextureProvider = new TextureProvider(WRenderer, imagesPath);
             AudioProvider = new AudioProvider(audiosPath);
+            FontProvider = new FontProvider(fontsPath);
         }
 
         public IntPtr GetTexture(string imageFile) => TextureProvider.GetTexture(imageFile);
 
         public IntPtr GetAudioChunk(string audioFile) => AudioProvider.GetAudioChunk(audioFile);
+
+        public IntPtr GetFont(string fontFile, int fontSize) => FontProvider.GetFont(fontFile, fontSize);
 
         public void OnWindowResize(int width, int height) =>
             OnWindowResize(new Size(width, height));

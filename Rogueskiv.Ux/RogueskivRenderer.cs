@@ -22,7 +22,6 @@ namespace Rogueskiv.Ux
         private readonly RogueskivGame RogueskivGame;
         private readonly IRogueskivUxConfig UxConfig;
         private readonly IPositionComp PlayerPositionComp;
-        private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
         private readonly PlayerMovementEffectPlayer PlayerMovementEffectPlayer;
 
@@ -40,7 +39,7 @@ namespace Rogueskiv.Ux
             UxConfig = uxConfig;
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
-            Font = SDL_ttf.TTF_OpenFont(uxConfig.FontFile, FONT_SIZE);
+            var font = uxContext.GetFont(uxConfig.FontFile, FONT_SIZE);
             BoardTexture = uxContext.GetTexture("board.png");
 
             var bgrRenderer = new BgrRenderer(uxContext, new Size(1920, 1440));
@@ -58,12 +57,12 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(TimerComp)] = new GameInfoRenderer(
                 uxContext,
                 gameContext,
-                Font,
+                font,
                 game.Floor,
                 inGameTimeVisible: uxConfig.InGameTimeVisible,
                 realTimeVisible: uxConfig.RealTimeVisible
             );
-            CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
+            CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, font);
 
             PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(uxContext, game);
             EffectPlayers.Add(new BounceEffectPlayer(uxContext, game));
@@ -113,7 +112,6 @@ namespace Rogueskiv.Ux
             base.Dispose(cleanManagedResources);
             if (cleanManagedResources)
             {
-                SDL_ttf.TTF_CloseFont(Font);
                 EffectPlayers.ForEach(ep => ep.Dispose());
                 PlayerMovementEffectPlayer.Dispose();
             }

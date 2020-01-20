@@ -24,7 +24,7 @@ namespace Rogueskiv.Run
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
             AppConfig = appConfig;
-            UxContext = new UxContext("Rogueskiv", AppConfig, imagesPath: "imgs", audiosPath: "audio");
+            UxContext = new UxContext("Rogueskiv", AppConfig, imagesPath: "imgs", audiosPath: "audio", fontsPath: "fonts");
             GameContext = new GameContext(appConfig.MaxGameStepsWithoutRender);
             LoadingScreenRenderer = new LoadingScreenRenderer(UxContext, AppConfig.FontFile);
         }
