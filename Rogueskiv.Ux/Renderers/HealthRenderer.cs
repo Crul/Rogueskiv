@@ -1,11 +1,9 @@
 ﻿using Rogueskiv.Core.Components;
-using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
 using System.Drawing;
-using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
@@ -26,11 +24,10 @@ namespace Rogueskiv.Ux.Renderers
         public HealthRenderer(UxContext uxContext)
             : base(uxContext)
         {
-            Texture = SDL_image.IMG_LoadTexture(uxContext.WRenderer, Path.Combine("imgs", "player-health-bar.png"));
+            Texture = uxContext.GetTexture("player-health-bar.png");
             TextureSize = new Size(TEXTURE_WIDTH, TEXTURE_HEIGHT);
             TextureRect = new SDL_Rect() { x = 0, y = 0, w = TextureSize.Width, h = TextureSize.Height };
         }
-
 
         protected override void Render(IEntity entity, HealthComp healthComp, float interpolation)
         {
@@ -68,13 +65,6 @@ namespace Rogueskiv.Ux.Renderers
             };
             SDL_SetRenderDrawColor(UxContext.WRenderer, red, green, blue, 0xFF);
             SDL_RenderFillRect(UxContext.WRenderer, ref rect);
-        }
-        protected override void Dispose(bool cleanManagedResources)
-        {
-            base.Dispose(cleanManagedResources);
-            if (cleanManagedResources)
-                SDL_DestroyTexture(Texture);
-
         }
     }
 }

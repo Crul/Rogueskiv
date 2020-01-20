@@ -1,6 +1,5 @@
 ﻿using Rogueskiv.Core.Components;
 using Seedwork.Crosscutting;
-using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
 using System;
 using System.Drawing;
@@ -14,14 +13,6 @@ namespace Rogueskiv.Ux.SpriteProviders
         private const float MAX_SIZE_FACTOR = 2;
 
         public T PickableItemComp { get; set; }
-
-        public PickableSpriteProvider(
-            UxContext uxContext,
-            string texturePath,
-            SDL_Rect textureRect,
-            (int width, int height)? outputSize = null
-        ) : base(uxContext, texturePath, textureRect, outputSize)
-        { }
 
         public PickableSpriteProvider(
             IntPtr texture,

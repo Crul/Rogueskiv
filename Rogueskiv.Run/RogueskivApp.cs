@@ -23,7 +23,7 @@ namespace Rogueskiv.Run
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
             AppConfig = appConfig;
-            UxContext = new UxContext("Rogueskiv", AppConfig);
+            UxContext = new UxContext("Rogueskiv", AppConfig, "imgs");
             GameContext = new GameContext(appConfig.MaxGameStepsWithoutRender);
             LoadingScreenRenderer = new LoadingScreenRenderer(UxContext, AppConfig.FontFile);
         }

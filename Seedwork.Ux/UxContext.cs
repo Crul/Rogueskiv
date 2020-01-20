@@ -1,5 +1,6 @@
 ﻿using SDL2;
 using Seedwork.Crosscutting;
+using Seedwork.Ux.MediaProviders;
 using System;
 using System.Drawing;
 
@@ -14,10 +15,11 @@ namespace Seedwork.Ux
         public IntPtr WRenderer { get; }
 
         private readonly IUxConfig UxConfig;
+        private readonly TextureProvider TextureProvider;
         private IntPtr? MusicPointer = null;
         private string MusicFilePath;
 
-        public UxContext(string windowTitle, IUxConfig uxConfig)
+        public UxContext(string windowTitle, IUxConfig uxConfig, string imagesPath)
         {
             Title = windowTitle;
             UxConfig = uxConfig;
@@ -43,7 +45,11 @@ namespace Seedwork.Ux
             SDL.SDL_SetRenderDrawBlendMode(WRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
             SDL_mixer.Mix_OpenAudio(44100, SDL_mixer.MIX_DEFAULT_FORMAT, 2, 2048);
+
+            TextureProvider = new TextureProvider(WRenderer, imagesPath);
         }
+
+        public IntPtr GetTexture(string imageFile) => TextureProvider.GetTexture(imageFile);
 
         public void OnWindowResize(int width, int height) =>
             OnWindowResize(new Size(width, height));
@@ -92,6 +98,8 @@ namespace Seedwork.Ux
         {
             if (cleanManagedResources)
             {
+                TextureProvider.Dispose();
+
                 if (MusicPointer.HasValue)
                     SDL_mixer.Mix_FreeMusic(MusicPointer.Value);
 

@@ -11,9 +11,7 @@ using Seedwork.Ux;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using static SDL2.SDL;
 
 namespace Rogueskiv.Ux
 {
@@ -43,12 +41,9 @@ namespace Rogueskiv.Ux
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
             Font = SDL_ttf.TTF_OpenFont(uxConfig.FontFile, FONT_SIZE);
-            BoardTexture = SDL_image.IMG_LoadTexture(
-                uxContext.WRenderer,
-                Path.Combine("imgs", "board.png")
-            );
+            BoardTexture = uxContext.GetTexture("board.png");
 
-            var bgrRenderer = new BgrRenderer(uxContext, Path.Combine("imgs", "bgr.png"), new Size(1920, 1440));
+            var bgrRenderer = new BgrRenderer(uxContext, new Size(1920, 1440));
             Renderers.Add(bgrRenderer);
             Renderers.Add(new BoardRenderer(uxContext, game, BoardTexture));
 
@@ -117,7 +112,6 @@ namespace Rogueskiv.Ux
             if (cleanManagedResources)
             {
                 SDL_ttf.TTF_CloseFont(Font);
-                SDL_DestroyTexture(BoardTexture);
                 EffectPlayers.ForEach(ep => ep.Dispose());
                 PlayerMovementEffectPlayer.Dispose();
             }

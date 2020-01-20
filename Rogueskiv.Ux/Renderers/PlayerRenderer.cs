@@ -6,7 +6,6 @@ using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
 using System.Drawing;
-using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
@@ -21,7 +20,7 @@ namespace Rogueskiv.Ux.Renderers
                 game,
                 new SingleSpriteProvider<CurrentPositionComp>(
                     uxContext,
-                    Path.Combine("imgs", "player.png"),
+                    "player.png",
                     GetPlayerTextureRect(playerRadius)
                 )
             ) =>
