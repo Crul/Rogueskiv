@@ -1,10 +1,12 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.GameEvents;
+using Seedwork.Ux;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
     class FoodPickedEffectPlayer : EventEffectPlayer<FoodPickedEvent>
     {
-        public FoodPickedEffectPlayer(RogueskivGame game) : base(game, "food_picked") { }
+        public FoodPickedEffectPlayer(UxContext uxContext, RogueskivGame game)
+            : base(uxContext, game, "food_picked") { }
     }
 }

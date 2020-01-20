@@ -5,6 +5,7 @@ using Rogueskiv.Core.GameEvents;
 using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
+using Seedwork.Ux;
 using System.Linq;
 
 namespace Rogueskiv.Ux.EffectPlayers
@@ -20,8 +21,8 @@ namespace Rogueskiv.Ux.EffectPlayers
 
         private int LastVolume = 0;
 
-        public PlayerMovementEffectPlayer(RogueskivGame game)
-            : base(audioFilename: "player_movement")
+        public PlayerMovementEffectPlayer(UxContext uxContext, RogueskivGame game)
+            : base(uxContext, audioFilename: "player_movement")
         {
             Game = game;
             PlayerMovementComp = game.Entities.GetSingleComponent<PlayerComp, BoundedMovementComp>();
@@ -57,6 +58,8 @@ namespace Rogueskiv.Ux.EffectPlayers
 
             LastVolume = volume;
         }
+
+        public void Stop() => StopChannel();
 
         private void StopChannel()
         {

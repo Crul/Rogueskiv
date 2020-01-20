@@ -16,10 +16,16 @@ namespace Seedwork.Ux
 
         private readonly IUxConfig UxConfig;
         private readonly TextureProvider TextureProvider;
+        private readonly AudioProvider AudioProvider;
         private IntPtr? MusicPointer = null;
         private string MusicFilePath;
 
-        public UxContext(string windowTitle, IUxConfig uxConfig, string imagesPath)
+        public UxContext(
+            string windowTitle,
+            IUxConfig uxConfig,
+            string imagesPath,
+            string audiosPath
+        )
         {
             Title = windowTitle;
             UxConfig = uxConfig;
@@ -47,9 +53,12 @@ namespace Seedwork.Ux
             SDL_mixer.Mix_OpenAudio(44100, SDL_mixer.MIX_DEFAULT_FORMAT, 2, 2048);
 
             TextureProvider = new TextureProvider(WRenderer, imagesPath);
+            AudioProvider = new AudioProvider(audiosPath);
         }
 
         public IntPtr GetTexture(string imageFile) => TextureProvider.GetTexture(imageFile);
+
+        public IntPtr GetAudioChunk(string audioFile) => AudioProvider.GetAudioChunk(audioFile);
 
         public void OnWindowResize(int width, int height) =>
             OnWindowResize(new Size(width, height));
@@ -67,6 +76,7 @@ namespace Seedwork.Ux
 
             if (MusicFilePath != musicFilePath)
             {
+                DisposeMusic();
                 MusicFilePath = musicFilePath;
                 MusicPointer = SDL_mixer.Mix_LoadMUS(MusicFilePath);
             }
@@ -99,15 +109,18 @@ namespace Seedwork.Ux
             if (cleanManagedResources)
             {
                 TextureProvider.Dispose();
-
-                if (MusicPointer.HasValue)
-                    SDL_mixer.Mix_FreeMusic(MusicPointer.Value);
-
+                DisposeMusic();
                 SDL_mixer.Mix_Quit();
                 SDL.SDL_DestroyRenderer(WRenderer);
                 SDL.SDL_DestroyWindow(Window);
                 SDL.SDL_Quit();
             }
+        }
+
+        private void DisposeMusic()
+        {
+            if (MusicPointer.HasValue)
+                SDL_mixer.Mix_FreeMusic(MusicPointer.Value);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.GameEvents;
+using Seedwork.Ux;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
     class DeathEffectPlayer : EventEffectPlayer<DeathEvent>
     {
-        public DeathEffectPlayer(RogueskivGame game) : base(game, "death") { }
+        public DeathEffectPlayer(UxContext uxContext, RogueskivGame game)
+            : base(uxContext, game, "death") { }
     }
 }

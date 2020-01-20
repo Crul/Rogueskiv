@@ -65,17 +65,19 @@ namespace Rogueskiv.Ux
             );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
 
-            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(game);
-            EffectPlayers.Add(new BounceEffectPlayer(game));
-            EffectPlayers.Add(new TorchPickedEffectPlayer(game));
-            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
-            EffectPlayers.Add(new FoodPickedEffectPlayer(game));
-            EffectPlayers.Add(new WinEffectPlayer(game));
-            EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
-            EffectPlayers.Add(new StairsUpEffectPlayer(game));
-            EffectPlayers.Add(new StairsDownEffectPlayer(game));
-            EffectPlayers.Add(new DeathEffectPlayer(game));
+            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(uxContext, game);
+            EffectPlayers.Add(new BounceEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new TorchPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new FoodPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new WinEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new EnemyCollidedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new StairsUpEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new StairsDownEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new DeathEffectPlayer(uxContext, game));
         }
+
+        public override void Stop() => PlayerMovementEffectPlayer.Stop();
 
         public override void Reset() =>
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position);

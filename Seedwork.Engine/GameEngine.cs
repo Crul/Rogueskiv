@@ -84,6 +84,8 @@ namespace Seedwork.Engine
                 Renderer.Dispose();
         }
 
+        public void Stop() => Renderer.Stop();
+
         public void Dispose()
         {
             Dispose(true);
