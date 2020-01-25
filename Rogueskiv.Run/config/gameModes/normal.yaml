@@ -1,21 +1,10 @@
-# graphics
-maximized: true
-screenSize: { width: 640, height: 480 }
-maxGameStepsWithoutRender: 5
-cameraMovementFriction: 20
+﻿# graphics
 inGameTimeVisible: true
 realTimeVisible: false
 
 # sound
-soundsOn: true
-musicOn: true
-menuMusicFilePath: "audio/S35musicloops - Mystic Cave by Mellodeque.mp3"
-menuMusicVolume: 48
 gameMusicFilePath: "audio/GapingGill.mp3"
 gameMusicVolume: 10
-
-# game
-floorCount: 26
 
 # player
 playerRadius: 10
@@ -35,7 +24,7 @@ minMapRevealerSpawnDistanceFactor: 0.4
 minAmuletSpawnFactor: 0.9
 minDownStairsSpawnFactor: 0.8
 
-maxItemPickingTime: 600
+maxItemPickingTime: 0.66666
 foodHealthIncrease: 2
 torchVisualRangeIncrease: 0.5
 

@@ -1,7 +1,6 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.MapGeneration;
 using Seedwork.Crosscutting;
-using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,95 +9,106 @@ namespace Rogueskiv.Run
 {
     class RogueskivGameConfig : IRogueskivGameConfig
     {
-        private readonly RogueskivAppConfig RogueskivConfig;
-        private readonly float FloorFactor;
+        public int GameSeed { get; set; }
+        public int FloorCount { get; set; }
+        public int GameFPS { get; set; }
 
-        public int GameSeed { get; }
-        public int Floor { get; }
-        public bool IsLastFloor { get; }
-        public IMapGenerationParams MapGenerationParams { get; }
+        public string GameMusicFilePath { get; set; }
+        public int GameMusicVolume { get; set; }
+        public bool InGameTimeVisible { get; set; }
+        public bool RealTimeVisible { get; set; }
 
-        public int PlayerRadius => RogueskivConfig.PlayerRadius;
-        public int InitialPlayerHealth => RogueskivConfig.InitialPlayerHealth;
-        public float InitialPlayerVisualRange => RogueskivConfig.InitialPlayerVisualRange;
-        public float PlayerBounceAmortiguationFactor => RogueskivConfig.PlayerBounceAmortiguationFactor;
-        public float PlayerFrictionFactor => RogueskivConfig.PlayerFrictionFactor;
-        public float PlayerAcceleration { get; }
-        public float PlayerMaxSpeed { get; }
-        public float PlayerStopSpeed { get; }
+        // for IMapGenerationParams
+        public int MinRoomSize { get; set; }
+        public int MinRoomSeparation { get; set; }
+        public Range<int> MapSizeRange { get; set; }
+        public Range<float> RoomExpandProbRange { get; set; }
+        public Range<float> CorridorTurnProbRange { get; set; }
+        public Range<float> MinMapDensityRange { get; set; }
+        public Range<int> InitialRoomsRange { get; set; }
+        public List<RangedWeightedValue<int>> CorridorWidthProbWeightRanges { get; set; }
 
-        public int EnemyNumber { get; }
-        public int MinEnemySpeed { get; }
-        public int MaxEnemySpeed { get; }
-        public List<(int numAngles, float weight)> EnemyNumAnglesProbWeights { get; }
-        public int MinSpaceToSpawnEnemy => RogueskivConfig.MinSpaceToSpawnEnemy;
-        public int MinEnemySpawnDistance => RogueskivConfig.MinEnemySpawnDistance;
-        public int EnemyRadius => RogueskivConfig.EnemyRadius;
-        public float MinFoodSpawnDistanceFactor => RogueskivConfig.MinFoodSpawnDistanceFactor;
-        public float MinTorchSpawnDistanceFactor => RogueskivConfig.MinTorchSpawnDistanceFactor;
-        public float MinMapRevealerSpawnDistanceFactor => RogueskivConfig.MinMapRevealerSpawnDistanceFactor;
-        public float MinAmuletSpawnFactor => RogueskivConfig.MinAmuletSpawnFactor;
-        public float MinDownStairsSpawnFactor => RogueskivConfig.MinDownStairsSpawnFactor;
+        // ISpawnConfig
+        public int PlayerRadius { get; set; }
+        public int InitialPlayerHealth { get; set; }
+        public float InitialPlayerVisualRange { get; set; }
+        public float PlayerBounceAmortiguationFactor { get; set; }
+        public float PlayerFrictionFactor { get; set; }
+        public float PlayerAcceleration { get; set; }
+        public float PlayerMaxSpeed { get; set; }
+        public float PlayerStopSpeed { get; set; }
 
-        public int EnemyCollisionDamage => RogueskivConfig.EnemyCollisionDamage;
-        public float EnemyCollisionBounce => RogueskivConfig.EnemyCollisionBounce;
-        public int MaxItemPickingTime { get; }
-        public int FoodHealthIncrease => RogueskivConfig.FoodHealthIncrease;
-        public float TorchVisualRangeIncrease => RogueskivConfig.TorchVisualRangeIncrease;
+        public Range<int> EnemyNumberRange { get; set; }
+        public Range<float> MinEnemySpeedRange { get; set; }
+        public Range<float> MaxEnemySpeedRange { get; set; }
+        public List<RangedWeightedValue<int>> EnemyAnglesProbWeightRanges { get; set; }
+        public int MinSpaceToSpawnEnemy { get; set; }
+        public int MinEnemySpawnDistance { get; set; }
+        public int EnemyRadius { get; set; }
+        public float MinFoodSpawnDistanceFactor { get; set; }
+        public float MinTorchSpawnDistanceFactor { get; set; }
+        public float MinMapRevealerSpawnDistanceFactor { get; set; }
+        public float MinAmuletSpawnFactor { get; set; }
+        public float MinDownStairsSpawnFactor { get; set; }
 
-        public RogueskivGameConfig(RogueskivAppConfig rogueskivConfig, IGameContext gameContext, int floor)
+        public int EnemyCollisionDamage { get; set; }
+        public float EnemyCollisionBounce { get; set; }
+        public float MaxItemPickingTime { get; set; }
+        public int FoodHealthIncrease { get; set; }
+        public float TorchVisualRangeIncrease { get; set; }
+
+        // the parametrization is not perfect because with high FPS
+        // there are more steps with movement for the same acceleration
+        public float PlayerAccelerationInGameTicks => (float)Math.Pow(PlayerAcceleration, 25d / GameFPS);
+
+        public float PlayerMaxSpeedInGameTicks => GetSpeedInGameTicks(PlayerMaxSpeed);
+        public float PlayerStopSpeedInGameTicks => GetSpeedInGameTicks(PlayerStopSpeed);
+        public int MaxItemPickingTimeInGameTicks => (int)(MaxItemPickingTime * GameFPS);
+
+        public bool IsLastFloor(int floor) => FloorFactor(floor) == 1f;
+
+        public int GetEnemyNumber(int floor) => GetFloorDependantValue(EnemyNumberRange, floor);
+
+        public Range<float> GetEnemySpeedRangeInGameTicks(int floor)
+            => new Range<float>()
+            {
+                Start = GetSpeedInGameTicks(GetFloorDependantValue(MinEnemySpeedRange, floor)),
+                End = GetSpeedInGameTicks(GetFloorDependantValue(MaxEnemySpeedRange, floor)),
+            };
+
+        public List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(int floor)
+            => EnemyAnglesProbWeightRanges
+                .Select(eapwr => (numAngles: eapwr.Value, weight: GetFloorDependantValue(eapwr.WeightRange, floor)))
+                .ToList();
+
+        public IMapGenerationParams GetMapGenerationParams(int floor)
         {
-            RogueskivConfig = rogueskivConfig;
-            GameSeed = gameContext.GameSeed;
-            Floor = floor;
-            IsLastFloor = floor == RogueskivConfig.FloorCount;
-            FloorFactor = (float)floor / RogueskivConfig.FloorCount;
-
-            EnemyNumber = GetFloorDependantValue(rogueskivConfig.EnemyNumberRange);
-            MinEnemySpeed = GetFloorDependantValue(rogueskivConfig.MinEnemySpeedRange) / gameContext.GameFPS;
-            MaxEnemySpeed = GetFloorDependantValue(rogueskivConfig.MaxEnemySpeedRange) / gameContext.GameFPS;
-            MaxItemPickingTime = RogueskivConfig.MaxItemPickingTime / gameContext.GameFPS;
-
-            // the parametrization is not perfect because with high FPS
-            // there are more steps with movement for the same acceleration
-            PlayerAcceleration = (float)Math.Pow(RogueskivConfig.PlayerAcceleration, 25d / gameContext.GameFPS);
-            PlayerMaxSpeed = RogueskivConfig.PlayerMaxSpeed / gameContext.GameFPS;
-            PlayerStopSpeed = RogueskivConfig.PlayerStopSpeed / gameContext.GameFPS;
-
-            EnemyNumAnglesProbWeights = rogueskivConfig
-                .EnemyAnglesProbWeightRanges
-                .Select(eapwr => (numAngles: eapwr.Value, weight: GetFloorDependantValue(eapwr.WeightRange)))
+            var mapSize = GetFloorDependantValue(MapSizeRange, floor);
+            var corridorWidthProbWeights = CorridorWidthProbWeightRanges
+                .Select(cwpwr => (numAngles: cwpwr.Value, weight: GetFloorDependantValue(cwpwr.WeightRange, floor)))
                 .ToList();
 
-            var mapSize = GetFloorDependantValue(rogueskivConfig.MapSizeRange);
-            var roomExpandProb = GetFloorDependantValue(rogueskivConfig.RoomExpandProbRange);
-            var corridorTurnProb = GetFloorDependantValue(rogueskivConfig.CorridorTurnProbRange);
-            var minMapDensity = GetFloorDependantValue(rogueskivConfig.MinMapDensityRange);
-            var initialRooms = GetFloorDependantValue(rogueskivConfig.InitialRoomsRange);
-            var minRoomSize = rogueskivConfig.MinRoomSize;
-            var minRoomSeparation = rogueskivConfig.MinRoomSeparation;
-            var corridorWidthProbWeights = rogueskivConfig
-                .CorridorWidthProbWeightRanges
-                .Select(cwpwr => (numAngles: cwpwr.Value, weight: GetFloorDependantValue(cwpwr.WeightRange)))
-                .ToList();
-
-            MapGenerationParams = new MapGenerationParams(
+            return new MapGenerationParams(
                 width: mapSize,
                 height: mapSize,
-                roomExpandProb,
-                corridorTurnProb,
-                minMapDensity,
-                initialRooms,
-                minRoomSize,
-                minRoomSeparation,
+                GetFloorDependantValue(RoomExpandProbRange, floor),
+                GetFloorDependantValue(CorridorTurnProbRange, floor),
+                GetFloorDependantValue(MinMapDensityRange, floor),
+                GetFloorDependantValue(InitialRoomsRange, floor),
+                MinRoomSize,
+                MinRoomSeparation,
                 corridorWidthProbWeights
             );
         }
 
-        private int GetFloorDependantValue(Range<int> range) =>
-            (int)(range.Start + (FloorFactor * (range.End - range.Start)));
+        private float GetSpeedInGameTicks(float speedInSeconds) => speedInSeconds / GameFPS;
 
-        private float GetFloorDependantValue(Range<float> range) =>
-            (range.Start + (FloorFactor * (range.End - range.Start)));
+        private int GetFloorDependantValue(Range<int> range, int floor) =>
+            (int)(range.Start + (FloorFactor(floor) * (range.End - range.Start)));
+
+        private float GetFloorDependantValue(Range<float> range, int floor) =>
+            (range.Start + (FloorFactor(floor) * (range.End - range.Start)));
+
+        private float FloorFactor(int floor) => (float)floor / FloorCount;
     }
 }

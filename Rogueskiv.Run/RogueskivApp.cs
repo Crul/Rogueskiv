@@ -2,6 +2,7 @@
 using Rogueskiv.Menus;
 using Rogueskiv.Ux;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
@@ -102,13 +103,17 @@ namespace Rogueskiv.Run
             if (gameSeed.HasValue)
                 GameContext.SetSeed(gameSeed.Value);
 
+            var gameConfig = YamlParser.ParseFile<RogueskivGameConfig>(AppConfig.GameModeFilesPath, AppConfig.GameMode);
+            gameConfig.GameFPS = GameContext.GameFPS;
+            gameConfig.GameSeed = GameContext.GameSeed;
+            gameConfig.FloorCount = AppConfig.FloorCount;
+
             if (FloorEngines.Count == 0)
-                UxContext.PlayMusic(AppConfig.GameMusicFilePath, AppConfig.GameMusicVolume);
+                UxContext.PlayMusic(gameConfig.GameMusicFilePath, gameConfig.GameMusicVolume);
 
             CurrentFloor = FloorEngines.Count + 1;
-            var gameConfig = new RogueskivGameConfig(AppConfig, GameContext, CurrentFloor);
-            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
-            var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result);
+            var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig, gameConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
 

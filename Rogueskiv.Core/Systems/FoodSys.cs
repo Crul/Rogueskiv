@@ -11,9 +11,8 @@ namespace Rogueskiv.Core.Systems
 
         private HealthComp PlayerHealthComp;
 
-        public FoodSys(int pickingTime, int foodHealthIncrease)
-            : base(pickingTime, isSingleCompPerFloor: true) =>
-            FoodHealthIncrease = foodHealthIncrease;
+        public FoodSys(int foodHealthIncrease) : base(isSingleCompPerFloor: true)
+            => FoodHealthIncrease = foodHealthIncrease;
 
         public override void Init(Game game)
         {

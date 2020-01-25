@@ -31,7 +31,8 @@ namespace Rogueskiv.Ux
             UxContext uxContext,
             IGameContext gameContext,
             RogueskivGame game,
-            IRogueskivUxConfig uxConfig
+            IRogueskivUxConfig uxConfig,
+            IRogueskivGameConfig gameConfig
         ) : base(uxContext, game)
         {
             RogueskivGame = game;
@@ -52,15 +53,15 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(AmuletComp)] = new AmuletRenderer(this, uxContext, game, BoardTexture);
             CompRenderers[typeof(EnemyComp)] = new EnemyRenderer(uxContext, game);
             CompRenderers[typeof(FOVComp)] = new FOVRenderer(uxContext);
-            CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, uxConfig.PlayerRadius);
+            CompRenderers[typeof(PlayerComp)] = new PlayerRenderer(uxContext, game, gameConfig.PlayerRadius);
             CompRenderers[typeof(HealthComp)] = new HealthRenderer(uxContext);
             CompRenderers[typeof(TimerComp)] = new GameInfoRenderer(
                 uxContext,
                 gameContext,
                 font,
                 game.Floor,
-                inGameTimeVisible: uxConfig.InGameTimeVisible,
-                realTimeVisible: uxConfig.RealTimeVisible
+                inGameTimeVisible: gameConfig.InGameTimeVisible,
+                realTimeVisible: gameConfig.RealTimeVisible
             );
             CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, font);
 

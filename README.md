@@ -6,11 +6,9 @@ Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia
 
 ## Configuration
 
-A configuration filename can be specified on execution (default value is `default`):
+Global options can be changed in `config/global.yaml`.
 
-```Rogueskiv.Run.exe --config=configfilename```
-
-Options will be loaded from `config/configfilename.yaml`.
+Game modes are defined in `config/gameModes/*.yaml`.
 
 ## Environment Setup
 

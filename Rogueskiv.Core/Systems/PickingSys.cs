@@ -15,14 +15,10 @@ namespace Rogueskiv.Core.Systems
 
         private PlayerComp PlayerComp;
         private PositionComp PlayerPositionComp;
-        private readonly int PickingTime;
         private readonly bool IsSingleCompPerFloor;
 
-        protected PickingSys(int pickingTime, bool isSingleCompPerFloor)
-        {
-            PickingTime = pickingTime;
+        protected PickingSys(bool isSingleCompPerFloor) =>
             IsSingleCompPerFloor = isSingleCompPerFloor;
-        }
 
         public override void Init(Game game)
         {
@@ -92,7 +88,7 @@ namespace Rogueskiv.Core.Systems
         protected virtual void StartPicking(List<T> pickedComponents) =>
             pickedComponents.ForEach(pickedComp =>
             {
-                pickedComp.StartPicking(PickingTime);
+                pickedComp.StartPicking();
                 PlayerComp.PickingComps.Add(pickedComp);
                 var gameEvent = pickedComp.GetGameEvent();
                 if (gameEvent != null)

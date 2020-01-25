@@ -1,0 +1,17 @@
+# graphics
+maximized: true
+screenSize: { width: 640, height: 480 }
+maxGameStepsWithoutRender: 5
+cameraMovementFriction: 20
+
+# sound
+soundsOn: true
+musicOn: true
+menuMusicFilePath: "audio/S35musicloops - Mystic Cave by Mellodeque.mp3"
+menuMusicVolume: 36
+
+# game
+maxFloorCount: 50
+minFloorCount: 1
+floorCount: 26
+gameMode: "normal"

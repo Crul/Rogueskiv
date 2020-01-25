@@ -15,10 +15,10 @@ namespace Rogueskiv.Core.Components
             : base(tilePos) =>
             MaxPickingTime = maxPickingTime;
 
-        public void StartPicking(int pickingTime)
+        public void StartPicking()
         {
             IsBeingPicked = true;
-            PickingTime = pickingTime;
+            PickingTime = MaxPickingTime;
         }
 
         public void TickPickingTime() => PickingTime--;

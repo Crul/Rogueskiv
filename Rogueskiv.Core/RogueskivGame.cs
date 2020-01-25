@@ -16,7 +16,7 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
-        public int Floor { get => GameConfig.Floor; }
+        public int Floor { get; }
         public int GameSeed { get => GameConfig.GameSeed; }
 
         public List<IGameEvent> GameEvents { get; }
@@ -29,6 +29,7 @@ namespace Rogueskiv.Core
         public RogueskivGame(
             GameStageCode stageCode,
             IRogueskivGameConfig gameConfig,
+            int floor,
             IGameResult<IEntity> previousFloorResult,
             string boardData = default
         )
@@ -39,24 +40,21 @@ namespace Rogueskiv.Core
                     new List<IComponent> { new TimerComp(previousFloorResult?.Data.GetSingleComponent<TimerComp>()) },
                     new List<IComponent> { new BoardComp() },
                     new List<IComponent> { new FOVComp() },
-                    new List<IComponent> { new PopUpComp() { Text = GetStartText(gameConfig.Floor) } },
+                    new List<IComponent> { new PopUpComp() { Text = GetStartText(floor) } },
                 },
                 systems: new List<ISystem> {
                     new TimerSys(),
                     string.IsNullOrEmpty(boardData)
-                        ? new BoardSys(gameConfig.MapGenerationParams)
+                        ? new BoardSys(gameConfig.GetMapGenerationParams(floor))
                         : new BoardSys(boardData),
-                    new SpawnSys(
-                        gameConfig,
-                        previousFloorResult
-                    ),
-                    new PlayerSys(gameConfig.PlayerAcceleration),
+                    new SpawnSys(floor, gameConfig, previousFloorResult),
+                    new PlayerSys(gameConfig.PlayerAccelerationInGameTicks),
                     new MovementSys(),
                     new WallSys(),
-                    new FoodSys(gameConfig.MaxItemPickingTime, gameConfig.FoodHealthIncrease),
-                    new TorchSys(gameConfig.MaxItemPickingTime, gameConfig.TorchVisualRangeIncrease),
-                    new RevealMapSys(gameConfig.MaxItemPickingTime),
-                    new AmuletSys(gameConfig.MaxItemPickingTime),
+                    new FoodSys(gameConfig.FoodHealthIncrease),
+                    new TorchSys(gameConfig.TorchVisualRangeIncrease),
+                    new RevealMapSys(),
+                    new AmuletSys(),
                     new CollisionSys(gameConfig.EnemyCollisionDamage, gameConfig.EnemyCollisionBounce),
                     new FOVSys(),
                     new StairsSys(),
@@ -66,6 +64,7 @@ namespace Rogueskiv.Core
                 quitControl: (int)Core.Controls.QUIT
             )
         {
+            Floor = floor;
             Pause = true;
             GameConfig = gameConfig;
             GameEvents = new List<IGameEvent>();
