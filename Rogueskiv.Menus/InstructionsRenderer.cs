@@ -12,7 +12,7 @@ namespace Rogueskiv.Menus
     {
         private const int MIN_MARGIN_X = 40;
         private const int MAX_MARGIN_DELTA_X = 140 + MIN_MARGIN_X;
-        private const int MIN_Y = 320;
+        private const int MIN_Y = 390;
         private const int MARGIN_Y = 24;
         private const int LINE_HEIGHT = 24;
         private const float MIN_SCREEN_WIDTH_TO_ADJUST_MARGIN = 720;

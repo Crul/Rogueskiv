@@ -21,6 +21,8 @@ namespace Rogueskiv.Menus
                     { (int)SDL_Keycode.SDLK_ESCAPE,   (int)Controls.QUIT },
                     { (int)SDL_Keycode.SDLK_UP,       (int)Controls.UP },
                     { (int)SDL_Keycode.SDLK_DOWN,     (int)Controls.DOWN },
+                    { (int)SDL_Keycode.SDLK_LEFT,     (int)Controls.LEFT },
+                    { (int)SDL_Keycode.SDLK_RIGHT,    (int)Controls.RIGHT },
                     { (int)SDL_Keycode.SDLK_RETURN,   (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_KP_ENTER, (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE},

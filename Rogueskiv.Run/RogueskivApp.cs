@@ -131,7 +131,7 @@ namespace Rogueskiv.Run
             UxContext.PlayMusic(AppConfig.MenuMusicFilePath, AppConfig.MenuMusicVolume);
 
             var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
-            var game = new RogueskivMenu(GameStageCodes.Menu);
+            var game = new RogueskivMenu(AppConfig, GameStageCodes.Menu);
             var renderer = new RogueskivMenuRenderer(UxContext, game, AppConfig.FontFile);
             var userInput = new RogueskivMenuInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);

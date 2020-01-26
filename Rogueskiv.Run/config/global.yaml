@@ -14,4 +14,4 @@ menuMusicVolume: 36
 maxFloorCount: 50
 minFloorCount: 1
 floorCount: 26
-gameMode: "normal"
+gameModeIndex: 1

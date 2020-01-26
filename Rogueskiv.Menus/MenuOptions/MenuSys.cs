@@ -65,11 +65,13 @@ namespace Rogueskiv.Menus.MenuOptions
                 .ToList();
 
             var activeMenuOption = menuOptions.Single(mo => mo.Active);
-            if (ControlPressed(controls, Controls.ENTER))
-            {
-                activeMenuOption.Execute(this);
-                return;
-            }
+
+            activeMenuOption
+                .ActionsByControl
+                .Keys
+                .Where(control => ControlPressed(controls, control))
+                .ToList()
+                .ForEach(control => activeMenuOption.ActionsByControl[control]());
 
             int newActiveIndex;
             if (ControlPressed(controls, Controls.QUIT))

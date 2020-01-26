@@ -10,7 +10,7 @@ namespace Rogueskiv.Menus.MenuOptions
     {
         private const int MARGIN_LEFT = 100;
         private const int MARGIN_TOP = 136;
-        private const int LINE_HEIGHT = 50;
+        private const int LINE_HEIGHT = 45;
 
         private readonly RogueskivMenu Game;
 
@@ -18,7 +18,7 @@ namespace Rogueskiv.Menus.MenuOptions
             : base(uxContext, font) =>
             Game = game;
 
-        protected override string GetText(MenuOptionComp component) => component.Text;
+        protected override string GetText(MenuOptionComp component) => component.GetText();
 
         protected override SDL_Color GetColor(MenuOptionComp component) =>
             component.Active

@@ -10,9 +10,9 @@ namespace Rogueskiv.Menus
 {
     class ControlsInfoRenderer : IRenderer
     {
-        private const int MIN_MARGIN_X_LEFT = 360;
+        private const int MIN_MARGIN_X_LEFT = 390;
         private const int MARGIN_X_RIGHT = 250;
-        private const int MARGIN_Y = 160;
+        private const int MARGIN_Y = 144;
         private const int LINE_HEIGHT = 24;
         private readonly List<string> InstructionsTextLines = new List<string>
         {
