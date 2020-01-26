@@ -10,8 +10,13 @@ namespace Rogueskiv.Ux.EffectPlayers
 
         protected int Channel { get; set; } = -1;
 
-        protected EffectPlayer(UxContext uxContext, string audioFilename) =>
-            AudioChunk = uxContext.GetAudioChunk($"{audioFilename}.mp3");
+        private readonly string AudioFilename;
+
+        protected EffectPlayer(UxContext uxContext, string audioFilename)
+        {
+            AudioFilename = $"{audioFilename}.mp3";
+            AudioChunk = uxContext.GetAudioChunk(AudioFilename);
+        }
 
         public abstract void Play();
 
@@ -20,7 +25,7 @@ namespace Rogueskiv.Ux.EffectPlayers
             SetVolume(volume); // TODO only if volume has changed ?
             Channel = SDL_mixer.Mix_PlayChannel(-1, AudioChunk, loops);
             if (Channel < 0)
-                Console.WriteLine("ERROR Mix_PlayChannel");
+                Console.WriteLine($"ERROR Mix_PlayChannel: {AudioFilename}");
         }
 
         protected void SetVolume(int volume) =>
