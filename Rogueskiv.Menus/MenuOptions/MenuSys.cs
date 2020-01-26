@@ -29,12 +29,20 @@ namespace Rogueskiv.Menus.MenuOptions
             }
         }
 
-        public bool AskingForCustomSeed { get; private set; } = false;
-
         private Game Game;
+        private StatsComp StatsComp;
         private List<Controls> LastControls = new List<Controls>();
 
-        public override void Init(Game game) => Game = game;
+        private enum MenuStates { MainMenu, CustomSeedInput, StatsView };
+        private MenuStates MenuState;
+        internal bool IsMainMenuView => MenuState == MenuStates.MainMenu;
+        internal bool IsCustomSeedInput => MenuState == MenuStates.CustomSeedInput;
+
+        public override void Init(Game game)
+        {
+            Game = game;
+            StatsComp = game.Entities.GetSingleComponent<StatsComp>();
+        }
 
         public override void Update(EntityList entities, List<int> controls)
         {
@@ -42,18 +50,34 @@ namespace Rogueskiv.Menus.MenuOptions
             if (controls.Count == 0)
                 return;
 
-            if (AskingForCustomSeed)
-                UpdateCustomSeedInput(controls);
-            else
-                UpdateMenuOptions(entities, controls);
+            switch (MenuState)
+            {
+                case MenuStates.MainMenu:
+                    UpdateMenuOptions(entities, controls);
+                    break;
+                case MenuStates.CustomSeedInput:
+                    UpdateCustomSeedInput(controls);
+                    break;
+                case MenuStates.StatsView:
+                    UpdateStatsView(controls);
+                    break;
+                default:
+                    break;
+            }
 
             LastControls = controls.Select(c => (Controls)c).ToList();
         }
 
         internal void OnTextInput(string text)
         {
-            if (AskingForCustomSeed)
+            if (MenuState == MenuStates.CustomSeedInput)
                 CustomSeedText += text;
+        }
+
+        internal void ShowStats()
+        {
+            MenuState = MenuStates.StatsView;
+            StatsComp.Show();
         }
 
         private void UpdateMenuOptions(EntityList entities, List<int> controls)
@@ -120,7 +144,7 @@ namespace Rogueskiv.Menus.MenuOptions
             if (ControlPressed(controls, Controls.QUIT))
             {
                 CustomSeed = 0;
-                AskingForCustomSeed = false;
+                MenuState = MenuStates.MainMenu;
                 SDL_StopTextInput();
                 return;
             }
@@ -146,9 +170,25 @@ namespace Rogueskiv.Menus.MenuOptions
             }
         }
 
+        private void UpdateStatsView(List<int> controls)
+        {
+            if (ControlPressed(controls, Controls.QUIT) || ControlPressed(controls, Controls.ENTER))
+            {
+                StatsComp.Hide();
+                MenuState = MenuStates.MainMenu;
+                return;
+            }
+
+            if (ControlPressed(controls, Controls.UP))
+                StatsComp.Page--;
+
+            if (ControlPressed(controls, Controls.DOWN))
+                StatsComp.Page++;
+        }
+
         public void AskForCustomSeed()
         {
-            AskingForCustomSeed = true;
+            MenuState = MenuStates.CustomSeedInput;
             SDL_StartTextInput();
         }
 

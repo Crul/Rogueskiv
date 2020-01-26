@@ -5,6 +5,7 @@ namespace Rogueskiv.Core
 {
     public interface IRogueskivGameConfig : ISpawnConfig
     {
+        int GameFPS { get; }
         int GameSeed { get; }
         bool InGameTimeVisible { get; }
         bool RealTimeVisible { get; }

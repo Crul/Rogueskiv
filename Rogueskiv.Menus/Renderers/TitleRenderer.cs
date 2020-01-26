@@ -9,7 +9,7 @@ namespace Rogueskiv.Menus.Renderers
     class TitleRenderer : IRenderer
     {
         private const int MARGIN_X = 120;
-        private const int MARGIN_Y = 60;
+        private const int MARGIN_Y = 30;
 
         private readonly Point MinPosition = new Point(30, MARGIN_Y);
 

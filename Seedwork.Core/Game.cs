@@ -48,8 +48,11 @@ namespace Seedwork.Core
             SetPause();
 
             if (!Pause && !Quit)
-                Systems.ToList().ForEach(s => s.Update(Entities, Controls));
+                UpdateSystems();
         }
+
+        protected virtual void UpdateSystems()
+            => Systems.ToList().ForEach(s => s.Update(Entities, Controls));
 
         public virtual void Restart(IGameResult<IEntity> result)
         {

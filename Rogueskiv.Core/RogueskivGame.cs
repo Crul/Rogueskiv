@@ -16,6 +16,8 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        private const long TICKS_IN_A_SECOND = 10000000;
+
         public int Floor { get; }
         public int GameSeed { get => GameConfig.GameSeed; }
 
@@ -147,6 +149,14 @@ namespace Rogueskiv.Core
             base.Update();
         }
 
+        protected override void UpdateSystems()
+        {
+            if (Result == RogueskivGameResults.DeathResult)
+                Quit = true;
+            else
+                base.UpdateSystems();
+        }
+
         public override void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
         {
             var timerEntity = Entities.GetWithComponent<TimerComp>().Single();
@@ -172,7 +182,7 @@ namespace Rogueskiv.Core
                 DiedOnFloor = gameResult == RogueskivGameResults.DeathResult ? (int?)Floor : null,
                 FinalHealth = Entities.GetSingleComponent<HealthComp>().Health,
                 RealTime = timerComp.GetRealTime().Ticks,
-                InGameTime = timerComp.InGameTime,
+                InGameTime = TICKS_IN_A_SECOND * timerComp.InGameTime / GameConfig.GameFPS,
             };
         }
     }

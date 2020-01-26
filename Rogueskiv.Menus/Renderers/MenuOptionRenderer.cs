@@ -1,4 +1,5 @@
 ﻿using Rogueskiv.Menus.MenuOptions;
+using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
@@ -13,7 +14,7 @@ namespace Rogueskiv.Menus.Renderers
         private const int MAX_MARGIN_DELTA_X = 100 - MIN_MARGIN_X;
         private const float MIN_SCREEN_WIDTH_TO_ADJUST_MARGIN = 720;
         private const float MAX_SCREEN_WIDTH_TO_ADJUST_MARGIN = 1200;
-        private const int MARGIN_TOP = 136;
+        private const int MARGIN_Y = 106;
         private const int LINE_HEIGHT = 32;
 
         private readonly RogueskivMenu Game;
@@ -22,15 +23,21 @@ namespace Rogueskiv.Menus.Renderers
             : base(uxContext, font) =>
             Game = game;
 
+        protected override void Render(IEntity entity, MenuOptionComp comp, float interpolation)
+        {
+            if (Game.IsMainMenuView)
+                base.Render(entity, comp, interpolation);
+        }
+
         protected override string GetText(MenuOptionComp component) => component.GetText();
 
         protected override SDL_Color GetColor(MenuOptionComp component) =>
             component.Active
-                ? (Game.AskingForCustomSeed
+                ? (Game.IsCustomSeedInput
                     ? new SDL_Color { r = 0xCC, g = 0xCC, b = 0xCC, a = 0xFF }
                     : new SDL_Color { r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF }
                 )
-                : (Game.AskingForCustomSeed
+                : (Game.IsCustomSeedInput
                     ? new SDL_Color { r = 0x44, g = 0x44, b = 0x44, a = 0xFF }
                     : new SDL_Color { r = 0x99, g = 0x99, b = 0x99, a = 0xFF }
                 );
@@ -53,7 +60,7 @@ namespace Rogueskiv.Menus.Renderers
             );
 
         private int GetY(MenuOptionComp component)
-            => MARGIN_TOP + (component.Order * LINE_HEIGHT);
+            => MARGIN_Y + (component.Order * LINE_HEIGHT);
 
         protected override TextAlign GetAligment() => TextAlign.TOP_LEFT;
     }

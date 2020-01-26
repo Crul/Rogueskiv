@@ -8,6 +8,6 @@
         public int? DiedOnFloor { get; set; }
         public int FinalHealth { get; set; }
         public long RealTime { get; set; }
-        public int InGameTime { get; set; }
+        public long InGameTime { get; set; }
     }
 }

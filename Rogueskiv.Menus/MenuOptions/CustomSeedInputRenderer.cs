@@ -21,7 +21,7 @@ namespace Rogueskiv.Menus.MenuOptions
 
         public void Render()
         {
-            if (Game.AskingForCustomSeed)
+            if (Game.IsCustomSeedInput)
                 TextRenderer.Render(
                     $"Enter seed: {Game.CustomSeedText}_",
                     TextColor,

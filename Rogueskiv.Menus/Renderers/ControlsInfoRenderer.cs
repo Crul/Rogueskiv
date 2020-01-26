@@ -12,7 +12,7 @@ namespace Rogueskiv.Menus.Renderers
     {
         private const int MIN_MARGIN_X_LEFT = 360;
         private const int MARGIN_X_RIGHT = 280;
-        private const int MARGIN_Y = 144;
+        private const int MARGIN_Y = 114;
         private const int LINE_HEIGHT = 24;
         private readonly List<string> InstructionsTextLines = new List<string>
         {
@@ -39,7 +39,7 @@ namespace Rogueskiv.Menus.Renderers
 
         public void Render()
         {
-            if (Game.AskingForCustomSeed)
+            if (!Game.IsMainMenuView)
                 return;
 
             var position = new Point(x: GetX(), y: GetY());
