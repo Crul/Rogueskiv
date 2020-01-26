@@ -124,7 +124,7 @@ namespace Rogueskiv.Run
                 UxContext.PlayMusic(gameConfig.GameMusicFilePath, gameConfig.GameMusicVolume);
 
             CurrentFloor = FloorEngines.Count + 1;
-            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result, OnGameEnd);
             var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig, gameConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
@@ -132,6 +132,15 @@ namespace Rogueskiv.Run
             FloorEngines.Add(engine);
 
             return engine;
+        }
+
+        private void OnGameEnd(RogueskivGameStats gameStats)
+        {
+            gameStats.GameMode = AppConfig.GameMode;
+            gameStats.Floors = AppConfig.FloorCount;
+
+            var yamlData = YamlParser.Serialize(new List<RogueskivGameStats> { gameStats });
+            File.AppendAllText(AppConfig.GameStatsFilePath, yamlData);
         }
 
         private GameEngine<IEntity> CreateMenuStage()

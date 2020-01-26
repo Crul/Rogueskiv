@@ -10,6 +10,7 @@ namespace Rogueskiv.Run
     class RogueskivAppConfig : IRogueskivUxConfig, IRogueskivGameParams
     {
         public string GlobalConfigFilePath { get; internal set; }
+        public string GameStatsFilePath { get; internal set; }
         public string GameModeFilesPath { get; set; }
         public string MenuMusicFilePath { get; set; }
         public int MenuMusicVolume { get; set; }

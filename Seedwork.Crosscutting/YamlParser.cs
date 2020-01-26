@@ -18,5 +18,11 @@ namespace Seedwork.Crosscutting
 
             return data;
         }
+
+        public static string Serialize<T>(T obj)
+            => new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build()
+                .Serialize(obj);
     }
 }
