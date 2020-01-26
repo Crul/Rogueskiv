@@ -7,8 +7,8 @@ namespace Seedwork.Engine
     {
         public IGame<T> Game { get; }
         public IInputHandler InputHandler { get; }
+        public IGameRenderer Renderer { get; }
 
-        private readonly IGameRenderer Renderer;
         private readonly IGameContext GameContext;
 
         public GameEngine(

@@ -97,6 +97,7 @@ namespace Rogueskiv.Run
             var nextFloorEngine = CurrentFloorEngine;
             nextFloorEngine.Game.Restart(result);
             nextFloorEngine.SetInputControls(currentFloorEngine.InputHandler);
+            nextFloorEngine.Renderer.RecreateTextures();
 
             return nextFloorEngine;
         }
