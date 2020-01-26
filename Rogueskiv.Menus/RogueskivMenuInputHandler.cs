@@ -38,8 +38,8 @@ namespace Rogueskiv.Menus
 
                     { (int)SDL_Keycode.SDLK_RETURN,   (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_KP_ENTER, (int)Controls.ENTER },
-                    { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE},
-                    { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC},
+                    { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE },
+                    { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC },
                 },
                 closeWindowControl: (int)Controls.CLOSE_WINDOW,
                 toggleMusicControl: (int)Controls.TOGGLE_MUSIC
@@ -50,12 +50,12 @@ namespace Rogueskiv.Menus
             ControlStates.Add((int)Controls.PASTE, false);
         }
 
-        protected override void OnKeyEvent(SDL_Keycode key, bool pressed)
+        protected override void OnKeyEvent(SDL_Keycode key, bool pressed, bool isRepeat)
         {
-            base.OnKeyEvent(key, pressed);
+            base.OnKeyEvent(key, pressed, isRepeat);
 
-            ControlStates[(int)Controls.COPY] = key == SDL_Keycode.SDLK_c && IsControlKeyPressed();
-            ControlStates[(int)Controls.PASTE] = key == SDL_Keycode.SDLK_v && IsControlKeyPressed();
+            ControlStates[(int)Controls.COPY] = !isRepeat && (key == SDL_Keycode.SDLK_c && IsControlKeyPressed());
+            ControlStates[(int)Controls.PASTE] = !isRepeat && (key == SDL_Keycode.SDLK_v && IsControlKeyPressed());
         }
 
         protected override void OnTextInput(string text)
