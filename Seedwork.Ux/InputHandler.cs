@@ -147,5 +147,10 @@ namespace Seedwork.Ux
 
         public void Reset() =>
             ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = false);
+
+        public void SetControls(IInputHandler inputHandler)
+            => ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = inputHandler.GetControlState(k));
+
+        public bool GetControlState(int control) => ControlStates[control];
     }
 }

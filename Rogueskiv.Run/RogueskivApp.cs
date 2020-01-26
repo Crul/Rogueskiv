@@ -24,6 +24,7 @@ namespace Rogueskiv.Run
         private readonly LoadingScreenRenderer LoadingScreenRenderer;
 
         private int CurrentFloor;
+        private GameEngine<IEntity> CurrentFloorEngine => FloorEngines[CurrentFloor - 1];
 
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
@@ -77,24 +78,27 @@ namespace Rogueskiv.Run
         {
             StopCurrentFloorEngine();
 
-            return GetRestartFloorEngine(--CurrentFloor, result);
+            return GetRestartFloorEngine(-1, result);
         }
 
         private GameEngine<IEntity> GetFloorDown(IGameResult<IEntity> result)
         {
             StopCurrentFloorEngine();
             if (CurrentFloor < FloorEngines.Count)
-                return GetRestartFloorEngine(++CurrentFloor, result);
+                return GetRestartFloorEngine(1, result);
 
             return CreateGameStage(result);
         }
 
-        private GameEngine<IEntity> GetRestartFloorEngine(int floor, IGameResult<IEntity> result)
+        private GameEngine<IEntity> GetRestartFloorEngine(int floorMovement, IGameResult<IEntity> result)
         {
-            var floorEngine = FloorEngines[floor - 1];
-            floorEngine.Game.Restart(result);
+            var currentFloorEngine = CurrentFloorEngine;
+            CurrentFloor += floorMovement;
+            var nextFloorEngine = CurrentFloorEngine;
+            nextFloorEngine.Game.Restart(result);
+            nextFloorEngine.SetInputControls(currentFloorEngine.InputHandler);
 
-            return floorEngine;
+            return nextFloorEngine;
         }
 
         private GameEngine<IEntity> CreateGameStage(
@@ -150,7 +154,7 @@ namespace Rogueskiv.Run
         private void StopCurrentFloorEngine()
         {
             if (FloorEngines.Any())
-                FloorEngines[CurrentFloor - 1].Stop();
+                CurrentFloorEngine.Stop();
         }
 
         private void SaveGlobalConfig()

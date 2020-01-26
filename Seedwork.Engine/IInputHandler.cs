@@ -4,5 +4,7 @@
     {
         void ProcessEvents();
         void Reset();
+        void SetControls(IInputHandler inputHandler);
+        bool GetControlState(int control);
     }
 }
