@@ -19,6 +19,7 @@ namespace Rogueskiv.Menus
                 controlsByKeys: new Dictionary<int, int>
                 {
                     { (int)SDL_Keycode.SDLK_ESCAPE,   (int)Controls.QUIT },
+                    { (int)SDL_Keycode.SDLK_q,        (int)Controls.QUIT },
 
                     { (int)SDL_Keycode.SDLK_UP,       (int)Controls.UP },
                     { (int)SDL_Keycode.SDLK_DOWN,     (int)Controls.DOWN },

@@ -66,39 +66,47 @@ namespace Rogueskiv.Menus.MenuOptions
 
             var activeMenuOption = menuOptions.Single(mo => mo.Active);
 
-            activeMenuOption
+            var actionsToExecute = activeMenuOption
                 .ActionsByControl
                 .Keys
                 .Where(control => ControlPressed(controls, control))
-                .ToList()
-                .ForEach(control => activeMenuOption.ActionsByControl[control]());
+                .Select(control => activeMenuOption.ActionsByControl[control])
+                .ToList();
 
-            int indexToActivate;
+            actionsToExecute.ForEach(action => action());
+
+            if (actionsToExecute.Any())
+                return;
+
+            int? indexToActivate = null;
+            if (ControlPressed(controls, Controls.ENTER))
+                indexToActivate = 0;
+
             if (ControlPressed(controls, Controls.QUIT))
                 indexToActivate = menuOptions.Count - 1;
 
-            else
+            var move = 0;
+            if (ControlPressed(controls, Controls.UP))
+                move -= 1;
+            if (ControlPressed(controls, Controls.DOWN))
+                move += 1;
+
+            if (move != 0)
             {
-                var move = 0;
-                if (ControlPressed(controls, Controls.UP))
-                    move -= 1;
-                if (ControlPressed(controls, Controls.DOWN))
-                    move += 1;
-
-                if (move == 0)
-                    return;
-
                 indexToActivate = menuOptions.IndexOf(activeMenuOption);
                 do
                 {
                     indexToActivate += move;
-                    indexToActivate = Maths.Modulo(indexToActivate, menuOptions.Count);
+                    indexToActivate = Maths.Modulo(indexToActivate.Value, menuOptions.Count);
                 }
-                while (!menuOptions[indexToActivate].Focusable);
+                while (!menuOptions[indexToActivate.Value].Focusable);
             }
 
-            activeMenuOption.Active = false;
-            menuOptions[indexToActivate].Active = true;
+            if (indexToActivate.HasValue)
+            {
+                activeMenuOption.Active = false;
+                menuOptions[indexToActivate.Value].Active = true;
+            }
         }
 
         private void UpdateCustomSeedInput(List<int> controls)
