@@ -20,6 +20,8 @@ namespace Seedwork.Ux
 
         protected readonly IDictionary<int, bool> ControlStates;
 
+        private readonly bool AllowRepeats;
+
         private readonly int CloseWindowControl;
         private bool CloseWindowKeyPressed;
 
@@ -32,7 +34,8 @@ namespace Seedwork.Ux
             IGameRenderer gameRenderer,
             IDictionary<int, int> controlsByKeys,
             int closeWindowControl,
-            int toggleMusicControl
+            int toggleMusicControl,
+            bool allowRepeats = false
         )
         {
             UxContext = uxContext;
@@ -46,9 +49,10 @@ namespace Seedwork.Ux
 
             CloseWindowControl = closeWindowControl;
             ToggleMusicControl = toggleMusicControl;
+            AllowRepeats = allowRepeats;
         }
 
-        public void ProcessEvents()
+        public virtual void ProcessEvents()
         {
             while (SDL_PollEvent(out SDL_Event ev) != 0)
                 ProcessEvent(ev);
@@ -104,7 +108,7 @@ namespace Seedwork.Ux
             var intKey = (int)key;
             if (ControlsByKeys.ContainsKey(intKey))
             {
-                if (!isRepeat)
+                if (AllowRepeats || !isRepeat)
                     ControlStates[ControlsByKeys[intKey]] = pressed;
 
                 HandleToggleMusic();

@@ -9,6 +9,13 @@ namespace Rogueskiv.Menus
     {
         private readonly RogueskivMenu Game;
 
+        private readonly List<SDL_Keycode> RepeatAllowedKeys = new List<SDL_Keycode>
+        {
+            SDL_Keycode.SDLK_LEFT, SDL_Keycode.SDLK_RIGHT,
+            SDL_Keycode.SDLK_a, SDL_Keycode.SDLK_d,
+            SDL_Keycode.SDLK_KP_4, SDL_Keycode.SDLK_KP_6,
+        };
+
         public RogueskivMenuInputHandler(
             UxContext uxContext, RogueskivMenu game, IGameRenderer gameRenderer
         )
@@ -37,12 +44,14 @@ namespace Rogueskiv.Menus
                     { (int)SDL_Keycode.SDLK_KP_6,     (int)Controls.RIGHT },
 
                     { (int)SDL_Keycode.SDLK_RETURN,   (int)Controls.ENTER },
+                    { (int)SDL_Keycode.SDLK_RETURN2,  (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_KP_ENTER, (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE },
                     { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC },
                 },
                 closeWindowControl: (int)Controls.CLOSE_WINDOW,
-                toggleMusicControl: (int)Controls.TOGGLE_MUSIC
+                toggleMusicControl: (int)Controls.TOGGLE_MUSIC,
+                allowRepeats: true
             )
         {
             Game = game;
@@ -50,9 +59,16 @@ namespace Rogueskiv.Menus
             ControlStates.Add((int)Controls.PASTE, false);
         }
 
+        public override void ProcessEvents()
+        {
+            base.ProcessEvents();
+            Reset();
+        }
+
         protected override void OnKeyEvent(SDL_Keycode key, bool pressed, bool isRepeat)
         {
-            base.OnKeyEvent(key, pressed, isRepeat);
+            if (!isRepeat || RepeatAllowedKeys.Contains(key))
+                base.OnKeyEvent(key, pressed, isRepeat);
 
             ControlStates[(int)Controls.COPY] = !isRepeat && (key == SDL_Keycode.SDLK_c && IsControlKeyPressed());
             ControlStates[(int)Controls.PASTE] = !isRepeat && (key == SDL_Keycode.SDLK_v && IsControlKeyPressed());

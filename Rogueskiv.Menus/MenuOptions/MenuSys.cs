@@ -38,11 +38,9 @@ namespace Rogueskiv.Menus.MenuOptions
 
         public override void Update(EntityList entities, List<int> controls)
         {
+            LastControls.Clear();
             if (controls.Count == 0)
-            {
-                LastControls.Clear();
                 return;
-            }
 
             if (AskingForCustomSeed)
                 UpdateCustomSeedInput(controls);

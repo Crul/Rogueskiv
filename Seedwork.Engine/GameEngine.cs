@@ -40,9 +40,9 @@ namespace Seedwork.Engine
             var stepsWithoutRender = 0;
             while (true)
             {
-                InputHandler.ProcessEvents();
                 while (ShouldUpdate(nextGameTick, stepsWithoutRender))
                 {
+                    InputHandler.ProcessEvents();
                     Game.Update();
                     if (Game.Quit)
                     {
