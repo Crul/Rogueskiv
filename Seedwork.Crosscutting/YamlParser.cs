@@ -9,7 +9,7 @@ namespace Seedwork.Crosscutting
         public static T ParseFile<T>(string path, string filename)
         {
             var filePath = Path.Combine(path, $"{filename}.yaml");
-            var fileReader = new StreamReader(filePath);
+            using var fileReader = new StreamReader(filePath);
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
