@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     class InstructionsRenderer : IRenderer
     {
@@ -20,7 +20,7 @@ namespace Rogueskiv.Menus
         private readonly List<string> InstructionsTextLines = new List<string>
         {
             "Only keyboard supported (no mouse)",
-            "Use cursors and press ENTER to select an option.",
+            "Use cursors, WASD, NumPad to move and press ENTER to play.",
             "WARNING! Work in progress: This is a proof of concept, not a fully developed game."
         };
 

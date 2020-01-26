@@ -107,7 +107,7 @@ namespace Rogueskiv.Menus
             => gameMode.Substring(gameMode.IndexOf("-") + 1);
 
         private static string GetNumericOptionText(string title, string text, int index, int minIndex, int maxIndex)
-            => $"    {title} " +
+            => $"   {title} " +
                $"{(minIndex < index ? "<" : " ")}" +
                $" {text} " +
                $"{(maxIndex > index ? ">" : " ")}";

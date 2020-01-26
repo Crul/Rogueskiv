@@ -6,20 +6,20 @@ using System.Collections.Generic;
 using System.Drawing;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     class ControlsInfoRenderer : IRenderer
     {
-        private const int MIN_MARGIN_X_LEFT = 390;
-        private const int MARGIN_X_RIGHT = 250;
+        private const int MIN_MARGIN_X_LEFT = 360;
+        private const int MARGIN_X_RIGHT = 280;
         private const int MARGIN_Y = 144;
         private const int LINE_HEIGHT = 24;
         private readonly List<string> InstructionsTextLines = new List<string>
         {
             "Game controls:",
-            "- Cursors to move",
+            "- Cursors, WASD, NumPad to move",
             "- ESC to pause or exit",
-            "- S to toggle sound",
+            "- N to toggle sound",
             "- M to toggle music",
         };
 

@@ -2,7 +2,7 @@
 using Seedwork.Ux;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     // TODO do not render if no changes ?
     public class RogueskivMenuRenderer : GameRenderer

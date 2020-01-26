@@ -115,8 +115,8 @@ namespace Rogueskiv.Core
                     + $"{Environment.NewLine}Controls:"
                     + $"{Environment.NewLine}ESC = continue playing"
                     + $"{Environment.NewLine}  Q = quit to menu    "
+                    + $"{Environment.NewLine}  N = toggle sounds   "
                     + $"{Environment.NewLine}  M = toggle music    "
-                    + $"{Environment.NewLine}  S = toggle sounds   "
                     + $"{Environment.NewLine}"
                     + $"{Environment.NewLine}Seed: {GameConfig.GameSeed}";
                 Entities.GetSingleComponent<PopUpComp>().Text = pauseText;

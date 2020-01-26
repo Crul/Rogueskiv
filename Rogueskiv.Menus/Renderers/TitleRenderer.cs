@@ -4,7 +4,7 @@ using System;
 using System.Drawing;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     class TitleRenderer : IRenderer
     {
