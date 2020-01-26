@@ -18,7 +18,17 @@ namespace Seedwork.Ux
             BufferRenderer.Render();
         }
 
-        public override void RecreateTextures() => BufferRenderer.RecreateBuffer();
+        public override void RecreateBufferTextures()
+        {
+            base.RecreateBufferTextures();
+            BufferRenderer.RecreateBuffer();
+        }
+
+        protected override void DisposeBufferTextures()
+        {
+            base.DisposeBufferTextures();
+            BufferRenderer.Dispose();
+        }
 
         protected override void Dispose(bool cleanManagedResources)
         {

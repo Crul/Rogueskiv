@@ -26,7 +26,7 @@ namespace Seedwork.Engine
 
         public IGameResult<T> RunLoop()
         {
-            Renderer.Reset();
+            Renderer.Restart();
             RunGameLoop();
 
             return Game.Result;

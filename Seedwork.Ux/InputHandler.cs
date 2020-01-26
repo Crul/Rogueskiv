@@ -95,7 +95,7 @@ namespace Seedwork.Ux
                     return;
 
                 case SDL_EventType.SDL_RENDER_TARGETS_RESET:
-                    GameRenderer.RecreateTextures();
+                    GameRenderer.RecreateBufferTextures();
                     return;
             }
         }

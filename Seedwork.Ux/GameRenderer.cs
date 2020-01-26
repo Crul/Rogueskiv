@@ -27,9 +27,9 @@ namespace Seedwork.Ux
             CompRenderers = new Dictionary<Type, ICompRenderer>();
         }
 
-        public virtual void Stop() { }
+        public virtual void Stop() => DisposeBufferTextures();
 
-        public virtual void Reset() { }
+        public virtual void Restart() => RecreateBufferTextures();
 
         public void Render(float interpolation)
         {
@@ -51,7 +51,9 @@ namespace Seedwork.Ux
         public void AddRenderOnEnd(Action renderOnEnd) =>
             RenderOnEndActions.Add(renderOnEnd);
 
-        public virtual void RecreateTextures() { }
+        public virtual void RecreateBufferTextures() { }
+
+        protected virtual void DisposeBufferTextures() { }
 
         public void Dispose()
         {

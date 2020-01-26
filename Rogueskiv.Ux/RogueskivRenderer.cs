@@ -77,10 +77,17 @@ namespace Rogueskiv.Ux
             EffectPlayers.Add(new DeathEffectPlayer(uxContext, game));
         }
 
-        public override void Stop() => PlayerMovementEffectPlayer.Stop();
+        public override void Stop()
+        {
+            base.Stop();
+            PlayerMovementEffectPlayer.Stop();
+        }
 
-        public override void Reset() =>
+        public override void Restart()
+        {
+            base.Restart();
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position);
+        }
 
         protected override void RenderGame(float interpolation)
         {
@@ -93,6 +100,7 @@ namespace Rogueskiv.Ux
 
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position, UxConfig.CameraMovementFriction);
             base.RenderGame(interpolation);
+
             if (UxConfig.SoundsOn)
             {
                 PlayerMovementEffectPlayer.Play();
@@ -101,12 +109,20 @@ namespace Rogueskiv.Ux
             RogueskivGame.GameEvents.Clear();
         }
 
-        public override void RecreateTextures()
+        public override void RecreateBufferTextures()
         {
-            base.RecreateTextures();
-            var boardRenderer = (BoardRenderer)Renderers.Where(r => r is BoardRenderer).Single();
-            boardRenderer.RecreateBuffer(Game, BoardTexture);
+            base.RecreateBufferTextures();
+            GetBoardRenderer().RecreateBuffer(Game, BoardTexture);
         }
+
+        protected override void DisposeBufferTextures()
+        {
+            base.DisposeBufferTextures();
+            GetBoardRenderer().Dispose();
+        }
+
+        private BoardRenderer GetBoardRenderer()
+            => (BoardRenderer)Renderers.Where(r => r is BoardRenderer).Single();
 
         protected override void Dispose(bool cleanManagedResources)
         {

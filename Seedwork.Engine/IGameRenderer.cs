@@ -6,8 +6,8 @@ namespace Seedwork.Engine
     {
         void Render(float interpolation);
         void Stop();
-        void Reset();
+        void Restart();
         void AddRenderOnEnd(Action renderOnEnd);
-        void RecreateTextures();
+        void RecreateBufferTextures();
     }
 }
