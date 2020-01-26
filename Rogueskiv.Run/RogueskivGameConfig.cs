@@ -65,36 +65,40 @@ namespace Rogueskiv.Run
         public float PlayerStopSpeedInGameTicks => GetSpeedInGameTicks(PlayerStopSpeed);
         public int MaxItemPickingTimeInGameTicks => (int)(MaxItemPickingTime * GameFPS);
 
-        public bool IsLastFloor(int floor) => FloorFactor(floor) == 1f;
+        public float FloorFactor(int floor) =>
+            (float)FloorCount == 1 ? 1f : (floor - 1) / (FloorCount - 1);
 
-        public int GetEnemyNumber(int floor) => GetFloorDependantValue(EnemyNumberRange, floor);
+        public int GetEnemyNumber(float floorFactor) => GetFloorDependantValue1(EnemyNumberRange, floorFactor);
 
-        public Range<float> GetEnemySpeedRangeInGameTicks(int floor)
+        public Range<float> GetEnemySpeedRangeInGameTicks(float floorFactor)
             => new Range<float>()
             {
-                Start = GetSpeedInGameTicks(GetFloorDependantValue(MinEnemySpeedRange, floor)),
-                End = GetSpeedInGameTicks(GetFloorDependantValue(MaxEnemySpeedRange, floor)),
+                Start = GetSpeedInGameTicks(GetFloorDependantValue1(MinEnemySpeedRange, floorFactor)),
+                End = GetSpeedInGameTicks(GetFloorDependantValue1(MaxEnemySpeedRange, floorFactor)),
             };
 
-        public List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(int floor)
+        public List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(float floorFactor)
             => EnemyAnglesProbWeightRanges
-                .Select(eapwr => (numAngles: eapwr.Value, weight: GetFloorDependantValue(eapwr.WeightRange, floor)))
+                .Select(eapwr =>
+                    (numAngles: eapwr.Value, weight: GetFloorDependantValue1(eapwr.WeightRange, floorFactor))
+                )
                 .ToList();
 
         public IMapGenerationParams GetMapGenerationParams(int floor)
         {
-            var mapSize = GetFloorDependantValue(MapSizeRange, floor);
+            var floorFactor = FloorFactor(floor);
+            var mapSize = GetFloorDependantValue1(MapSizeRange, floorFactor);
             var corridorWidthProbWeights = CorridorWidthProbWeightRanges
-                .Select(cwpwr => (numAngles: cwpwr.Value, weight: GetFloorDependantValue(cwpwr.WeightRange, floor)))
+                .Select(cwpwr => (numAngles: cwpwr.Value, weight: GetFloorDependantValue1(cwpwr.WeightRange, floorFactor)))
                 .ToList();
 
             return new MapGenerationParams(
                 width: mapSize,
                 height: mapSize,
-                GetFloorDependantValue(RoomExpandProbRange, floor),
-                GetFloorDependantValue(CorridorTurnProbRange, floor),
-                GetFloorDependantValue(MinMapDensityRange, floor),
-                GetFloorDependantValue(InitialRoomsRange, floor),
+                GetFloorDependantValue1(RoomExpandProbRange, floorFactor),
+                GetFloorDependantValue1(CorridorTurnProbRange, floorFactor),
+                GetFloorDependantValue1(MinMapDensityRange, floorFactor),
+                GetFloorDependantValue1(InitialRoomsRange, floorFactor),
                 MinRoomSize,
                 MinRoomSeparation,
                 corridorWidthProbWeights
@@ -103,12 +107,10 @@ namespace Rogueskiv.Run
 
         private float GetSpeedInGameTicks(float speedInSeconds) => speedInSeconds / GameFPS;
 
-        private int GetFloorDependantValue(Range<int> range, int floor) =>
-            (int)(range.Start + (FloorFactor(floor) * (range.End - range.Start)));
+        private int GetFloorDependantValue1(Range<int> range, float floorFactor) =>
+            (int)(range.Start + (floorFactor * (range.End - range.Start)));
 
-        private float GetFloorDependantValue(Range<float> range, int floor) =>
-            (range.Start + (FloorFactor(floor) * (range.End - range.Start)));
-
-        private float FloorFactor(int floor) => (float)floor / FloorCount;
+        private float GetFloorDependantValue1(Range<float> range, float floorFactor) =>
+            (range.Start + (floorFactor * (range.End - range.Start)));
     }
 }

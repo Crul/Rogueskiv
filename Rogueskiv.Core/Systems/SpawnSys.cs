@@ -16,7 +16,7 @@ namespace Rogueskiv.Core.Systems
 {
     class SpawnSys : BaseSystem
     {
-        private readonly int Floor; // TODO reusable SpawnSys for all levels (remove data from systems)
+        private readonly float FloorFactor; // TODO reusable SpawnSys for all levels (remove data from systems)
         private readonly ISpawnConfig SpawnConfig;
         private readonly IGameResult<IEntity> PreviousFloorResult;
 
@@ -33,7 +33,7 @@ namespace Rogueskiv.Core.Systems
             IGameResult<IEntity> previousFloorResult
         )
         {
-            Floor = floor;
+            FloorFactor = spawnConfig.FloorFactor(floor);
             SpawnConfig = spawnConfig;
             PreviousFloorResult = previousFloorResult;
         }
@@ -61,8 +61,8 @@ namespace Rogueskiv.Core.Systems
                 .ToList();
 
             var enemiesCounter = 0;
-            var totalEnemiesCount = SpawnConfig.GetEnemyNumber(Floor);
-            var enemySpeedRange = SpawnConfig.GetEnemySpeedRangeInGameTicks(Floor);
+            var totalEnemiesCount = SpawnConfig.GetEnemyNumber(FloorFactor);
+            var enemySpeedRange = SpawnConfig.GetEnemySpeedRangeInGameTicks(FloorFactor);
             while (enemiesCounter < totalEnemiesCount)
             {
                 var enemy = CreateEnemy(enemySpeedRange, boardComp, tilePosAndDistances, occupiedTiles);
@@ -81,7 +81,8 @@ namespace Rogueskiv.Core.Systems
             game.AddEntity(CreateTorch(tilePosAndDistances, occupiedTiles, maxDistance));
             game.AddEntity(CreateMapRevealer(tilePosAndDistances, occupiedTiles, maxDistance));
 
-            if (SpawnConfig.IsLastFloor(Floor))
+            var isLastFloor = FloorFactor == 1f;
+            if (isLastFloor)
                 game.AddEntity(CreateAmulet(tilePosAndDistances, occupiedTiles, maxDistance));
             else
             {
@@ -225,7 +226,7 @@ namespace Rogueskiv.Core.Systems
                 + Luck.NextDouble() * (enemySpeedRange.End - enemySpeedRange.Start);
 
             var numAngles = SpawnConfig
-                .GetEnemyAnglesProbWeights(Floor)
+                .GetEnemyAnglesProbWeights(FloorFactor)
                 .OrderByDescending(napb => napb.weight * Luck.NextDouble())
                 .First()
                 .numAngles;
