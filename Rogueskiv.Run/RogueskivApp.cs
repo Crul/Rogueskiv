@@ -8,7 +8,9 @@ using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Rogueskiv.Run
 {
@@ -40,6 +42,7 @@ namespace Rogueskiv.Run
                 var gameResult = engine.RunLoop();
                 engine = GameStages.GetNext(engine.Game.StageCode, gameResult);
             }
+            SaveGlobalConfig();
         }
 
         private void InitStages()
@@ -101,6 +104,10 @@ namespace Rogueskiv.Run
         {
             LoadingScreenRenderer.Render();
 
+            var isFirstStage = result == null;
+            if (isFirstStage)
+                SaveGlobalConfig();
+
             if (gameSeed.HasValue)
                 GameContext.SetSeed(gameSeed.Value);
 
@@ -145,6 +152,24 @@ namespace Rogueskiv.Run
             if (FloorEngines.Any())
                 FloorEngines[CurrentFloor - 1].Stop();
         }
+
+        private void SaveGlobalConfig()
+        {
+            var globalConfigText = File.ReadAllText(AppConfig.GlobalConfigFilePath);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "floorCount", AppConfig.FloorCount);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "gameModeIndex", AppConfig.GameModeIndex);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "musicOn", AppConfig.MusicOn.ToString().ToLower());
+
+            File.WriteAllText(AppConfig.GlobalConfigFilePath, globalConfigText);
+        }
+
+        private static string ReplaceOptionValue(string globalConfigText, string optionName, object optionValue)
+            => Regex.Replace(
+                globalConfigText,
+                "^" + optionName + @":\s*[a-z\d]+",
+                $"{optionName}: {optionValue}",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase
+            );
 
         public void Dispose()
         {

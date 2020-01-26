@@ -13,13 +13,20 @@ namespace Rogueskiv.Run
 
         static void Main()
         {
+            var rogueskivConfig = GetRogueskivAppConfig();
+            using var rogueskivApp = new RogueskivApp(rogueskivConfig);
+            rogueskivApp.Run();
+        }
+
+        private static RogueskivAppConfig GetRogueskivAppConfig()
+        {
             var rogueskivConfig = YamlParser.ParseFile<RogueskivAppConfig>(CONFIG_FILES_PATH, CONFIG_FILE_NAME);
+            rogueskivConfig.GlobalConfigFilePath = Path.Combine(CONFIG_FILES_PATH, $"{CONFIG_FILE_NAME}.yaml");
             rogueskivConfig.GameModeFilesPath = Path.Combine(CONFIG_FILES_PATH, GAME_MODE_FILES_PATH);
             rogueskivConfig.GameModes = GetGameModes(rogueskivConfig);
             rogueskivConfig.CheckGameModeIndexBounds();
 
-            using var rogueskivApp = new RogueskivApp(rogueskivConfig);
-            rogueskivApp.Run();
+            return rogueskivConfig;
         }
 
         private static List<string> GetGameModes(RogueskivAppConfig rogueskivConfig)
