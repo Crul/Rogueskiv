@@ -8,7 +8,7 @@ namespace Rogueskiv.Menus
     public class RogueskivMenuRenderer : GameRenderer
     {
         private const int TITLE_FONT_SIZE = 48;
-        private const int MENU_FONT_SIZE = 24;
+        private const int MENU_FONT_SIZE = 20;
         private const int SMALL_FONT_SIZE = 14;
 
         public RogueskivMenuRenderer(UxContext uxContext, RogueskivMenu game, string fontFile)

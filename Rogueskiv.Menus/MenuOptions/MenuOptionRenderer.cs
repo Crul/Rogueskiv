@@ -10,7 +10,7 @@ namespace Rogueskiv.Menus.MenuOptions
     {
         private const int MARGIN_LEFT = 100;
         private const int MARGIN_TOP = 136;
-        private const int LINE_HEIGHT = 45;
+        private const int LINE_HEIGHT = 32;
 
         private readonly RogueskivMenu Game;
 

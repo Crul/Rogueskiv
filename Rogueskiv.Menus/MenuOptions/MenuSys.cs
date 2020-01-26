@@ -73,9 +73,9 @@ namespace Rogueskiv.Menus.MenuOptions
                 .ToList()
                 .ForEach(control => activeMenuOption.ActionsByControl[control]());
 
-            int newActiveIndex;
+            int indexToActivate;
             if (ControlPressed(controls, Controls.QUIT))
-                newActiveIndex = menuOptions.Count - 1;
+                indexToActivate = menuOptions.Count - 1;
 
             else
             {
@@ -88,14 +88,17 @@ namespace Rogueskiv.Menus.MenuOptions
                 if (move == 0)
                     return;
 
-                newActiveIndex = Maths.Modulo(
-                    menuOptions.IndexOf(activeMenuOption) + move,
-                    menuOptions.Count
-                );
+                indexToActivate = menuOptions.IndexOf(activeMenuOption);
+                do
+                {
+                    indexToActivate += move;
+                    indexToActivate = Maths.Modulo(indexToActivate, menuOptions.Count);
+                }
+                while (!menuOptions[indexToActivate].Focusable);
             }
 
             activeMenuOption.Active = false;
-            menuOptions[newActiveIndex].Active = true;
+            menuOptions[indexToActivate].Active = true;
         }
 
         private void UpdateCustomSeedInput(List<int> controls)

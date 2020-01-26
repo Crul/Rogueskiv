@@ -24,8 +24,9 @@ namespace Rogueskiv.Menus
             MenuSystem = new MenuSys();
             AddSystem(MenuSystem);
 
+            var counter = 0;
             AddEntity(new MenuOptionComp(
-                0,
+                counter++,
                 () => "Play Random",
                 new Dictionary<Controls, Action>
                 {
@@ -34,7 +35,7 @@ namespace Rogueskiv.Menus
             ));
 
             AddEntity(new MenuOptionComp(
-                1,
+                counter++,
                 () => "Play Custom Seed",
                 new Dictionary<Controls, Action>
                 {
@@ -42,8 +43,10 @@ namespace Rogueskiv.Menus
                 }
             ));
 
+            AddEntity(new MenuOptionComp(counter++, () => "Settings"));
+
             AddEntity(new MenuOptionComp(
-                2,
+                counter++,
                 () => GetFloorsOptionText(gameParams),
                 new Dictionary<Controls, Action>
                 {
@@ -53,7 +56,7 @@ namespace Rogueskiv.Menus
             ));
 
             AddEntity(new MenuOptionComp(
-                3,
+                counter++,
                 () => GetGameModesOptionText(gameParams),
                 new Dictionary<Controls, Action>
                 {
@@ -62,8 +65,10 @@ namespace Rogueskiv.Menus
                 }
             ));
 
+            AddEntity(new MenuOptionComp(counter++, () => string.Empty));
+
             AddEntity(new MenuOptionComp(
-                4,
+                counter++,
                 () => "Quit",
                 new Dictionary<Controls, Action>
                 {
@@ -82,7 +87,7 @@ namespace Rogueskiv.Menus
 
         private static string GetFloorsOptionText(IRogueskivGameParams gameParams)
             => GetNumericOptionText(
-                title: "Floors",
+                title: "Floors   ",
                 text: gameParams.FloorCount.ToString(),
                 index: gameParams.FloorCount,
                 minIndex: gameParams.MinFloorCount,
@@ -102,7 +107,7 @@ namespace Rogueskiv.Menus
             => gameMode.Substring(gameMode.IndexOf("-") + 1);
 
         private static string GetNumericOptionText(string title, string text, int index, int minIndex, int maxIndex)
-            => $"{title}: " +
+            => $"    {title} " +
                $"{(minIndex < index ? "<" : " ")}" +
                $" {text} " +
                $"{(maxIndex > index ? ">" : " ")}";
