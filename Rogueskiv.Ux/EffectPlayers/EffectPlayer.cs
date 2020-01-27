@@ -1,6 +1,6 @@
 ﻿using SDL2;
+using Seedwork.Ux;
 using System;
-using System.IO;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
@@ -10,8 +10,8 @@ namespace Rogueskiv.Ux.EffectPlayers
 
         protected int Channel { get; set; } = -1;
 
-        protected EffectPlayer(string audioFilename) =>
-            AudioChunk = SDL_mixer.Mix_LoadWAV(Path.Combine("audio", $"{audioFilename}.mp3"));
+        protected EffectPlayer(UxContext uxContext, string audioFilename) =>
+            AudioChunk = uxContext.GetAudioChunk($"{audioFilename}.mp3");
 
         public abstract void Play();
 
@@ -33,9 +33,6 @@ namespace Rogueskiv.Ux.EffectPlayers
         }
 
         protected virtual void Dispose(bool cleanManagedResources)
-        {
-            if (cleanManagedResources)
-                SDL_mixer.Mix_FreeChunk(AudioChunk);
-        }
+        { }
     }
 }

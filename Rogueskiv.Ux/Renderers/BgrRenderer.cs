@@ -1,5 +1,4 @@
-﻿using SDL2;
-using Seedwork.Crosscutting;
+﻿using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
 using System;
@@ -14,10 +13,10 @@ namespace Rogueskiv.Ux.Renderers
         private readonly IntPtr Texture;
         private readonly Size TextureSize;
 
-        public BgrRenderer(UxContext uxContext, string texturePath, Size textureSize)
+        public BgrRenderer(UxContext uxContext, Size textureSize)
         {
             UxContext = uxContext;
-            Texture = SDL_image.IMG_LoadTexture(uxContext.WRenderer, texturePath);
+            Texture = uxContext.GetTexture("bgr.png");
             TextureSize = textureSize;
         }
 
@@ -63,9 +62,6 @@ namespace Rogueskiv.Ux.Renderers
         }
 
         protected virtual void Dispose(bool cleanManagedResources)
-        {
-            if (cleanManagedResources)
-                SDL_DestroyTexture(Texture);
-        }
+        { }
     }
 }

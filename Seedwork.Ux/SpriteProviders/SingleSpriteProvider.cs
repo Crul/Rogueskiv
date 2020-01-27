@@ -1,5 +1,4 @@
-﻿using SDL2;
-using Seedwork.Core.Components;
+﻿using Seedwork.Core.Components;
 using System;
 using System.Drawing;
 using static SDL2.SDL;
@@ -13,28 +12,20 @@ namespace Seedwork.Ux.SpriteProviders
         protected IntPtr Texture { get; }
         protected SDL_Rect TextureRect { get; }
 
-        private readonly bool ShouldDestroyTexture;
-
         public SingleSpriteProvider(
             UxContext uxContext,
-            string texturePath,
+            string imageFile,
             SDL_Rect? textureRect = null,
             (int width, int height)? outputSize = null
-        ) : this(textureRect, outputSize)
-        {
-            Texture = SDL_image.IMG_LoadTexture(uxContext.WRenderer, texturePath);
-            ShouldDestroyTexture = true;
-        }
+        ) : this(textureRect, outputSize) =>
+            Texture = uxContext.GetTexture(imageFile);
 
         public SingleSpriteProvider(
             IntPtr texture,
             SDL_Rect? textureRect = null,
             (int width, int height)? outputSize = null
-        ) : this(textureRect, outputSize)
-        {
+        ) : this(textureRect, outputSize) =>
             Texture = texture;
-            ShouldDestroyTexture = false;
-        }
 
         private SingleSpriteProvider(
             SDL_Rect? textureRect = null,
@@ -57,11 +48,5 @@ namespace Seedwork.Ux.SpriteProviders
 
         public override SDL_Rect GetOutputRect(T comp, Point screenPosition)
             => GetOutputRect(screenPosition, OutputSize);
-
-        protected override void Dispose(bool cleanManagedResources)
-        {
-            if (cleanManagedResources && ShouldDestroyTexture)
-                SDL_DestroyTexture(Texture);
-        }
     }
 }

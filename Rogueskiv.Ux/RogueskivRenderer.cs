@@ -11,9 +11,7 @@ using Seedwork.Ux;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using static SDL2.SDL;
 
 namespace Rogueskiv.Ux
 {
@@ -24,7 +22,6 @@ namespace Rogueskiv.Ux
         private readonly RogueskivGame RogueskivGame;
         private readonly IRogueskivUxConfig UxConfig;
         private readonly IPositionComp PlayerPositionComp;
-        private readonly IntPtr Font;
         private readonly IntPtr BoardTexture;
         private readonly PlayerMovementEffectPlayer PlayerMovementEffectPlayer;
 
@@ -42,13 +39,10 @@ namespace Rogueskiv.Ux
             UxConfig = uxConfig;
             PlayerPositionComp = game.Entities.GetSingleComponent<PlayerComp, CurrentPositionComp>();
 
-            Font = SDL_ttf.TTF_OpenFont(uxConfig.FontFile, FONT_SIZE);
-            BoardTexture = SDL_image.IMG_LoadTexture(
-                uxContext.WRenderer,
-                Path.Combine("imgs", "board.png")
-            );
+            var font = uxContext.GetFont(uxConfig.FontFile, FONT_SIZE);
+            BoardTexture = uxContext.GetTexture("board.png");
 
-            var bgrRenderer = new BgrRenderer(uxContext, Path.Combine("imgs", "bgr.png"), new Size(1920, 1440));
+            var bgrRenderer = new BgrRenderer(uxContext, new Size(1920, 1440));
             Renderers.Add(bgrRenderer);
             Renderers.Add(new BoardRenderer(uxContext, game, BoardTexture));
 
@@ -63,24 +57,26 @@ namespace Rogueskiv.Ux
             CompRenderers[typeof(TimerComp)] = new GameInfoRenderer(
                 uxContext,
                 gameContext,
-                Font,
+                font,
                 game.Floor,
                 inGameTimeVisible: uxConfig.InGameTimeVisible,
                 realTimeVisible: uxConfig.RealTimeVisible
             );
-            CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, Font);
+            CompRenderers[typeof(PopUpComp)] = new PopUpRenderer(uxContext, game, font);
 
-            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(game);
-            EffectPlayers.Add(new BounceEffectPlayer(game));
-            EffectPlayers.Add(new TorchPickedEffectPlayer(game));
-            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(game));
-            EffectPlayers.Add(new FoodPickedEffectPlayer(game));
-            EffectPlayers.Add(new WinEffectPlayer(game));
-            EffectPlayers.Add(new EnemyCollidedEffectPlayer(game));
-            EffectPlayers.Add(new StairsUpEffectPlayer(game));
-            EffectPlayers.Add(new StairsDownEffectPlayer(game));
-            EffectPlayers.Add(new DeathEffectPlayer(game));
+            PlayerMovementEffectPlayer = new PlayerMovementEffectPlayer(uxContext, game);
+            EffectPlayers.Add(new BounceEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new TorchPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new MapRevealerPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new FoodPickedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new WinEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new EnemyCollidedEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new StairsUpEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new StairsDownEffectPlayer(uxContext, game));
+            EffectPlayers.Add(new DeathEffectPlayer(uxContext, game));
         }
+
+        public override void Stop() => PlayerMovementEffectPlayer.Stop();
 
         public override void Reset() =>
             PlayerRenderer.SetUxCenter(UxContext, PlayerPositionComp.Position);
@@ -116,8 +112,6 @@ namespace Rogueskiv.Ux
             base.Dispose(cleanManagedResources);
             if (cleanManagedResources)
             {
-                SDL_ttf.TTF_CloseFont(Font);
-                SDL_DestroyTexture(BoardTexture);
                 EffectPlayers.ForEach(ep => ep.Dispose());
                 PlayerMovementEffectPlayer.Dispose();
             }

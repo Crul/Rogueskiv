@@ -3,7 +3,6 @@ using Seedwork.Core;
 using Seedwork.Core.Entities;
 using Seedwork.Ux;
 using Seedwork.Ux.SpriteProviders;
-using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.Renderers
@@ -16,7 +15,7 @@ namespace Rogueskiv.Ux.Renderers
                 game,
                 new SingleSpriteProvider<CurrentPositionComp>(
                     uxContext,
-                    Path.Combine("imgs", "enemy.png"),
+                    "enemy.png",
                     new SDL_Rect { x = 0, y = 0, w = 16, h = 16 }
                 )
             )

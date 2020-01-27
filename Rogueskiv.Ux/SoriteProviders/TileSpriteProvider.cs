@@ -11,10 +11,10 @@ namespace Rogueskiv.Ux.SoriteProviders
     {
         private readonly Size TextureSize;
 
-        public TileSpriteProvider(UxContext uxContext, string texturePath, Size textureSize)
+        public TileSpriteProvider(UxContext uxContext, string imagePath, Size textureSize)
             : base(
                   uxContext,
-                  texturePath,
+                  imagePath,
                   outputSize: (BoardComp.TILE_SIZE, BoardComp.TILE_SIZE)
             ) =>
             TextureSize = textureSize;

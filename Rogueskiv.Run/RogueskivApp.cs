@@ -6,6 +6,7 @@ using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rogueskiv.Run
 {
@@ -23,7 +24,7 @@ namespace Rogueskiv.Run
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
             AppConfig = appConfig;
-            UxContext = new UxContext("Rogueskiv", AppConfig);
+            UxContext = new UxContext("Rogueskiv", AppConfig, imagesPath: "imgs", audiosPath: "audio", fontsPath: "fonts");
             GameContext = new GameContext(appConfig.MaxGameStepsWithoutRender);
             LoadingScreenRenderer = new LoadingScreenRenderer(UxContext, AppConfig.FontFile);
         }
@@ -67,11 +68,16 @@ namespace Rogueskiv.Run
             );
         }
 
-        private GameEngine<IEntity> GetFloorUp(IGameResult<IEntity> result) =>
-            GetRestartFloorEngine(--CurrentFloor, result);
+        private GameEngine<IEntity> GetFloorUp(IGameResult<IEntity> result)
+        {
+            StopCurrentFloorEngine();
+
+            return GetRestartFloorEngine(--CurrentFloor, result);
+        }
 
         private GameEngine<IEntity> GetFloorDown(IGameResult<IEntity> result)
         {
+            StopCurrentFloorEngine();
             if (CurrentFloor < FloorEngines.Count)
                 return GetRestartFloorEngine(++CurrentFloor, result);
 
@@ -80,10 +86,10 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> GetRestartFloorEngine(int floor, IGameResult<IEntity> result)
         {
-            var donwFloorEngine = FloorEngines[floor - 1];
-            donwFloorEngine.Game.Restart(result);
+            var floorEngine = FloorEngines[floor - 1];
+            floorEngine.Game.Restart(result);
 
-            return donwFloorEngine;
+            return floorEngine;
         }
 
         private GameEngine<IEntity> CreateGameStage(
@@ -113,6 +119,7 @@ namespace Rogueskiv.Run
 
         private GameEngine<IEntity> CreateMenuStage()
         {
+            StopCurrentFloorEngine();
             CurrentFloor = 1;
             FloorEngines.ForEach(gameEngine => gameEngine.Dispose());
             FloorEngines.Clear();
@@ -125,6 +132,12 @@ namespace Rogueskiv.Run
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
 
             return engine;
+        }
+
+        private void StopCurrentFloorEngine()
+        {
+            if (FloorEngines.Any())
+                FloorEngines[CurrentFloor - 1].Stop();
         }
 
         public void Dispose()

@@ -1,6 +1,7 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.GameEvents;
 using SDL2;
+using Seedwork.Ux;
 using System.Linq;
 
 namespace Rogueskiv.Ux.EffectPlayers
@@ -10,8 +11,8 @@ namespace Rogueskiv.Ux.EffectPlayers
     {
         private readonly RogueskivGame Game;
 
-        protected EventEffectPlayer(RogueskivGame game, string audioFilename)
-            : base(audioFilename) =>
+        protected EventEffectPlayer(UxContext uxContext, RogueskivGame game, string audioFilename)
+            : base(uxContext, audioFilename) =>
             Game = game;
 
         protected virtual int GetVolume(T gameEvent) => SDL_mixer.MIX_MAX_VOLUME;

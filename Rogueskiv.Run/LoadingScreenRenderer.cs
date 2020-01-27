@@ -1,8 +1,6 @@
-﻿using SDL2;
-using Seedwork.Crosscutting;
+﻿using Seedwork.Crosscutting;
 using Seedwork.Ux;
 using Seedwork.Ux.Renderers;
-using System;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Run
@@ -14,23 +12,13 @@ namespace Rogueskiv.Run
         private const int LOADING_FONT_SIZE = 24;
 
         public LoadingScreenRenderer(UxContext uxContext, string fontPath)
-            : base(uxContext, GetFont(fontPath)) { }
+            : base(uxContext, uxContext.GetFont(fontPath, LOADING_FONT_SIZE)) { }
 
         public void Render()
         {
             SDL_RenderClear(UxContext.WRenderer);
             Render(LoadingText, LoadingTextColor, UxContext.ScreenSize.Divide(2).ToPoint(), TextAlign.CENTER);
             SDL_RenderPresent(UxContext.WRenderer);
-        }
-
-        private static IntPtr GetFont(string fontPath) =>
-            SDL_ttf.TTF_OpenFont(fontPath, LOADING_FONT_SIZE);
-
-        protected override void Dispose(bool cleanManagedResources)
-        {
-            base.Dispose(cleanManagedResources);
-            if (cleanManagedResources)
-                SDL_ttf.TTF_CloseFont(Font);
         }
     }
 }

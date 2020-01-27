@@ -1,12 +1,14 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Core.GameEvents;
+using Seedwork.Ux;
 using System;
 
 namespace Rogueskiv.Ux.EffectPlayers
 {
     class BounceEffectPlayer : EventEffectPlayer<PlayerHitWallEvent>
     {
-        public BounceEffectPlayer(RogueskivGame game) : base(game, "rock_hit") { }
+        public BounceEffectPlayer(UxContext uxContext, RogueskivGame game)
+            : base(uxContext, game, "rock_hit") { }
 
         protected override int GetVolume(PlayerHitWallEvent playerHitWallEvent)
         {

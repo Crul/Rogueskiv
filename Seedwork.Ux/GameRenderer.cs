@@ -27,6 +27,8 @@ namespace Seedwork.Ux
             CompRenderers = new Dictionary<Type, ICompRenderer>();
         }
 
+        public virtual void Stop() { }
+
         public virtual void Reset() { }
 
         public void Render(float interpolation)

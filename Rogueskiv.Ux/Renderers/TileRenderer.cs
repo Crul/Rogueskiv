@@ -3,7 +3,6 @@ using Rogueskiv.Ux.SoriteProviders;
 using Seedwork.Core;
 using Seedwork.Ux;
 using System.Drawing;
-using System.IO;
 
 namespace Rogueskiv.Ux.Renderers
 {
@@ -15,7 +14,7 @@ namespace Rogueskiv.Ux.Renderers
                 game,
                 new TileSpriteProvider(
                     uxContext,
-                    Path.Combine("imgs", "floor.png"),
+                    "floor.png",
                     new Size(1920, 1440)
                 )
             )

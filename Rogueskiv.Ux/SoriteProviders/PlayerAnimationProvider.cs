@@ -1,5 +1,4 @@
 ﻿using Rogueskiv.Core.Components.Position;
-using SDL2;
 using Seedwork.Core.Entities;
 using Seedwork.Crosscutting;
 using Seedwork.Ux;
@@ -7,7 +6,6 @@ using Seedwork.Ux.SpriteProviders;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using static SDL2.SDL;
 
 namespace Rogueskiv.Ux.SoriteProviders
@@ -24,10 +22,7 @@ namespace Rogueskiv.Ux.SoriteProviders
 
         public PlayerAnimationProvider(UxContext uxContext, int playerRadius)
         {
-            Texture = SDL_image.IMG_LoadTexture(
-                uxContext.WRenderer,
-                Path.Combine("imgs", "player-texture.png")
-            );
+            Texture = uxContext.GetTexture("player-texture.png");
             var playerDiameter = playerRadius * 2;
             MaskTexture = Masks.GetCircleMask(playerRadius);
             TextureRect = new SDL_Rect { x = 0, y = 0, w = playerDiameter, h = playerDiameter };
@@ -94,11 +89,5 @@ namespace Rogueskiv.Ux.SoriteProviders
 
         public override SDL_Rect GetOutputRect(CurrentPositionComp comp, Point position) =>
             OutputRect;
-
-        protected override void Dispose(bool cleanManagedResources)
-        {
-            base.Dispose(cleanManagedResources);
-            SDL_DestroyTexture(Texture);
-        }
     }
 }
