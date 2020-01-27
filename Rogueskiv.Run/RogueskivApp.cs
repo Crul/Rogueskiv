@@ -177,20 +177,16 @@ namespace Rogueskiv.Run
             return data
                   .AsEnumerable()
                   .Reverse()
-                  .Select(gameStat =>
-                  {
-                      var dateTime = new DateTime(gameStat.Timestamp);
-                      return new List<string>
-                      {
-                        gameStat.DiedOnFloor.HasValue ? "DEAD" : "WIN",
-                        $"{dateTime.ToString("dd/MM")} {dateTime.ToShortTimeString()}",
+                  .Select(gameStat => new List<string>
+                    {
+                        gameStat.GetResult(),
+                        gameStat.GetDateTime(),
                         RogueskivMenu.CleanGameModeText(gameStat.GameMode),
                         gameStat.Floors.ToString(),
                         gameStat.DiedOnFloor.ToString(),
                         gameStat.FinalHealth.ToString(),
-                        new TimeSpan(gameStat.RealTime).ToString("g"),
-                        new TimeSpan(gameStat.InGameTime).ToString("g"),
-                      };
+                        gameStat.GetRealTimeFormatted(),
+                        gameStat.GetInGameTimeFormatted(),
                   })
                   .ToList();
         }

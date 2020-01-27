@@ -67,12 +67,10 @@ namespace Rogueskiv.Ux.Renderers
             if (resultCode == RogueskivGameResults.WinResult.ResultCode)
                 return $"YOU WIN!"
                     + $"{Environment.NewLine}"
-                    + $"{Environment.NewLine}I know it's not the most epic win screen,"
-                    + $"{Environment.NewLine}but you know, this is work in progress."
+                    + $"{Environment.NewLine}In Game Time: {Game.GameStats.GetInGameTimeFormatted()}"
+                    + $"{Environment.NewLine}Real Time: {Game.GameStats.GetRealTimeFormatted()}"
                     + $"{Environment.NewLine}"
-                    + $"{Environment.NewLine}Anyway, YOU DID IT!!! ^_^"
-                    + $"{Environment.NewLine}"
-                    + $"{Environment.NewLine}Press Q to go to the menu."
+                    + $"{Environment.NewLine}Press Q to go to the menu or ESC to continue playing."
                     + $"{Environment.NewLine}"
                     + $"{Environment.NewLine}Seed: {Game.GameSeed}";
 
