@@ -12,6 +12,12 @@ Game modes are defined in `%APPDATA%/Rogueskiv/gameModes/*.yaml`.
 
 See `data/README.md` for more info.
 
+## Linux, iOS amd 32 bits version
+
+Although in theory the code is cross-platform, I have only been able to make it work on Windows. I tried it on Ubuntu (see dev / ubuntu branch) and, although it runs, the graphics are rendered incorrectly and closes when trying to play a sound. As for iOS, I don't have an environment to test with.
+
+The 32 bits version is on the technical debt list.
+
 ## Environment Setup
 
 Download and extract into `Seedwork.Ux/dlls/`:
