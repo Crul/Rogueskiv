@@ -1,4 +1,5 @@
 ﻿using Seedwork.Crosscutting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,8 @@ namespace Rogueskiv.Run
 {
     class Program
     {
-        private const string CONFIG_FILES_PATH = "data";
+        private const string DATA_FILES_PATH = "data";
+        private const string APP_DATA_FOLDER = "Rogueskiv";
         private const string GAME_MODE_FILES_PATH = "gameModes";
         private const string CONFIG_FILE_NAME = "config";
         private const string GAME_STATS_FILE_NAME = "stats";
@@ -21,10 +23,16 @@ namespace Rogueskiv.Run
 
         private static RogueskivAppConfig GetRogueskivAppConfig()
         {
-            var rogueskivConfig = YamlParser.ParseFile<RogueskivAppConfig>(CONFIG_FILES_PATH, CONFIG_FILE_NAME);
-            rogueskivConfig.GlobalConfigFilePath = Path.Combine(CONFIG_FILES_PATH, $"{CONFIG_FILE_NAME}.yaml");
-            rogueskivConfig.GameStatsFilePath = Path.Combine(CONFIG_FILES_PATH, $"{GAME_STATS_FILE_NAME}.yaml");
-            rogueskivConfig.GameModeFilesPath = Path.Combine(CONFIG_FILES_PATH, GAME_MODE_FILES_PATH);
+            var dataFilePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                APP_DATA_FOLDER
+            );
+            CheckApplicationDataFolder(dataFilePath);
+
+            var rogueskivConfig = YamlParser.ParseFile<RogueskivAppConfig>(dataFilePath, CONFIG_FILE_NAME);
+            rogueskivConfig.GlobalConfigFilePath = Path.Combine(dataFilePath, $"{CONFIG_FILE_NAME}.yaml");
+            rogueskivConfig.GameStatsFilePath = Path.Combine(dataFilePath, $"{GAME_STATS_FILE_NAME}.yaml");
+            rogueskivConfig.GameModeFilesPath = Path.Combine(dataFilePath, GAME_MODE_FILES_PATH);
             rogueskivConfig.GameModes = GetGameModes(rogueskivConfig);
             rogueskivConfig.CheckGameModeIndexBounds();
 
@@ -35,5 +43,14 @@ namespace Rogueskiv.Run
             => (new DirectoryInfo(rogueskivConfig.GameModeFilesPath)).GetFiles("*.yaml")
                 .Select(fileInfo => Path.GetFileNameWithoutExtension(fileInfo.Name))
                 .ToList();
+
+        private static void CheckApplicationDataFolder(string dataFilePath)
+        {
+            if (Directory.Exists(dataFilePath))
+                return;
+
+            Directory.CreateDirectory(dataFilePath);
+            FileCopy.DirectoryCopy(DATA_FILES_PATH, dataFilePath, copySubDirs: true);
+        }
     }
 }

@@ -6,9 +6,9 @@ Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia
 
 ## Configuration
 
-Global options can be changed in `data/config.yaml`.
+Global options can be changed in `%APPDATA%/Rogueskiv/config.yaml`.
 
-Game modes are defined in `data/gameModes/*.yaml`.
+Game modes are defined in `%APPDATA%/Rogueskiv/gameModes/*.yaml`.
 
 See `data/README.md` for more info.
 
