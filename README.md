@@ -10,6 +10,8 @@ Global options can be changed in `data/config.yaml`.
 
 Game modes are defined in `data/gameModes/*.yaml`.
 
+See `data/README.md` for more info.
+
 ## Environment Setup
 
 Download and extract into `Seedwork.Ux/dlls/`:
