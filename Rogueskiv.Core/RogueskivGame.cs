@@ -151,7 +151,7 @@ namespace Rogueskiv.Core
 
         protected override void UpdateSystems()
         {
-            if (Result == RogueskivGameResults.DeathResult)
+            if (Result?.ResultCode == RogueskivGameResults.DeathResult.ResultCode)
                 Quit = true;
             else
                 base.UpdateSystems();
@@ -160,7 +160,11 @@ namespace Rogueskiv.Core
         public override void EndGame(IGameResult<EntityList> gameResult, bool pauseBeforeQuit = false)
         {
             var timerEntity = Entities.GetWithComponent<TimerComp>().Single();
-            if (gameResult == RogueskivGameResults.DeathResult || gameResult == RogueskivGameResults.WinResult)
+            var isEndGameResult = (
+                gameResult?.ResultCode == RogueskivGameResults.DeathResult.ResultCode
+                || gameResult?.ResultCode == RogueskivGameResults.WinResult.ResultCode
+            );
+            if (isEndGameResult)
                 OnGameEnd(GetGameStats(gameResult, timerEntity.GetComponent<TimerComp>()));
 
             gameResult.Data.Add(timerEntity.Id, timerEntity);
@@ -179,7 +183,7 @@ namespace Rogueskiv.Core
             return new RogueskivGameStats()
             {
                 Timestamp = timerComp.RealTimeStart.Value.Ticks,
-                DiedOnFloor = gameResult == RogueskivGameResults.DeathResult ? (int?)Floor : null,
+                DiedOnFloor = gameResult?.ResultCode == RogueskivGameResults.DeathResult.ResultCode ? (int?)Floor : null,
                 FinalHealth = Entities.GetSingleComponent<HealthComp>().Health,
                 RealTime = timerComp.GetRealTime().Ticks,
                 InGameTime = TICKS_IN_A_SECOND * timerComp.InGameTime / GameConfig.GameFPS,
