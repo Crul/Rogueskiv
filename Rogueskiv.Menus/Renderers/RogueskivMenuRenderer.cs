@@ -23,6 +23,7 @@ namespace Rogueskiv.Menus.Renderers
             Renderers.Add(new ControlsInfoRenderer(uxContext, game, smallFont));
             Renderers.Add(new CustomSeedInputRenderer(uxContext, game, smallFont));
             CompRenderers[typeof(MenuOptionComp)] = new MenuOptionRenderer(uxContext, game, menuFont);
+            CompRenderers[typeof(StatsComp)] = new StatsRenderer(uxContext, smallFont);
         }
 
         protected override void RenderGame(float interpolation)

@@ -1,5 +1,6 @@
 ﻿using Rogueskiv.Menus.MenuOptions;
 using Seedwork.Core;
+using Seedwork.Core.Components;
 using Seedwork.Engine;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,19 @@ namespace Rogueskiv.Menus
     {
         private readonly MenuSys MenuSystem;
         public string CustomSeedText { get => MenuSystem.CustomSeedText; }
-        public bool AskingForCustomSeed { get => MenuSystem.AskingForCustomSeed; }
+        public bool IsMainMenuView { get => MenuSystem.IsMainMenuView; }
+        public bool IsCustomSeedInput { get => MenuSystem.IsCustomSeedInput; }
 
         public RogueskivMenu(
             IRogueskivGameParams gameParams,
-            GameStageCode stageCode
+            GameStageCode stageCode,
+            Func<List<List<string>>> loadStatsFn
         )
             : base(
+                entitiesComponents: new List<List<IComponent>>
+                {
+                    new List<IComponent>{ new StatsComp(loadStatsFn) },
+                },
                 quitControl: (int)Menus.Controls.NONE,
                 stageCode: stageCode
             )
@@ -65,6 +72,15 @@ namespace Rogueskiv.Menus
                 }
             ));
 
+            AddEntity(new MenuOptionComp(
+                counter++,
+                () => "Stats",
+                new Dictionary<Controls, Action>
+                {
+                    [Menus.Controls.ENTER] = () => MenuSystem.ShowStats()
+                }
+            ));
+
             AddEntity(new MenuOptionComp(counter++, () => string.Empty));
 
             AddEntity(new MenuOptionComp(
@@ -103,7 +119,7 @@ namespace Rogueskiv.Menus
                 maxIndex: gameParams.GameModesCount - 1
             );
 
-        private static string CleanGameModeText(string gameMode)
+        public static string CleanGameModeText(string gameMode)
             => gameMode.Substring(gameMode.IndexOf("-") + 1);
 
         private static string GetNumericOptionText(string title, string text, int index, int minIndex, int maxIndex)

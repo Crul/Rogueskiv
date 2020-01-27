@@ -7,7 +7,7 @@ namespace Rogueskiv.Core.Components
     {
         public bool HasStarted { get; private set; }
         public DateTime? RealTimeStart { get; private set; }
-        public int InGameTime { get; set; }
+        public long InGameTime { get; set; }
 
         public TimerComp(TimerComp previousTimer)
         {

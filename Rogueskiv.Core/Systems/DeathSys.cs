@@ -30,15 +30,9 @@ namespace Rogueskiv.Core.Systems
             if (PlayerHealthComp.Health > 0)
                 return;
 
-            if (Game.Result?.ResultCode == RogueskivGameResults.DeathResult.ResultCode)
-                Game.EndGame(Game.Result);
-
-            else
-            {
-                LastPositionComp.Position = CurrentPositionComp.Position;
-                Game.GameEvents.Add(new DeathEvent());
-                Game.EndGame(RogueskivGameResults.DeathResult, pauseBeforeQuit: true);
-            }
+            LastPositionComp.Position = CurrentPositionComp.Position;
+            Game.GameEvents.Add(new DeathEvent());
+            Game.EndGame(RogueskivGameResults.DeathResult, pauseBeforeQuit: true);
         }
     }
 }

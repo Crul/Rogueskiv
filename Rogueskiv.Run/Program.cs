@@ -7,9 +7,10 @@ namespace Rogueskiv.Run
 {
     class Program
     {
-        private const string CONFIG_FILES_PATH = "config";
+        private const string CONFIG_FILES_PATH = "data";
         private const string GAME_MODE_FILES_PATH = "gameModes";
-        private const string CONFIG_FILE_NAME = "global";
+        private const string CONFIG_FILE_NAME = "config";
+        private const string GAME_STATS_FILE_NAME = "stats";
 
         static void Main()
         {
@@ -22,6 +23,7 @@ namespace Rogueskiv.Run
         {
             var rogueskivConfig = YamlParser.ParseFile<RogueskivAppConfig>(CONFIG_FILES_PATH, CONFIG_FILE_NAME);
             rogueskivConfig.GlobalConfigFilePath = Path.Combine(CONFIG_FILES_PATH, $"{CONFIG_FILE_NAME}.yaml");
+            rogueskivConfig.GameStatsFilePath = Path.Combine(CONFIG_FILES_PATH, $"{GAME_STATS_FILE_NAME}.yaml");
             rogueskivConfig.GameModeFilesPath = Path.Combine(CONFIG_FILES_PATH, GAME_MODE_FILES_PATH);
             rogueskivConfig.GameModes = GetGameModes(rogueskivConfig);
             rogueskivConfig.CheckGameModeIndexBounds();

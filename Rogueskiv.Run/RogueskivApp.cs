@@ -124,7 +124,7 @@ namespace Rogueskiv.Run
                 UxContext.PlayMusic(gameConfig.GameMusicFilePath, gameConfig.GameMusicVolume);
 
             CurrentFloor = FloorEngines.Count + 1;
-            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result, OnGameEnd);
             var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig, gameConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
@@ -132,6 +132,15 @@ namespace Rogueskiv.Run
             FloorEngines.Add(engine);
 
             return engine;
+        }
+
+        private void OnGameEnd(RogueskivGameStats gameStats)
+        {
+            gameStats.GameMode = AppConfig.GameMode;
+            gameStats.Floors = AppConfig.FloorCount;
+
+            var yamlData = YamlParser.Serialize(new List<RogueskivGameStats> { gameStats });
+            File.AppendAllText(AppConfig.GameStatsFilePath, yamlData);
         }
 
         private GameEngine<IEntity> CreateMenuStage()
@@ -143,7 +152,7 @@ namespace Rogueskiv.Run
             UxContext.PlayMusic(AppConfig.MenuMusicFilePath, AppConfig.MenuMusicVolume);
 
             var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
-            var game = new RogueskivMenu(AppConfig, GameStageCodes.Menu);
+            var game = new RogueskivMenu(AppConfig, GameStageCodes.Menu, LoadStats);
             var renderer = new RogueskivMenuRenderer(UxContext, game, AppConfig.FontFile);
             var userInput = new RogueskivMenuInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
@@ -155,6 +164,35 @@ namespace Rogueskiv.Run
         {
             if (FloorEngines.Any())
                 CurrentFloorEngine.Stop();
+        }
+
+        private List<List<string>> LoadStats()
+        {
+            var data = YamlParser
+                    .ParseFile<List<RogueskivGameStats>>(AppConfig.GameStatsFilePath);
+
+            if (data == null)
+                return new List<List<string>>();
+
+            return data
+                  .AsEnumerable()
+                  .Reverse()
+                  .Select(gameStat =>
+                  {
+                      var dateTime = new DateTime(gameStat.Timestamp);
+                      return new List<string>
+                      {
+                        gameStat.DiedOnFloor.HasValue ? "DEAD" : "WIN",
+                        $"{dateTime.ToString("dd/MM")} {dateTime.ToShortTimeString()}",
+                        RogueskivMenu.CleanGameModeText(gameStat.GameMode),
+                        gameStat.Floors.ToString(),
+                        gameStat.DiedOnFloor.ToString(),
+                        gameStat.FinalHealth.ToString(),
+                        new TimeSpan(gameStat.RealTime).ToString("g"),
+                        new TimeSpan(gameStat.InGameTime).ToString("g"),
+                      };
+                  })
+                  .ToList();
         }
 
         private void SaveGlobalConfig()

@@ -16,6 +16,8 @@ namespace Rogueskiv.Core
 {
     public class RogueskivGame : Game
     {
+        private const long TICKS_IN_A_SECOND = 10000000;
+
         public int Floor { get; }
         public int GameSeed { get => GameConfig.GameSeed; }
 
@@ -25,12 +27,14 @@ namespace Rogueskiv.Core
         private readonly BoardComp BoardComp;
         private readonly TimerComp TimerComp;
         private readonly IRogueskivGameConfig GameConfig;
+        private readonly Action<RogueskivGameStats> OnGameEnd;
 
         public RogueskivGame(
             GameStageCode stageCode,
             IRogueskivGameConfig gameConfig,
             int floor,
             IGameResult<IEntity> previousFloorResult,
+            Action<RogueskivGameStats> onGameEnd,
             string boardData = default
         )
             : base(
@@ -70,6 +74,7 @@ namespace Rogueskiv.Core
             GameEvents = new List<IGameEvent>();
             BoardComp = Entities.GetSingleComponent<BoardComp>();
             TimerComp = Entities.GetSingleComponent<TimerComp>();
+            OnGameEnd = onGameEnd;
         }
 
         private static string GetStartText(int floor) =>
@@ -144,9 +149,21 @@ namespace Rogueskiv.Core
             base.Update();
         }
 
+        protected override void UpdateSystems()
+        {
+            if (Result == RogueskivGameResults.DeathResult)
+                Quit = true;
+            else
+                base.UpdateSystems();
+        }
+
         public override void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
         {
-            gameResult.Data.Add(Entities.GetWithComponent<TimerComp>().Single());
+            var timerEntity = Entities.GetWithComponent<TimerComp>().Single();
+            if (gameResult == RogueskivGameResults.DeathResult || gameResult == RogueskivGameResults.WinResult)
+                OnGameEnd(GetGameStats(gameResult, timerEntity.GetComponent<TimerComp>()));
+
+            gameResult.Data.Add(timerEntity);
             base.EndGame(gameResult, pauseBeforeQuit);
         }
 
@@ -155,6 +172,18 @@ namespace Rogueskiv.Core
             var currentPositionComp = Entities[id].GetComponent<CurrentPositionComp>();
             BoardComp.RemoveEntity(id, currentPositionComp);
             base.RemoveEntity(id);
+        }
+
+        private RogueskivGameStats GetGameStats(IGameResult<IEntity> gameResult, TimerComp timerComp)
+        {
+            return new RogueskivGameStats()
+            {
+                Timestamp = timerComp.RealTimeStart.Value.Ticks,
+                DiedOnFloor = gameResult == RogueskivGameResults.DeathResult ? (int?)Floor : null,
+                FinalHealth = Entities.GetSingleComponent<HealthComp>().Health,
+                RealTime = timerComp.GetRealTime().Ticks,
+                InGameTime = TICKS_IN_A_SECOND * timerComp.InGameTime / GameConfig.GameFPS,
+            };
         }
     }
 }
