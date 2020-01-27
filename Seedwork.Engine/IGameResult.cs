@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace Seedwork.Engine
+﻿namespace Seedwork.Engine
 {
     public interface IGameResult<T>
     {
         GameResultCode ResultCode { get; }
-        List<T> Data { get; }
+        T Data { get; }
     }
 }

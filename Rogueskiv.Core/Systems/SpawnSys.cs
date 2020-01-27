@@ -18,7 +18,7 @@ namespace Rogueskiv.Core.Systems
     {
         private readonly float FloorFactor; // TODO reusable SpawnSys for all levels (remove data from systems)
         private readonly ISpawnConfig SpawnConfig;
-        private readonly IGameResult<IEntity> PreviousFloorResult;
+        private readonly IGameResult<EntityList> PreviousFloorResult;
 
         public static List<Point> NeighbourTilePositions { get; } = new List<Point>
         {
@@ -30,7 +30,7 @@ namespace Rogueskiv.Core.Systems
         public SpawnSys(
             int floor,
             ISpawnConfig spawnConfig,
-            IGameResult<IEntity> previousFloorResult
+            IGameResult<EntityList> previousFloorResult
         )
         {
             FloorFactor = spawnConfig.FloorFactor(floor);

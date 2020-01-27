@@ -8,13 +8,13 @@ using System.Linq;
 
 namespace Seedwork.Core
 {
-    public class Game : IGame<IEntity>, IControlable, IRenderizable
+    public class Game : IGame<EntityList>, IControlable, IRenderizable
     {
         public EntityList Entities { get; }
         private List<ISystem> Systems { get; }
         public List<int> Controls { get; set; }
         public GameStageCode StageCode { get; protected set; } = default;
-        public IGameResult<IEntity> Result { get; protected set; }
+        public IGameResult<EntityList> Result { get; protected set; }
 
         public bool Pause { get; set; }
         public bool Quit { get; protected set; }
@@ -54,13 +54,13 @@ namespace Seedwork.Core
         protected virtual void UpdateSystems()
             => Systems.ToList().ForEach(s => s.Update(Entities, Controls));
 
-        public virtual void Restart(IGameResult<IEntity> result)
+        public virtual void Restart(IGameResult<EntityList> result)
         {
             Quit = false;
             Result = default;
         }
 
-        public virtual void EndGame(IGameResult<IEntity> gameResult, bool pauseBeforeQuit = false)
+        public virtual void EndGame(IGameResult<EntityList> gameResult, bool pauseBeforeQuit = false)
         {
             Result = gameResult;
             if (pauseBeforeQuit)
