@@ -13,81 +13,49 @@
 
   <ItemGroup>
     <!-- https://stackoverflow.com/a/56989245 -->
-    <ContentWithTargetPath Include="dlls\SDL2.dll">
+    <ContentWithTargetPath Include="lib\libSDL2-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SDL2.dll</TargetPath>
+      <TargetPath>libSDL2-2.0.so.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\SDL2_image.dll">
+    <ContentWithTargetPath Include="libSDL2-2.0.so.0.8.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SDL2_image.dll</TargetPath>
+      <TargetPath>libSDL2-2.0.so.0.8.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\SDL2_mixer.dll">
+    <ContentWithTargetPath Include="libSDL2_image-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SDL2_mixer.dll</TargetPath>
+      <TargetPath>libSDL2_image-2.0.so.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\SDL2_ttf.dll">
+    <ContentWithTargetPath Include="libSDL2_image-2.0.so.0.2.1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SDL2_ttf.dll</TargetPath>
+      <TargetPath>libSDL2_image-2.0.so.0.2.1</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libFLAC-8.dll">
+    <ContentWithTargetPath Include="libSDL2_mixer-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libFLAC-8.dll</TargetPath>
+      <TargetPath>libSDL2_mixer-2.0.so.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libfreetype-6.dll">
+    <ContentWithTargetPath Include="libSDL2_mixer-2.0.so.0.2.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libfreetype-6.dll</TargetPath>
+      <TargetPath>libSDL2_mixer-2.0.so.0.2.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libjpeg-9.dll">
+    <ContentWithTargetPath Include="libSDL2_ttf-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libjpeg-9.dll</TargetPath>
+      <TargetPath>libSDL2_ttf-2.0.so.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libmodplug-1.dll">
+    <ContentWithTargetPath Include="libSDL2_ttf-2.0.so.0.14.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libmodplug-1.dll</TargetPath>
+      <TargetPath>libSDL2_ttf-2.0.so.0.14.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libmpg123-0.dll">
+    <ContentWithTargetPath Include="libgdiplus.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libmpg123-0.dll</TargetPath>
+      <TargetPath>libgdiplus.so</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libogg-0.dll">
+    <ContentWithTargetPath Include="libgdiplus.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libogg-0.dll</TargetPath>
+      <TargetPath>libgdiplus.so.0</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libopus-0.dll">
+    <ContentWithTargetPath Include="libgdiplus.so.0.0.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libopus-0.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libopusfile-0.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libopusfile-0.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libpng16-16.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libpng16-16.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libtiff-5.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libtiff-5.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libvorbis-0.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libvorbis-0.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libvorbisfile-3.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libvorbisfile-3.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libwebp-7.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwebp-7.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\libfreetype-6.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libfreetype-6.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="dlls\zlib1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>zlib1.dll</TargetPath>
+      <TargetPath>libgdiplus.so.0.0.0</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
 

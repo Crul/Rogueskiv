@@ -38,7 +38,7 @@ namespace SDL2
 		#region SDL2# Variables
 
 		/* Used by DllImport to load the native library. */
-		private const string nativeLibName = "SDL2_ttf";
+		private const string nativeLibName = "libSDL2_ttf-2.0.so.0";
 
 		#endregion
 
