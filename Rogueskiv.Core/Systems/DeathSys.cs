@@ -15,6 +15,7 @@ namespace Rogueskiv.Core.Systems
         private HealthComp PlayerHealthComp;
         private CurrentPositionComp CurrentPositionComp;
         private LastPositionComp LastPositionComp;
+        private TimerComp TimerComp;
 
         public override void Init(Game game)
         {
@@ -23,6 +24,7 @@ namespace Rogueskiv.Core.Systems
             PlayerHealthComp = playerComp.GetComponent<HealthComp>();
             CurrentPositionComp = playerComp.GetComponent<CurrentPositionComp>();
             LastPositionComp = playerComp.GetComponent<LastPositionComp>();
+            TimerComp = Game.Entities.GetSingleComponent<TimerComp>();
         }
 
         public override void Update(EntityList entities, List<int> controls)
@@ -30,6 +32,7 @@ namespace Rogueskiv.Core.Systems
             if (PlayerHealthComp.Health > 0)
                 return;
 
+            TimerComp.Stop();
             LastPositionComp.Position = CurrentPositionComp.Position;
             Game.GameEvents.Add(new DeathEvent());
             Game.EndGame(RogueskivGameResults.DeathResult, pauseBeforeQuit: true);

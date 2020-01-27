@@ -7,6 +7,7 @@ namespace Rogueskiv.Core.Components
     {
         public bool HasStarted { get; private set; }
         public DateTime? RealTimeStart { get; private set; }
+        public DateTime? RealTimeStop { get; private set; }
         public long InGameTime { get; set; }
 
         public TimerComp(TimerComp previousTimer)
@@ -17,7 +18,7 @@ namespace Rogueskiv.Core.Components
         }
 
         public TimeSpan GetRealTime() => RealTimeStart.HasValue
-            ? DateTime.Now - RealTimeStart.Value
+            ? FinalTime - RealTimeStart.Value
             : new TimeSpan();
 
         public void Start()
@@ -28,5 +29,9 @@ namespace Rogueskiv.Core.Components
             HasStarted = true;
             RealTimeStart = DateTime.Now;
         }
+
+        public void Stop() => RealTimeStop = DateTime.Now;
+
+        private DateTime FinalTime => RealTimeStop ?? DateTime.Now;
     }
 }
