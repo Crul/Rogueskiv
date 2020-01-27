@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
     <ProjectReference Include="..\Seedwork.Crosscutting\Seedwork.Crosscutting.csproj" />
   </ItemGroup>
 

@@ -792,3 +792,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>", Scope = "type", Target = "~T:SDL2.SDL.SDL_WindowEvent")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2217:Do not mark enums with FlagsAttribute", Justification = "<Pending>", Scope = "type", Target = "~T:SDL2.SDL.SDL_WindowFlags")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1712:Do not prefix enum values with type name", Justification = "<Pending>", Scope = "type", Target = "~T:SDL2.SDL.SDL_WinRT_DeviceFamily")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1401:P/Invokes should not be visible", Justification = "<Pending>", Scope = "member", Target = "~M:SDL2.SDL.SDL_memcpy(System.IntPtr,System.IntPtr,System.IntPtr)~System.IntPtr")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "<Pending>", Scope = "type", Target = "~T:SDL2.SDL.INTERNAL_vivante_wminfo")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>", Scope = "type", Target = "~T:SDL2.SDL.INTERNAL_vivante_wminfo")]
