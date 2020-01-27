@@ -125,7 +125,7 @@ namespace Rogueskiv.Core.Systems
                     SpawnConfig.PlayerMaxSpeedInGameTicks,
                     SpawnConfig.PlayerStopSpeedInGameTicks,
                     frictionFactor: SpawnConfig.PlayerFrictionFactor,
-                    bounceAmortiguationFactor: SpawnConfig.PlayerBounceAmortiguationFactor,
+                    bounceMomentumConservationFactor: SpawnConfig.PlayerBounceMomentumConservationFactor,
                     radius: SpawnConfig.PlayerRadius,
                     simpleBounce: false
                 )
@@ -209,7 +209,7 @@ namespace Rogueskiv.Core.Systems
                 new MovementComp(
                     speed: enemySpeed.Value,
                     frictionFactor: 1,
-                    bounceAmortiguationFactor: 1,
+                    bounceMomentumConservationFactor: 1,
                     radius: SpawnConfig.EnemyRadius,
                     simpleBounce: true
                 )

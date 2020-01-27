@@ -21,11 +21,11 @@ namespace Rogueskiv.Core.Components
             float maxSpeed,
             float stopSpeed,
             float frictionFactor,
-            float bounceAmortiguationFactor,
+            float bounceMomentumConservationFactor,
             int radius,
             PointF? speed = null,
             bool simpleBounce = true
-        ) : base(frictionFactor, bounceAmortiguationFactor, radius, speed, simpleBounce)
+        ) : base(frictionFactor, bounceMomentumConservationFactor, radius, speed, simpleBounce)
         {
             MaxSpeed = maxSpeed;
             StopSpeed = stopSpeed;

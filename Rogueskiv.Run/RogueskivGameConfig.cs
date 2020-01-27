@@ -32,7 +32,7 @@ namespace Rogueskiv.Run
         public int PlayerRadius { get; set; }
         public int InitialPlayerHealth { get; set; }
         public float InitialPlayerVisualRange { get; set; }
-        public float PlayerBounceAmortiguationFactor { get; set; }
+        public float PlayerBounceMomentumConservationFactor { get; set; }
         public float PlayerFrictionFactor { get; set; }
         public float PlayerAcceleration { get; set; }
         public float PlayerMaxSpeed { get; set; }

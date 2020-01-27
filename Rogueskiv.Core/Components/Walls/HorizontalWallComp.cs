@@ -32,7 +32,7 @@ namespace Rogueskiv.Core.Components.Walls
         protected override void SetVariablePosition(PositionComp positionComp, float value) =>
             positionComp.SetPosition(x: value);
 
-        protected override void ReverseSpeed(MovementComp movementComp, float amortiguationFactor) =>
-            movementComp.MultiplySpeed(factorY: amortiguationFactor);
+        protected override void ReverseSpeed(MovementComp movementComp, float momentumConservationFactor) =>
+            movementComp.MultiplySpeed(factorY: momentumConservationFactor);
     }
 }

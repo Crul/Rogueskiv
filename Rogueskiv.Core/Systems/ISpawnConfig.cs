@@ -28,7 +28,7 @@ namespace Rogueskiv.Core.Systems
         float MinMapRevealerSpawnDistanceFactor { get; }
         float MinAmuletSpawnFactor { get; }
         float MinDownStairsSpawnFactor { get; }
-        float PlayerBounceAmortiguationFactor { get; }
+        float PlayerBounceMomentumConservationFactor { get; }
         float PlayerFrictionFactor { get; }
 
         int MaxItemPickingTimeInGameTicks { get; }
