@@ -2,13 +2,13 @@
 using Seedwork.Ux;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     // TODO do not render if no changes ?
     public class RogueskivMenuRenderer : GameRenderer
     {
         private const int TITLE_FONT_SIZE = 48;
-        private const int MENU_FONT_SIZE = 24;
+        private const int MENU_FONT_SIZE = 20;
         private const int SMALL_FONT_SIZE = 14;
 
         public RogueskivMenuRenderer(UxContext uxContext, RogueskivMenu game, string fontFile)

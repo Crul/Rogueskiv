@@ -1,24 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using Seedwork.Crosscutting;
+using System.Collections.Generic;
 
 namespace Rogueskiv.Core.Systems
 {
     public interface ISpawnConfig
     {
-        bool IsLastFloor { get; }
+        bool IsLastFloor(int floor);
 
         int PlayerRadius { get; }
         int InitialPlayerHealth { get; }
         float InitialPlayerVisualRange { get; }
-        float PlayerAcceleration { get; }
-        float PlayerMaxSpeed { get; }
-        float PlayerStopSpeed { get; }
+        float PlayerAccelerationInGameTicks { get; }
+        float PlayerMaxSpeedInGameTicks { get; }
+        float PlayerStopSpeedInGameTicks { get; }
 
-        int EnemyNumber { get; }
+        int GetEnemyNumber(int floor);
         int EnemyCollisionDamage { get; }
         float EnemyCollisionBounce { get; }
-        int MinEnemySpeed { get; }
-        int MaxEnemySpeed { get; }
-        List<(int numAngles, float weight)> EnemyNumAnglesProbWeights { get; }
+        Range<float> GetEnemySpeedRangeInGameTicks(int floor);
+        List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(int floor);
         int MinSpaceToSpawnEnemy { get; }
         int MinEnemySpawnDistance { get; }
         int EnemyRadius { get; }
@@ -31,7 +31,7 @@ namespace Rogueskiv.Core.Systems
         float PlayerBounceAmortiguationFactor { get; }
         float PlayerFrictionFactor { get; }
 
-        int MaxItemPickingTime { get; }
+        int MaxItemPickingTimeInGameTicks { get; }
         int FoodHealthIncrease { get; }
         float TorchVisualRangeIncrease { get; }
     }

@@ -1,12 +1,16 @@
 ﻿using Rogueskiv.Core;
 using Rogueskiv.Menus;
+using Rogueskiv.Menus.Renderers;
 using Rogueskiv.Ux;
 using Seedwork.Core.Entities;
+using Seedwork.Crosscutting;
 using Seedwork.Engine;
 using Seedwork.Ux;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Rogueskiv.Run
 {
@@ -20,6 +24,7 @@ namespace Rogueskiv.Run
         private readonly LoadingScreenRenderer LoadingScreenRenderer;
 
         private int CurrentFloor;
+        private GameEngine<IEntity> CurrentFloorEngine => FloorEngines[CurrentFloor - 1];
 
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
@@ -38,6 +43,7 @@ namespace Rogueskiv.Run
                 var gameResult = engine.RunLoop();
                 engine = GameStages.GetNext(engine.Game.StageCode, gameResult);
             }
+            SaveGlobalConfig();
         }
 
         private void InitStages()
@@ -72,24 +78,27 @@ namespace Rogueskiv.Run
         {
             StopCurrentFloorEngine();
 
-            return GetRestartFloorEngine(--CurrentFloor, result);
+            return GetRestartFloorEngine(-1, result);
         }
 
         private GameEngine<IEntity> GetFloorDown(IGameResult<IEntity> result)
         {
             StopCurrentFloorEngine();
             if (CurrentFloor < FloorEngines.Count)
-                return GetRestartFloorEngine(++CurrentFloor, result);
+                return GetRestartFloorEngine(1, result);
 
             return CreateGameStage(result);
         }
 
-        private GameEngine<IEntity> GetRestartFloorEngine(int floor, IGameResult<IEntity> result)
+        private GameEngine<IEntity> GetRestartFloorEngine(int floorMovement, IGameResult<IEntity> result)
         {
-            var floorEngine = FloorEngines[floor - 1];
-            floorEngine.Game.Restart(result);
+            var currentFloorEngine = CurrentFloorEngine;
+            CurrentFloor += floorMovement;
+            var nextFloorEngine = CurrentFloorEngine;
+            nextFloorEngine.Game.Restart(result);
+            nextFloorEngine.SetInputControls(currentFloorEngine.InputHandler);
 
-            return floorEngine;
+            return nextFloorEngine;
         }
 
         private GameEngine<IEntity> CreateGameStage(
@@ -99,16 +108,24 @@ namespace Rogueskiv.Run
         {
             LoadingScreenRenderer.Render();
 
+            var isFirstStage = result == null;
+            if (isFirstStage)
+                SaveGlobalConfig();
+
             if (gameSeed.HasValue)
                 GameContext.SetSeed(gameSeed.Value);
 
+            var gameConfig = YamlParser.ParseFile<RogueskivGameConfig>(AppConfig.GameModeFilesPath, AppConfig.GameMode);
+            gameConfig.GameFPS = GameContext.GameFPS;
+            gameConfig.GameSeed = GameContext.GameSeed;
+            gameConfig.FloorCount = AppConfig.FloorCount;
+
             if (FloorEngines.Count == 0)
-                UxContext.PlayMusic(AppConfig.GameMusicFilePath, AppConfig.GameMusicVolume);
+                UxContext.PlayMusic(gameConfig.GameMusicFilePath, gameConfig.GameMusicVolume);
 
             CurrentFloor = FloorEngines.Count + 1;
-            var gameConfig = new RogueskivGameConfig(AppConfig, GameContext, CurrentFloor);
-            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, result);
-            var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig);
+            var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result);
+            var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig, gameConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
 
@@ -126,7 +143,7 @@ namespace Rogueskiv.Run
             UxContext.PlayMusic(AppConfig.MenuMusicFilePath, AppConfig.MenuMusicVolume);
 
             var gameContext = new GameContext(AppConfig.MaxGameStepsWithoutRender);
-            var game = new RogueskivMenu(GameStageCodes.Menu);
+            var game = new RogueskivMenu(AppConfig, GameStageCodes.Menu);
             var renderer = new RogueskivMenuRenderer(UxContext, game, AppConfig.FontFile);
             var userInput = new RogueskivMenuInputHandler(UxContext, game, renderer);
             var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
@@ -137,8 +154,26 @@ namespace Rogueskiv.Run
         private void StopCurrentFloorEngine()
         {
             if (FloorEngines.Any())
-                FloorEngines[CurrentFloor - 1].Stop();
+                CurrentFloorEngine.Stop();
         }
+
+        private void SaveGlobalConfig()
+        {
+            var globalConfigText = File.ReadAllText(AppConfig.GlobalConfigFilePath);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "floorCount", AppConfig.FloorCount);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "gameModeIndex", AppConfig.GameModeIndex);
+            globalConfigText = ReplaceOptionValue(globalConfigText, "musicOn", AppConfig.MusicOn.ToString().ToLower());
+
+            File.WriteAllText(AppConfig.GlobalConfigFilePath, globalConfigText);
+        }
+
+        private static string ReplaceOptionValue(string globalConfigText, string optionName, object optionValue)
+            => Regex.Replace(
+                globalConfigText,
+                "^" + optionName + @":\s*[a-z\d]+",
+                $"{optionName}: {optionValue}",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase
+            );
 
         public void Dispose()
         {

@@ -1,42 +1,37 @@
-﻿using System.IO;
+﻿using Seedwork.Crosscutting;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Rogueskiv.Run
 {
     class Program
     {
         private const string CONFIG_FILES_PATH = "config";
-        private const string CONFIG_FILE_PATH_ARG = "--config=";
-        private const string DEFAULT_CONFIG_FILE_PATH = "default";
+        private const string GAME_MODE_FILES_PATH = "gameModes";
+        private const string CONFIG_FILE_NAME = "global";
 
-        static void Main(string[] args)
+        static void Main()
         {
-            var rogueskivConfig = ParseConfigFileArg(args);
+            var rogueskivConfig = GetRogueskivAppConfig();
             using var rogueskivApp = new RogueskivApp(rogueskivConfig);
             rogueskivApp.Run();
         }
 
-        private static RogueskivAppConfig ParseConfigFileArg(string[] args)
+        private static RogueskivAppConfig GetRogueskivAppConfig()
         {
-            var configFileName = args
-                .Where(arg => arg.StartsWith(CONFIG_FILE_PATH_ARG))
-                .Select(arg => arg.Substring(CONFIG_FILE_PATH_ARG.Length))
-                .FirstOrDefault();
-
-            if (string.IsNullOrEmpty(configFileName))
-                configFileName = DEFAULT_CONFIG_FILE_PATH;
-
-            var configFilePath = Path.Combine(CONFIG_FILES_PATH, $"{configFileName}.yaml");
-            var fileReader = new StreamReader(configFilePath);
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
-
-            var rogueskivConfig = deserializer.Deserialize<RogueskivAppConfig>(fileReader);
+            var rogueskivConfig = YamlParser.ParseFile<RogueskivAppConfig>(CONFIG_FILES_PATH, CONFIG_FILE_NAME);
+            rogueskivConfig.GlobalConfigFilePath = Path.Combine(CONFIG_FILES_PATH, $"{CONFIG_FILE_NAME}.yaml");
+            rogueskivConfig.GameModeFilesPath = Path.Combine(CONFIG_FILES_PATH, GAME_MODE_FILES_PATH);
+            rogueskivConfig.GameModes = GetGameModes(rogueskivConfig);
+            rogueskivConfig.CheckGameModeIndexBounds();
 
             return rogueskivConfig;
         }
+
+        private static List<string> GetGameModes(RogueskivAppConfig rogueskivConfig)
+            => (new DirectoryInfo(rogueskivConfig.GameModeFilesPath)).GetFiles("*.yaml")
+                .Select(fileInfo => Path.GetFileNameWithoutExtension(fileInfo.Name))
+                .ToList();
     }
 }

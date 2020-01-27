@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using static SDL2.SDL;
 
-namespace Rogueskiv.Menus
+namespace Rogueskiv.Menus.Renderers
 {
     class InstructionsRenderer : IRenderer
     {
         private const int MIN_MARGIN_X = 40;
         private const int MAX_MARGIN_DELTA_X = 140 + MIN_MARGIN_X;
-        private const int MIN_Y = 320;
+        private const int MIN_Y = 390;
         private const int MARGIN_Y = 24;
         private const int LINE_HEIGHT = 24;
         private const float MIN_SCREEN_WIDTH_TO_ADJUST_MARGIN = 720;
@@ -20,7 +20,7 @@ namespace Rogueskiv.Menus
         private readonly List<string> InstructionsTextLines = new List<string>
         {
             "Only keyboard supported (no mouse)",
-            "Use cursors and press ENTER to select an option.",
+            "Use cursors, WASD, NumPad to move and press ENTER to play.",
             "WARNING! Work in progress: This is a proof of concept, not a fully developed game."
         };
 

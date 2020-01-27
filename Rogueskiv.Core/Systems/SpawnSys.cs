@@ -16,6 +16,7 @@ namespace Rogueskiv.Core.Systems
 {
     class SpawnSys : BaseSystem
     {
+        private readonly int Floor; // TODO reusable SpawnSys for all levels (remove data from systems)
         private readonly ISpawnConfig SpawnConfig;
         private readonly IGameResult<IEntity> PreviousFloorResult;
 
@@ -27,10 +28,12 @@ namespace Rogueskiv.Core.Systems
         };
 
         public SpawnSys(
+            int floor,
             ISpawnConfig spawnConfig,
             IGameResult<IEntity> previousFloorResult
         )
         {
+            Floor = floor;
             SpawnConfig = spawnConfig;
             PreviousFloorResult = previousFloorResult;
         }
@@ -57,15 +60,17 @@ namespace Rogueskiv.Core.Systems
                 .Where(tile => tilePositions.Contains(tile.tilePos))
                 .ToList();
 
-            var enemiesCount = 0;
-            while (enemiesCount < SpawnConfig.EnemyNumber)
+            var enemiesCounter = 0;
+            var totalEnemiesCount = SpawnConfig.GetEnemyNumber(Floor);
+            var enemySpeedRange = SpawnConfig.GetEnemySpeedRangeInGameTicks(Floor);
+            while (enemiesCounter < totalEnemiesCount)
             {
-                var enemy = CreateEnemy(boardComp, tilePosAndDistances, occupiedTiles);
+                var enemy = CreateEnemy(enemySpeedRange, boardComp, tilePosAndDistances, occupiedTiles);
                 if (enemy == null)
                     continue;
 
                 game.AddEntity(enemy);
-                enemiesCount++;
+                enemiesCounter++;
             }
 
             var maxDistance = tilePosAndDistances.Max(tcd => tcd.distance);
@@ -76,7 +81,7 @@ namespace Rogueskiv.Core.Systems
             game.AddEntity(CreateTorch(tilePosAndDistances, occupiedTiles, maxDistance));
             game.AddEntity(CreateMapRevealer(tilePosAndDistances, occupiedTiles, maxDistance));
 
-            if (SpawnConfig.IsLastFloor)
+            if (SpawnConfig.IsLastFloor(Floor))
                 game.AddEntity(CreateAmulet(tilePosAndDistances, occupiedTiles, maxDistance));
             else
             {
@@ -116,8 +121,8 @@ namespace Rogueskiv.Core.Systems
                 new CurrentPositionComp(playerTilePos),
                 new LastPositionComp(playerTilePos),
                 new BoundedMovementComp(
-                    SpawnConfig.PlayerMaxSpeed,
-                    SpawnConfig.PlayerStopSpeed,
+                    SpawnConfig.PlayerMaxSpeedInGameTicks,
+                    SpawnConfig.PlayerStopSpeedInGameTicks,
                     frictionFactor: SpawnConfig.PlayerFrictionFactor,
                     bounceAmortiguationFactor: SpawnConfig.PlayerBounceAmortiguationFactor,
                     radius: SpawnConfig.PlayerRadius,
@@ -178,6 +183,7 @@ namespace Rogueskiv.Core.Systems
         }
 
         private List<IComponent> CreateEnemy(
+            Range<float> enemySpeedRange,
             BoardComp boardComp,
             List<(Point tilePos, int distance)> tilePositionsAndDistances,
             List<Point> occupiedTiles
@@ -188,7 +194,7 @@ namespace Rogueskiv.Core.Systems
                 occupiedTiles,
                 SpawnConfig.MinEnemySpawnDistance
             );
-            var enemySpeed = GetEnemySpeed(boardComp, enemyTilePos);
+            var enemySpeed = GetEnemySpeed(enemySpeedRange, boardComp, enemyTilePos);
             if (!enemySpeed.HasValue)
                 return null;
 
@@ -209,19 +215,24 @@ namespace Rogueskiv.Core.Systems
             };
         }
 
-        private PointF? GetEnemySpeed(BoardComp boardComp, Point enemyTilePos)
+        private PointF? GetEnemySpeed(
+            Range<float> enemySpeedRange,
+            BoardComp boardComp,
+            Point enemyTilePos
+        )
         {
+            var speed = enemySpeedRange.Start
+                + Luck.NextDouble() * (enemySpeedRange.End - enemySpeedRange.Start);
+
             var numAngles = SpawnConfig
-                .EnemyNumAnglesProbWeights
+                .GetEnemyAnglesProbWeights(Floor)
                 .OrderByDescending(napb => napb.weight * Luck.NextDouble())
                 .First()
                 .numAngles;
 
-            var speed = (SpawnConfig.MinEnemySpeed
-                + Luck.Next(SpawnConfig.MaxEnemySpeed - SpawnConfig.MinEnemySpeed));
             var angleRatios = Enumerable.Range(1, numAngles).ToList();
-
             var randomizedAngleRatios = angleRatios.OrderBy(a => Luck.NextDouble()).ToList();
+
             while (randomizedAngleRatios.Any())
             {
                 var angleRatio = randomizedAngleRatios.First();
@@ -286,7 +297,7 @@ namespace Rogueskiv.Core.Systems
             var foodTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
             occupiedTiles.Add(foodTilePos);
 
-            return new FoodComp(SpawnConfig.MaxItemPickingTime, foodTilePos);
+            return new FoodComp(SpawnConfig.MaxItemPickingTimeInGameTicks, foodTilePos);
         }
 
         private IComponent CreateTorch(
@@ -299,7 +310,7 @@ namespace Rogueskiv.Core.Systems
             var torchTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
             occupiedTiles.Add(torchTilePos);
 
-            return new TorchComp(SpawnConfig.MaxItemPickingTime, torchTilePos);
+            return new TorchComp(SpawnConfig.MaxItemPickingTimeInGameTicks, torchTilePos);
         }
 
         private IComponent CreateMapRevealer(
@@ -312,7 +323,7 @@ namespace Rogueskiv.Core.Systems
             var mapRevealerTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
             occupiedTiles.Add(mapRevealerTilePos);
 
-            return new MapRevealerComp(SpawnConfig.MaxItemPickingTime, mapRevealerTilePos);
+            return new MapRevealerComp(SpawnConfig.MaxItemPickingTimeInGameTicks, mapRevealerTilePos);
         }
 
         private IComponent CreateAmulet(
@@ -325,7 +336,7 @@ namespace Rogueskiv.Core.Systems
             var amuletTilePos = GetRandomTilePos(tilePositionsAndDistances, occupiedTiles, minDistance);
             occupiedTiles.Add(amuletTilePos);
 
-            return new AmuletComp(SpawnConfig.MaxItemPickingTime, amuletTilePos);
+            return new AmuletComp(SpawnConfig.MaxItemPickingTimeInGameTicks, amuletTilePos);
         }
 
         private IComponent CreateDownStairs(

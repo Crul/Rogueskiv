@@ -19,6 +19,7 @@ namespace Seedwork.Ux
         private readonly AudioProvider AudioProvider;
         private readonly FontProvider FontProvider;
         private IntPtr? MusicPointer = null;
+        private int MusicVolume = 0;
         private string MusicFilePath;
 
         public UxContext(
@@ -76,31 +77,37 @@ namespace Seedwork.Ux
 
         public void PlayMusic(string musicFilePath, int volume)
         {
-            if (!UxConfig.MusicOn)
+            if (MusicFilePath == musicFilePath)
                 return;
 
-            if (MusicFilePath != musicFilePath)
-            {
-                DisposeMusic();
-                MusicFilePath = musicFilePath;
-                MusicPointer = SDL_mixer.Mix_LoadMUS(MusicFilePath);
-            }
+            MusicFilePath = musicFilePath;
+            MusicVolume = volume;
 
-            SDL_mixer.Mix_FadeInMusic(MusicPointer.Value, -1, 1000);
-            SDL_mixer.Mix_VolumeMusic(volume);
+            DisposeMusic();
+            if (UxConfig.MusicOn)
+                LoadAndPlayMusic();
         }
 
         public void ToggleMusic()
         {
-            if (!MusicPointer.HasValue)
-                return;
-
             if (UxConfig.MusicOn)
                 SDL_mixer.Mix_HaltMusic();
             else
-                SDL_mixer.Mix_PlayMusic(MusicPointer.Value, -1);
+            {
+                if (MusicPointer.HasValue)
+                    SDL_mixer.Mix_PlayMusic(MusicPointer.Value, -1);
+                else
+                    LoadAndPlayMusic();
+            }
 
             UxConfig.MusicOn = !UxConfig.MusicOn;
+        }
+
+        private void LoadAndPlayMusic()
+        {
+            MusicPointer = SDL_mixer.Mix_LoadMUS(MusicFilePath);
+            SDL_mixer.Mix_FadeInMusic(MusicPointer.Value, -1, 1000);
+            SDL_mixer.Mix_VolumeMusic(MusicVolume);
         }
 
         public void Dispose()
@@ -125,7 +132,10 @@ namespace Seedwork.Ux
         private void DisposeMusic()
         {
             if (MusicPointer.HasValue)
+            {
                 SDL_mixer.Mix_FreeMusic(MusicPointer.Value);
+                MusicPointer = null;
+            }
         }
     }
 }

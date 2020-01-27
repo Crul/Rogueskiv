@@ -11,9 +11,8 @@ namespace Rogueskiv.Core.Systems
         private PlayerComp PlayerComp;
         private FOVComp FOVComp;
 
-        public TorchSys(int pickingTime, float torchVisualRangeIncrease)
-            : base(pickingTime, isSingleCompPerFloor: true) =>
-            TorchVisualRangeIncrease = torchVisualRangeIncrease;
+        public TorchSys(float torchVisualRangeIncrease) : base(isSingleCompPerFloor: true)
+            => TorchVisualRangeIncrease = torchVisualRangeIncrease;
 
         public override void Init(Game game)
         {

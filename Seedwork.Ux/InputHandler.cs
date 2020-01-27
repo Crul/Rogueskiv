@@ -20,6 +20,8 @@ namespace Seedwork.Ux
 
         protected readonly IDictionary<int, bool> ControlStates;
 
+        private readonly bool AllowRepeats;
+
         private readonly int CloseWindowControl;
         private bool CloseWindowKeyPressed;
 
@@ -32,7 +34,8 @@ namespace Seedwork.Ux
             IGameRenderer gameRenderer,
             IDictionary<int, int> controlsByKeys,
             int closeWindowControl,
-            int toggleMusicControl
+            int toggleMusicControl,
+            bool allowRepeats = false
         )
         {
             UxContext = uxContext;
@@ -46,9 +49,10 @@ namespace Seedwork.Ux
 
             CloseWindowControl = closeWindowControl;
             ToggleMusicControl = toggleMusicControl;
+            AllowRepeats = allowRepeats;
         }
 
-        public void ProcessEvents()
+        public virtual void ProcessEvents()
         {
             while (SDL_PollEvent(out SDL_Event ev) != 0)
                 ProcessEvent(ev);
@@ -79,11 +83,11 @@ namespace Seedwork.Ux
                     return;
 
                 case SDL_EventType.SDL_KEYDOWN:
-                    OnKeyEvent(ev.key.keysym.sym, true);
+                    OnKeyEvent(ev.key, true);
                     return;
 
                 case SDL_EventType.SDL_KEYUP:
-                    OnKeyEvent(ev.key.keysym.sym, false);
+                    OnKeyEvent(ev.key, false);
                     return;
 
                 case SDL_EventType.SDL_TEXTINPUT:
@@ -91,17 +95,22 @@ namespace Seedwork.Ux
                     return;
 
                 case SDL_EventType.SDL_RENDER_TARGETS_RESET:
-                    GameRenderer.RecreateTextures();
+                    GameRenderer.RecreateBufferTextures();
                     return;
             }
         }
 
-        protected virtual void OnKeyEvent(SDL_Keycode key, bool pressed)
+        private void OnKeyEvent(SDL_KeyboardEvent keyEvent, bool pressed)
+            => OnKeyEvent(keyEvent.keysym.sym, pressed, keyEvent.repeat != 0);
+
+        protected virtual void OnKeyEvent(SDL_Keycode key, bool pressed, bool isRepeat)
         {
             var intKey = (int)key;
             if (ControlsByKeys.ContainsKey(intKey))
             {
-                ControlStates[ControlsByKeys[intKey]] = pressed;
+                if (AllowRepeats || !isRepeat)
+                    ControlStates[ControlsByKeys[intKey]] = pressed;
+
                 HandleToggleMusic();
             }
         }
@@ -138,5 +147,10 @@ namespace Seedwork.Ux
 
         public void Reset() =>
             ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = false);
+
+        public void SetControls(IInputHandler inputHandler)
+            => ControlStates.Keys.ToList().ForEach(k => ControlStates[k] = inputHandler.GetControlState(k));
+
+        public bool GetControlState(int control) => ControlStates[control];
     }
 }

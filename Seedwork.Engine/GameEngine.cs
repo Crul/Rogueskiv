@@ -6,9 +6,10 @@ namespace Seedwork.Engine
     public class GameEngine<T> : IDisposable
     {
         public IGame<T> Game { get; }
+        public IInputHandler InputHandler { get; }
+        public IGameRenderer Renderer { get; }
+
         private readonly IGameContext GameContext;
-        private readonly IInputHandler InputHandler;
-        private readonly IGameRenderer Renderer;
 
         public GameEngine(
             IGameContext gameContext,
@@ -25,8 +26,7 @@ namespace Seedwork.Engine
 
         public IGameResult<T> RunLoop()
         {
-            InputHandler.Reset();
-            Renderer.Reset();
+            Renderer.Restart();
             RunGameLoop();
 
             return Game.Result;
@@ -40,9 +40,9 @@ namespace Seedwork.Engine
             var stepsWithoutRender = 0;
             while (true)
             {
-                InputHandler.ProcessEvents();
                 while (ShouldUpdate(nextGameTick, stepsWithoutRender))
                 {
+                    InputHandler.ProcessEvents();
                     Game.Update();
                     if (Game.Quit)
                     {
@@ -78,13 +78,16 @@ namespace Seedwork.Engine
 
         private static long CurrentTime() => DateTime.Now.Ticks;
 
+        public void SetInputControls(IInputHandler inputHandler)
+            => InputHandler.SetControls(inputHandler);
+
+        public void Stop() => Renderer.Stop();
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
                 Renderer.Dispose();
         }
-
-        public void Stop() => Renderer.Stop();
 
         public void Dispose()
         {

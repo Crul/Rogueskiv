@@ -8,6 +8,8 @@
         TOGGLE_MUSIC,
         UP,
         DOWN,
+        LEFT,
+        RIGHT,
         ENTER,
         BACKSPACE,
         COPY,

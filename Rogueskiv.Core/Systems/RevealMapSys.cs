@@ -12,8 +12,7 @@ namespace Rogueskiv.Core.Systems
         private FOVComp FOVComp;
         private BoardComp BoardComp;
 
-        public RevealMapSys(int pickingTime)
-            : base(pickingTime, isSingleCompPerFloor: true) { }
+        public RevealMapSys() : base(isSingleCompPerFloor: true) { }
 
         public override void Init(Game game)
         {

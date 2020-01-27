@@ -38,11 +38,9 @@ namespace Rogueskiv.Menus.MenuOptions
 
         public override void Update(EntityList entities, List<int> controls)
         {
+            LastControls.Clear();
             if (controls.Count == 0)
-            {
-                LastControls.Clear();
                 return;
-            }
 
             if (AskingForCustomSeed)
                 UpdateCustomSeedInput(controls);
@@ -65,35 +63,48 @@ namespace Rogueskiv.Menus.MenuOptions
                 .ToList();
 
             var activeMenuOption = menuOptions.Single(mo => mo.Active);
-            if (ControlPressed(controls, Controls.ENTER))
-            {
-                activeMenuOption.Execute(this);
+
+            var actionsToExecute = activeMenuOption
+                .ActionsByControl
+                .Keys
+                .Where(control => ControlPressed(controls, control))
+                .Select(control => activeMenuOption.ActionsByControl[control])
+                .ToList();
+
+            actionsToExecute.ForEach(action => action());
+
+            if (actionsToExecute.Any())
                 return;
-            }
 
-            int newActiveIndex;
+            int? indexToActivate = null;
+            if (ControlPressed(controls, Controls.ENTER))
+                indexToActivate = 0;
+
             if (ControlPressed(controls, Controls.QUIT))
-                newActiveIndex = menuOptions.Count - 1;
+                indexToActivate = menuOptions.Count - 1;
 
-            else
+            var move = 0;
+            if (ControlPressed(controls, Controls.UP))
+                move -= 1;
+            if (ControlPressed(controls, Controls.DOWN))
+                move += 1;
+
+            if (move != 0)
             {
-                var move = 0;
-                if (ControlPressed(controls, Controls.UP))
-                    move -= 1;
-                if (ControlPressed(controls, Controls.DOWN))
-                    move += 1;
-
-                if (move == 0)
-                    return;
-
-                newActiveIndex = Maths.Modulo(
-                    menuOptions.IndexOf(activeMenuOption) + move,
-                    menuOptions.Count
-                );
+                indexToActivate = menuOptions.IndexOf(activeMenuOption);
+                do
+                {
+                    indexToActivate += move;
+                    indexToActivate = Maths.Modulo(indexToActivate.Value, menuOptions.Count);
+                }
+                while (!menuOptions[indexToActivate.Value].Focusable);
             }
 
-            activeMenuOption.Active = false;
-            menuOptions[newActiveIndex].Active = true;
+            if (indexToActivate.HasValue)
+            {
+                activeMenuOption.Active = false;
+                menuOptions[indexToActivate.Value].Active = true;
+            }
         }
 
         private void UpdateCustomSeedInput(List<int> controls)

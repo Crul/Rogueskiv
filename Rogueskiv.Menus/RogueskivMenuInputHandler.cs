@@ -9,6 +9,13 @@ namespace Rogueskiv.Menus
     {
         private readonly RogueskivMenu Game;
 
+        private readonly List<SDL_Keycode> RepeatAllowedKeys = new List<SDL_Keycode>
+        {
+            SDL_Keycode.SDLK_LEFT, SDL_Keycode.SDLK_RIGHT,
+            SDL_Keycode.SDLK_a, SDL_Keycode.SDLK_d,
+            SDL_Keycode.SDLK_KP_4, SDL_Keycode.SDLK_KP_6,
+        };
+
         public RogueskivMenuInputHandler(
             UxContext uxContext, RogueskivMenu game, IGameRenderer gameRenderer
         )
@@ -19,15 +26,32 @@ namespace Rogueskiv.Menus
                 controlsByKeys: new Dictionary<int, int>
                 {
                     { (int)SDL_Keycode.SDLK_ESCAPE,   (int)Controls.QUIT },
+                    { (int)SDL_Keycode.SDLK_q,        (int)Controls.QUIT },
+
                     { (int)SDL_Keycode.SDLK_UP,       (int)Controls.UP },
                     { (int)SDL_Keycode.SDLK_DOWN,     (int)Controls.DOWN },
+                    { (int)SDL_Keycode.SDLK_LEFT,     (int)Controls.LEFT },
+                    { (int)SDL_Keycode.SDLK_RIGHT,    (int)Controls.RIGHT },
+
+                    { (int)SDL_Keycode.SDLK_w,        (int)Controls.UP },
+                    { (int)SDL_Keycode.SDLK_s,        (int)Controls.DOWN },
+                    { (int)SDL_Keycode.SDLK_a,        (int)Controls.LEFT },
+                    { (int)SDL_Keycode.SDLK_d,        (int)Controls.RIGHT },
+
+                    { (int)SDL_Keycode.SDLK_KP_8,     (int)Controls.UP },
+                    { (int)SDL_Keycode.SDLK_KP_2,     (int)Controls.DOWN },
+                    { (int)SDL_Keycode.SDLK_KP_4,     (int)Controls.LEFT },
+                    { (int)SDL_Keycode.SDLK_KP_6,     (int)Controls.RIGHT },
+
                     { (int)SDL_Keycode.SDLK_RETURN,   (int)Controls.ENTER },
+                    { (int)SDL_Keycode.SDLK_RETURN2,  (int)Controls.ENTER },
                     { (int)SDL_Keycode.SDLK_KP_ENTER, (int)Controls.ENTER },
-                    { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE},
-                    { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC},
+                    { (int)SDL_Keycode.SDLK_BACKSPACE,(int)Controls.BACKSPACE },
+                    { (int)SDL_Keycode.SDLK_m,        (int)Controls.TOGGLE_MUSIC },
                 },
                 closeWindowControl: (int)Controls.CLOSE_WINDOW,
-                toggleMusicControl: (int)Controls.TOGGLE_MUSIC
+                toggleMusicControl: (int)Controls.TOGGLE_MUSIC,
+                allowRepeats: true
             )
         {
             Game = game;
@@ -35,12 +59,19 @@ namespace Rogueskiv.Menus
             ControlStates.Add((int)Controls.PASTE, false);
         }
 
-        protected override void OnKeyEvent(SDL_Keycode key, bool pressed)
+        public override void ProcessEvents()
         {
-            base.OnKeyEvent(key, pressed);
+            base.ProcessEvents();
+            Reset();
+        }
 
-            ControlStates[(int)Controls.COPY] = key == SDL_Keycode.SDLK_c && IsControlKeyPressed();
-            ControlStates[(int)Controls.PASTE] = key == SDL_Keycode.SDLK_v && IsControlKeyPressed();
+        protected override void OnKeyEvent(SDL_Keycode key, bool pressed, bool isRepeat)
+        {
+            if (!isRepeat || RepeatAllowedKeys.Contains(key))
+                base.OnKeyEvent(key, pressed, isRepeat);
+
+            ControlStates[(int)Controls.COPY] = !isRepeat && (key == SDL_Keycode.SDLK_c && IsControlKeyPressed());
+            ControlStates[(int)Controls.PASTE] = !isRepeat && (key == SDL_Keycode.SDLK_v && IsControlKeyPressed());
         }
 
         protected override void OnTextInput(string text)
