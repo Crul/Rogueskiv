@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Rogueskiv.Run
 {
-    class Program
+    static class Program
     {
         private const string DATA_FILES_PATH = "data";
         private const string APP_DATA_FOLDER = "Rogueskiv";

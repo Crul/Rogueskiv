@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Rogueskiv.MapGeneration
 {
-    class CorridorGenerator
+    static class CorridorGenerator
     {
         private const int CONNECT_ROOMS_MAX_LOOPS = 250;
 
