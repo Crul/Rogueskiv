@@ -11,6 +11,9 @@ namespace Seedwork.Crosscutting
 
         public static T ParseFile<T>(string filePath)
         {
+            if (!File.Exists(filePath))
+                return default;
+
             using var fileReader = new StreamReader(filePath);
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
