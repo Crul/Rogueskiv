@@ -13,7 +13,7 @@ namespace Seedwork.Engine
         public long UxTicks { get; }
         public int MaxGameStepsWithoutRender { get; }
 
-        public GameContext(int maxGameStepsWithoutRender, int gameFPS = 30, int uxFPS = 60)
+        public GameContext(int maxGameStepsWithoutRender, int gameFPS = 60, int uxFPS = 60)
         {
             GameSeed = Luck.Reset();
             GameFPS = gameFPS;
