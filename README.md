@@ -4,6 +4,12 @@
 
 Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia=web) (by jf) and the countless [Roguelike games](https://www.reddit.com/r/roguelikedev/), inspired by the [Roguelike Celebration 2018](https://roguelike.club/event2018.html) talk: [Pippin Barr + Jonathan Lessard: Chess + Rogue = Chogue](https://www.youtube.com/watch?v=l1YEJBKehAY).
 
+## How it looks
+
+See [video trailer](https://crul.github.io/Rogueskiv/media/trailer-v0.0.1.webm).
+
+<img width="160px" src="https://crul.github.io/Rogueskiv/media/screenshot-v0.0.1-01.png" /> <img width="160px" src="https://crul.github.io/Rogueskiv/media/screenshot-v0.0.1-02.png" /> <img width="160px" src="https://crul.github.io/Rogueskiv/media/screenshot-v0.0.1-03.png" /> <img width="160px" src="https://crul.github.io/Rogueskiv/media/screenshot-v0.0.1-04.png" />
+
 ## Configuration
 
 Global options can be changed in `%APPDATA%/Rogueskiv/config.yaml`.
@@ -53,6 +59,7 @@ Rogueskiv makes use of the following projects:
   - [Quickly Walking Up Stairs](https://freesound.org/people/deleted_user_7146007/sounds/383889/) by [deleted_user_7146007 (sic)](https://freesound.org/people/deleted_user_7146007) ([Creative Commons 0 License](https://freesound.org/people/deleted_user_7146007/sounds/383889/#sound_license))
   - [Man Dying](https://freesound.org/people/Under7dude/sounds/163442/) by [Under7dude](https://freesound.org/people/Under7dude/) ([Creative Commons 0 License](https://freesound.org/people/Under7dude/sounds/163442/#sound_license))
   - [stone_mechanisem_loop_02](https://freesound.org/people/Claire.H/sounds/182344/) by [Claire.H](https://freesound.org/people/Claire.H/) ([Attribution License](https://freesound.org/people/Claire.H/sounds/182344/#sound_license))
+  - [Scary Tension Buildup 02](https://freesound.org/people/Magmi.Soundtracks/sounds/426759/) by [Magmi.Soundtracks](https://matasstacevicius.wixsite.com/magmisoundtracks) ([Creative Commons 0 License](https://freesound.org/people/Magmi.Soundtracks/sounds/426759/#sound_license)), not used in game, only for the trailer
 
 ## License (AGPL-3.0)
 
