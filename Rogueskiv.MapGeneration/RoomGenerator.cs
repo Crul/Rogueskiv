@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Rogueskiv.MapGeneration
 {
-    class RoomGenerator
+    static class RoomGenerator
     {
         private const int INITIAL_ROOMS_MAX_LOOPS = 150;
 

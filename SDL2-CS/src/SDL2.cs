@@ -1,7 +1,7 @@
 #region License
 /* SDL2# - C# Wrapper for SDL2
  *
- * Copyright (c) 2013-2016 Ethan Lee.
+ * Copyright (c) 2013-2020 Ethan Lee.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -130,6 +130,14 @@ namespace SDL2
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void SDL_free(IntPtr memblock);
+
+		/* Buffer.BlockCopy is not available in every runtime yet. Also,
+		 * using memcpy directly can be a compatibility issue in other
+		 * strange ways. So, we expose this to get around all that.
+		 * -flibit
+		 */
+		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr SDL_memcpy(IntPtr dst, IntPtr src, IntPtr len);
 
 		#endregion
 
@@ -4023,7 +4031,7 @@ namespace SDL2
 		private static extern IntPtr INTERNAL_SDL_GetClipboardText();
 		public static string SDL_GetClipboardText()
 		{
-			return UTF8_ToManaged(INTERNAL_SDL_GetClipboardText());
+			return UTF8_ToManaged(INTERNAL_SDL_GetClipboardText(), true);
 		}
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_SetClipboardText", CallingConvention = CallingConvention.Cdecl)]
@@ -4989,6 +4997,10 @@ namespace SDL2
 			SDL_SCANCODE_APP1 = 283,
 			SDL_SCANCODE_APP2 = 284,
 
+			/* These come from the USB consumer page (0x0C) */
+			SDL_SCANCODE_AUDIOREWIND = 285,
+			SDL_SCANCODE_AUDIOFASTFORWARD = 286,
+
 			/* This is not a key, simply marks the number of scancodes
 			 * so that you know how big to make your arrays. */
 			SDL_NUM_SCANCODES = 512
@@ -5272,7 +5284,12 @@ namespace SDL2
 			SDLK_KBDILLUMDOWN = (int)SDL_Scancode.SDL_SCANCODE_KBDILLUMDOWN | SDLK_SCANCODE_MASK,
 			SDLK_KBDILLUMUP = (int)SDL_Scancode.SDL_SCANCODE_KBDILLUMUP | SDLK_SCANCODE_MASK,
 			SDLK_EJECT = (int)SDL_Scancode.SDL_SCANCODE_EJECT | SDLK_SCANCODE_MASK,
-			SDLK_SLEEP = (int)SDL_Scancode.SDL_SCANCODE_SLEEP | SDLK_SCANCODE_MASK
+			SDLK_SLEEP = (int)SDL_Scancode.SDL_SCANCODE_SLEEP | SDLK_SCANCODE_MASK,
+			SDLK_APP1 = (int)SDL_Scancode.SDL_SCANCODE_APP1 | SDLK_SCANCODE_MASK,
+			SDLK_APP2 = (int)SDL_Scancode.SDL_SCANCODE_APP2 | SDLK_SCANCODE_MASK,
+
+			SDLK_AUDIOREWIND = (int)SDL_Scancode.SDL_SCANCODE_AUDIOREWIND | SDLK_SCANCODE_MASK,
+			SDLK_AUDIOFASTFORWARD = (int)SDL_Scancode.SDL_SCANCODE_AUDIOFASTFORWARD | SDLK_SCANCODE_MASK
 		}
 
 		/* Key modifiers (bitfield) */
@@ -7154,7 +7171,7 @@ namespace SDL2
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_AndroidGetExternalStorageState();
 
-		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(nativeLibName, EntryPoint = "SDL_AndroidGetExternalStorageState", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr INTERNAL_SDL_AndroidGetExternalStoragePath();
 
 		public static string SDL_AndroidGetExternalStoragePath()
@@ -7195,7 +7212,9 @@ namespace SDL2
 			SDL_SYSWM_WAYLAND,
 			SDL_SYSWM_MIR,
 			SDL_SYSWM_WINRT,
-			SDL_SYSWM_ANDROID
+			SDL_SYSWM_ANDROID,
+			SDL_SYSWM_VIVANTE,
+			SDL_SYSWM_OS2
 		}
 
 		// FIXME: I wish these weren't public...
@@ -7264,6 +7283,13 @@ namespace SDL2
 			public IntPtr surface; // Refers to an EGLSurface
 		}
 
+		[StructLayout(LayoutKind.Sequential)]
+		public struct INTERNAL_vivante_wminfo
+		{
+			public IntPtr display; // Refers to an EGLNativeDisplayType
+			public IntPtr window; // Refers to an EGLNativeWindowType
+		}
+
 		[StructLayout(LayoutKind.Explicit)]
 		public struct INTERNAL_SysWMDriverUnion
 		{
@@ -7285,6 +7311,8 @@ namespace SDL2
 			public INTERNAL_mir_wminfo mir;
 			[FieldOffset(0)]
 			public INTERNAL_android_wminfo android;
+			[FieldOffset(0)]
+			public INTERNAL_vivante_wminfo vivante;
 			// private int dummy;
 		}
 

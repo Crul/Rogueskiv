@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Version>0.0.1</Version>
+    <Authors>Crul</Authors>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
     <ProjectReference Include="..\Seedwork.Crosscutting\Seedwork.Crosscutting.csproj" />
   </ItemGroup>
 

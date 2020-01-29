@@ -18,7 +18,7 @@ namespace Rogueskiv.Menus.Renderers
             var menuFont = uxContext.GetFont(fontFile, MENU_FONT_SIZE);
             var smallFont = uxContext.GetFont(fontFile, SMALL_FONT_SIZE);
 
-            Renderers.Add(new TitleRenderer(uxContext, titleFont));
+            Renderers.Add(new TitleRenderer(uxContext, titleFont, smallFont));
             Renderers.Add(new InstructionsRenderer(uxContext, smallFont));
             Renderers.Add(new ControlsInfoRenderer(uxContext, game, smallFont));
             Renderers.Add(new CustomSeedInputRenderer(uxContext, game, smallFont));

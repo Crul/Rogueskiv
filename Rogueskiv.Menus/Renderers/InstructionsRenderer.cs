@@ -21,7 +21,8 @@ namespace Rogueskiv.Menus.Renderers
         {
             "Only keyboard supported (no mouse)",
             "Use cursors, WASD, NumPad to move and press ENTER to play.",
-            "WARNING! Work in progress: This is a proof of concept, not a fully developed game."
+            "WARNING! Work in progress: This is a proof of concept, not a fully developed game.",
+            "GitHub: https://github.com/Crul/Rogueskiv/",
         };
 
         private readonly SDL_Color InstructionsColor =
