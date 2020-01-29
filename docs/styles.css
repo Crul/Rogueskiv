@@ -19,11 +19,67 @@ h1 {
   text-align: right;
 }
 
-p { clear: both; }
-
 .content {
   max-width: 980px;
   margin: auto;
+}
+
+.content > p { clear: both; }
+
+/* https://www.bestcssbuttongenerator.com */
+a.download-big-btn {
+  font-size: 110%;
+  box-shadow: inset 0px 1px 0px 0px #caefab;
+  background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%);
+  background-color: #77d42a;
+  border-radius: 6px;
+  border: 1px solid #268a16;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 6px 16px;
+  text-decoration: none;
+  text-shadow: 0px 1px 0px #528009;
+  text-align: center;
+}
+a.download-big-btn:hover {
+  background: linear-gradient(to bottom, #5cb811 5%, #77d42a 100%);
+  background-color: #5cb811;
+  color: #ff0;
+}
+a.download-big-btn:active {
+  position: relative;
+  top: 1px;
+}
+a.download-big-btn p {
+  margin: 0;
+  font-size: 80%;
+  color: #eee;
+  font-weight: normal;
+}
+
+.download-small-btns {
+  display: inline-block;
+  vertical-align: top;
+}
+
+a.download-small-btn {
+  font-size: 66%;
+  border-radius: 6px;
+  border: 1px solid #caefab;
+  color: #caefab;
+  display: inline-block;
+  cursor: pointer;
+  padding: 4px 12px;
+  text-decoration: none;
+  text-shadow: 0px 1px 0px #528009;
+  text-align: center;
+  margin: 0 0 6px 0;
+}
+a.download-small-btn:hover {
+  color: #ff0;
+  border-color: #ff0;
 }
 
 .media video {

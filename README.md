@@ -4,6 +4,14 @@
 
 Rogueskiv is a mashup of [Eskiv](https://duckduckgo.com/?q=%22eskiv%22&t=ffab&ia=web) (by jf) and the countless [Roguelike games](https://www.reddit.com/r/roguelikedev/), inspired by the [Roguelike Celebration 2018](https://roguelike.club/event2018.html) talk: [Pippin Barr + Jonathan Lessard: Chess + Rogue = Chogue](https://www.youtube.com/watch?v=l1YEJBKehAY).
 
+## Download
+
+Currently only runs on Windows 64 bits (see Linux, iOS an 32 bits version notes):
+      
+- [Win-x64 Installer](https://github.com/Crul/Rogueskiv/releases/download/v0.0.1/rogueskiv-v0.0.1-win-x64-installer.exe)
+- [Win-x64 Compressed](https://github.com/Crul/Rogueskiv/releases/download/v0.0.1/Rogueskiv-v0.0.1-win-x64-compressed.zip)
+- [Win-x64 Code](https://github.com/Crul/Rogueskiv/archive/v0.0.1.zip)
+
 ## How it looks
 
 See [video trailer](https://crul.github.io/Rogueskiv/media/trailer-v0.0.1.webm).
