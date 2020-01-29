@@ -7,6 +7,6 @@ namespace Seedwork.Core
     {
         EntityList Entities { get; }
         bool Pause { get; }
-        IGameResult<IEntity> Result { get; }
+        IGameResult<EntityList> Result { get; }
     }
 }

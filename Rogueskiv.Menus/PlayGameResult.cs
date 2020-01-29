@@ -3,7 +3,7 @@ using Seedwork.Engine;
 
 namespace Rogueskiv.Menus
 {
-    public class PlayGameResult : GameResult<IEntity>
+    public class PlayGameResult : GameResult<EntityList>
     {
         public int? GameSeed { get; set; } = null;
 

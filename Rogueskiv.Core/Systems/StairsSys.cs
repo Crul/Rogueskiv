@@ -57,7 +57,7 @@ namespace Rogueskiv.Core.Systems
         }
 
         private void EndGame(
-            IGameResult<IEntity> gameresult, StairsComp stairsComp, bool pauseBeforeQuit = false
+            IGameResult<EntityList> gameresult, StairsComp stairsComp, bool pauseBeforeQuit = false
         )
         {
             // reset for next floor execution
@@ -65,7 +65,7 @@ namespace Rogueskiv.Core.Systems
             PlayerPositionComp.Position = stairsComp.Position.Add(BoardComp.TILE_SIZE / 2);
 
             gameresult.Data.Clear();
-            gameresult.Data.Add(PlayerEntity);
+            gameresult.Data.Add(PlayerEntity.Id, PlayerEntity);
 
             Game.GameEvents.Add(stairsComp.GetGameEvent());
             Game.EndGame(gameresult, pauseBeforeQuit);

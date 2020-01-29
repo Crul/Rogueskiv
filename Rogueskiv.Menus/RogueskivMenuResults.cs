@@ -6,6 +6,6 @@ namespace Rogueskiv.Menus
     public static class RogueskivMenuResults
     {
         public static PlayGameResult PlayResult { get; } = new PlayGameResult(1);
-        public static IGameResult<IEntity> QuitResult { get; } = new GameResult<IEntity>(2);
+        public static IGameResult<EntityList> QuitResult { get; } = new GameResult<EntityList>(2);
     }
 }

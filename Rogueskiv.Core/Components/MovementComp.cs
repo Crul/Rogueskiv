@@ -9,13 +9,13 @@ namespace Rogueskiv.Core.Components
         public virtual PointF Speed { get; set; }
         public int Radius { get; }
         public float FrictionFactor { get; }
-        public float BounceAmortiguationFactor { get; }
+        public float BounceMomentumConservationFactor { get; }
         public bool SimpleBounce { get; }
         public bool HasBounced { get; set; }
 
         public MovementComp(
             float frictionFactor,
-            float bounceAmortiguationFactor,
+            float bounceMomentumConservationFactor,
             int radius,
             PointF? speed = null,
             bool simpleBounce = true
@@ -24,7 +24,7 @@ namespace Rogueskiv.Core.Components
             Radius = radius;
             Speed = speed ?? new PointF(0, 0);
             FrictionFactor = frictionFactor;
-            BounceAmortiguationFactor = bounceAmortiguationFactor;
+            BounceMomentumConservationFactor = bounceMomentumConservationFactor;
             SimpleBounce = simpleBounce;
         }
 

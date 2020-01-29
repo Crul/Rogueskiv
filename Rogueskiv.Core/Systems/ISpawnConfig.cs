@@ -5,7 +5,7 @@ namespace Rogueskiv.Core.Systems
 {
     public interface ISpawnConfig
     {
-        bool IsLastFloor(int floor);
+        float FloorFactor(int floor);
 
         int PlayerRadius { get; }
         int InitialPlayerHealth { get; }
@@ -14,11 +14,11 @@ namespace Rogueskiv.Core.Systems
         float PlayerMaxSpeedInGameTicks { get; }
         float PlayerStopSpeedInGameTicks { get; }
 
-        int GetEnemyNumber(int floor);
+        int GetEnemyNumber(float floorFactor);
         int EnemyCollisionDamage { get; }
         float EnemyCollisionBounce { get; }
-        Range<float> GetEnemySpeedRangeInGameTicks(int floor);
-        List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(int floor);
+        Range<float> GetEnemySpeedRangeInGameTicks(float floorFactor);
+        List<(int numAngles, float weight)> GetEnemyAnglesProbWeights(float floorFactor);
         int MinSpaceToSpawnEnemy { get; }
         int MinEnemySpawnDistance { get; }
         int EnemyRadius { get; }
@@ -28,7 +28,7 @@ namespace Rogueskiv.Core.Systems
         float MinMapRevealerSpawnDistanceFactor { get; }
         float MinAmuletSpawnFactor { get; }
         float MinDownStairsSpawnFactor { get; }
-        float PlayerBounceAmortiguationFactor { get; }
+        float PlayerBounceMomentumConservationFactor { get; }
         float PlayerFrictionFactor { get; }
 
         int MaxItemPickingTimeInGameTicks { get; }

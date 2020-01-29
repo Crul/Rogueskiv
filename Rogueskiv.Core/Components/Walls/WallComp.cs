@@ -74,7 +74,7 @@ namespace Rogueskiv.Core.Components.Walls
             if (!isInFrontOrBehind)
                 return false;
 
-            ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
+            ReverseSpeed(movementComp, -movementComp.BounceMomentumConservationFactor);
             SimpleBounce(movementComp, currentPositionComp);
 
             return true;
@@ -122,7 +122,7 @@ namespace Rogueskiv.Core.Components.Walls
                 var hasTraversed = HasTraversed(currentPositionComp, lastPositionComp, movementComp);
                 if (hasTraversed)
                 {
-                    ReverseSpeed(movementComp, -movementComp.BounceAmortiguationFactor);
+                    ReverseSpeed(movementComp, -movementComp.BounceMomentumConservationFactor);
                     SimpleBounce(movementComp, currentPositionComp);
                     movementComp.HasBounced = true;
 
@@ -177,7 +177,7 @@ namespace Rogueskiv.Core.Components.Walls
                 bouncePosition.Y + (sinAngle * movementComp.Radius * PRECISE_BOUNCE_MARGIN_FACTOR)
             );
 
-            var speed = movementComp.BounceAmortiguationFactor * Distance.Get(movementComp.Speed);
+            var speed = movementComp.BounceMomentumConservationFactor * Distance.Get(movementComp.Speed);
             movementComp.Speed = new PointF(
                 speed * cosAngle,
                 speed * sinAngle
@@ -199,6 +199,6 @@ namespace Rogueskiv.Core.Components.Walls
             CurrentPositionComp currentPositionComp, LastPositionComp lastPositionComp, MovementComp movementComp
         );
 
-        protected abstract void ReverseSpeed(MovementComp movementComp, float amortiguationFactor);
+        protected abstract void ReverseSpeed(MovementComp movementComp, float momentumConservationFactor);
     }
 }

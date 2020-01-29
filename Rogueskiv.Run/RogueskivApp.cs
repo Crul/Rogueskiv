@@ -19,12 +19,12 @@ namespace Rogueskiv.Run
         private readonly UxContext UxContext;
         private readonly GameContext GameContext;
         private readonly RogueskivAppConfig AppConfig;
-        private readonly GameStages<IEntity> GameStages = new GameStages<IEntity>();
-        private readonly List<GameEngine<IEntity>> FloorEngines = new List<GameEngine<IEntity>>();
+        private readonly GameStages<EntityList> GameStages = new GameStages<EntityList>();
+        private readonly List<GameEngine<EntityList>> FloorEngines = new List<GameEngine<EntityList>>();
         private readonly LoadingScreenRenderer LoadingScreenRenderer;
 
         private int CurrentFloor;
-        private GameEngine<IEntity> CurrentFloorEngine => FloorEngines[CurrentFloor - 1];
+        private GameEngine<EntityList> CurrentFloorEngine => FloorEngines[CurrentFloor - 1];
 
         public RogueskivApp(RogueskivAppConfig appConfig)
         {
@@ -74,14 +74,14 @@ namespace Rogueskiv.Run
             );
         }
 
-        private GameEngine<IEntity> GetFloorUp(IGameResult<IEntity> result)
+        private GameEngine<EntityList> GetFloorUp(IGameResult<EntityList> result)
         {
             StopCurrentFloorEngine();
 
             return GetRestartFloorEngine(-1, result);
         }
 
-        private GameEngine<IEntity> GetFloorDown(IGameResult<IEntity> result)
+        private GameEngine<EntityList> GetFloorDown(IGameResult<EntityList> result)
         {
             StopCurrentFloorEngine();
             if (CurrentFloor < FloorEngines.Count)
@@ -90,7 +90,7 @@ namespace Rogueskiv.Run
             return CreateGameStage(result);
         }
 
-        private GameEngine<IEntity> GetRestartFloorEngine(int floorMovement, IGameResult<IEntity> result)
+        private GameEngine<EntityList> GetRestartFloorEngine(int floorMovement, IGameResult<EntityList> result)
         {
             var currentFloorEngine = CurrentFloorEngine;
             CurrentFloor += floorMovement;
@@ -101,8 +101,8 @@ namespace Rogueskiv.Run
             return nextFloorEngine;
         }
 
-        private GameEngine<IEntity> CreateGameStage(
-            IGameResult<IEntity> result = null,
+        private GameEngine<EntityList> CreateGameStage(
+            IGameResult<EntityList> result = null,
             int? gameSeed = null
         )
         {
@@ -127,7 +127,7 @@ namespace Rogueskiv.Run
             var game = new RogueskivGame(GameStageCodes.Game, gameConfig, CurrentFloor, result, OnGameEnd);
             var renderer = new RogueskivRenderer(UxContext, GameContext, game, AppConfig, gameConfig);
             var userInput = new RogueskivInputHandler(UxContext, game, renderer);
-            var engine = new GameEngine<IEntity>(GameContext, userInput, game, renderer);
+            var engine = new GameEngine<EntityList>(GameContext, userInput, game, renderer);
 
             FloorEngines.Add(engine);
 
@@ -143,7 +143,7 @@ namespace Rogueskiv.Run
             File.AppendAllText(AppConfig.GameStatsFilePath, yamlData);
         }
 
-        private GameEngine<IEntity> CreateMenuStage()
+        private GameEngine<EntityList> CreateMenuStage()
         {
             StopCurrentFloorEngine();
             CurrentFloor = 1;
@@ -155,7 +155,7 @@ namespace Rogueskiv.Run
             var game = new RogueskivMenu(AppConfig, GameStageCodes.Menu, LoadStats);
             var renderer = new RogueskivMenuRenderer(UxContext, game, AppConfig.FontFile);
             var userInput = new RogueskivMenuInputHandler(UxContext, game, renderer);
-            var engine = new GameEngine<IEntity>(gameContext, userInput, game, renderer);
+            var engine = new GameEngine<EntityList>(gameContext, userInput, game, renderer);
 
             return engine;
         }
@@ -177,20 +177,16 @@ namespace Rogueskiv.Run
             return data
                   .AsEnumerable()
                   .Reverse()
-                  .Select(gameStat =>
-                  {
-                      var dateTime = new DateTime(gameStat.Timestamp);
-                      return new List<string>
-                      {
-                        gameStat.DiedOnFloor.HasValue ? "DEAD" : "WIN",
-                        $"{dateTime.ToString("dd/MM")} {dateTime.ToShortTimeString()}",
+                  .Select(gameStat => new List<string>
+                    {
+                        gameStat.GetResult(),
+                        gameStat.GetDateTime(),
                         RogueskivMenu.CleanGameModeText(gameStat.GameMode),
                         gameStat.Floors.ToString(),
                         gameStat.DiedOnFloor.ToString(),
                         gameStat.FinalHealth.ToString(),
-                        new TimeSpan(gameStat.RealTime).ToString("g"),
-                        new TimeSpan(gameStat.InGameTime).ToString("g"),
-                      };
+                        gameStat.GetRealTimeFormatted(),
+                        gameStat.GetInGameTimeFormatted(),
                   })
                   .ToList();
         }
