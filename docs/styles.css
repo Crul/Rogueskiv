@@ -1,0 +1,71 @@
+html, body {
+  font-family: 'HackRegular';
+  font-weight: normal;
+  font-style: normal;
+  background-color: black;
+  color: #ccc;
+}
+
+body { padding: 0 40px; }
+
+a:link { color: #ffc; }
+a:visited { color: #eee; }
+a:hover { color: #ff0; }
+a:active { color: #fff; }
+
+h1 {
+  color: #7cd4da;
+  font-size: 266%;
+  text-align: right;
+}
+
+p { clear: both; }
+
+.content {
+  max-width: 980px;
+  margin: auto;
+}
+
+.media video {
+  float: left;
+  margin: 0 20px 20px 0;
+}
+
+.screenshots img {
+  width: 120px;
+}
+
+.warning {
+  color: #ff8;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  text-align: center;
+  border-top: solid 1px #ddd;
+}
+
+.footer a {
+  text-decoration: none;
+}
+.footer a:link { color: #ccc; }
+.footer a:visited { color: #aaa; }
+.footer a:hover { color: #f8f8f8; }
+.footer a:active { color: #fff; }
+
+.footer a:not(:last-child) {
+  margin-right: 48px;
+}
+
+.footer svg {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+}
+.footer a:link svg path { fill: #ccc; }
+.footer a:visited svg path { fill: #aaa; }
+.footer a:hover svg path { fill: #f8f8f8; }
+.footer a:active svg path { fill: #fff; }

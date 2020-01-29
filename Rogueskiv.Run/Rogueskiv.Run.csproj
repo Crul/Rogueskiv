@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Version>0.0.1</Version>
+    <Authors>Crul</Authors>
+    <Product>Rogueskiv</Product>
+    <Description>A roguelite game, mashup of Eskiv and the countless Roguelike games</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rogueskiv.Core\Rogueskiv.Core.csproj" />
+    <ProjectReference Include="..\Rogueskiv.Menus\Rogueskiv.Menus.csproj" />
+    <ProjectReference Include="..\Rogueskiv.Ux\Rogueskiv.Ux.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="data\gameModes\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="fonts\Hack\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Rogueskiv.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

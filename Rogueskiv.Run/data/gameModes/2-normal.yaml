@@ -1,0 +1,57 @@
+﻿# graphics
+inGameTimeVisible: true
+realTimeVisible: false
+
+# sound
+gameMusicFilePath: "audio/GapingGill.mp3"
+gameMusicVolume: 10
+
+# player
+playerRadius: 10
+playerAcceleration: 0.75
+playerMaxSpeed: 166
+playerStopSpeed: 0.5
+initialPlayerHealth: 10
+initialPlayerVisualRange: 5
+playerFrictionFactor: 0.05
+playerBounceMomentumConservationFactor: 0.4
+
+# items
+minFoodSpawnDistanceFactor: 16
+minFoodSpawnDistanceFactor: 0.33
+minTorchSpawnDistanceFactor: 0.1
+minMapRevealerSpawnDistanceFactor: 0.4
+minAmuletSpawnFactor: 0.9
+minDownStairsSpawnFactor: 0.8
+
+maxItemPickingTime: 0.66666
+foodHealthIncrease: 2
+torchVisualRangeIncrease: 0.5
+
+# enemies
+enemyCollisionDamage: 1
+enemyCollisionBounce: 8.5
+minSpaceToSpawnEnemy: 1
+minEnemySpawnDistance: 5
+enemyRadius: 6
+enemyAnglesProbWeightRanges:
+    - { value: 4,  weightRange: { start: 5, end: 5 } }
+    - { value: 8,  weightRange: { start: -10, end: 5 } }
+    - { value: 16,  weightRange: { start: -2.5, end: 5 } }
+
+# map generation params
+minRoomSize: 3
+minRoomSeparation: 1
+mapSizeRange: { start: 36, end: 48 }
+enemyNumberRange: { start: 10, end: 20 }
+minEnemySpeedRange: { start: 100, end: 125 }
+maxEnemySpeedRange: { start: 125, end: 175 }
+roomExpandProbRange: { start: 0.6, end: 0.3 }
+corridorTurnProbRange: { start: 0.05, end: 0.15 }
+minMapDensityRange: { start: 0.18, end: 0.12 }
+initialRoomsRange: { start: 15, end: 45 }
+corridorWidthProbWeightRanges:
+    - { value: 1,  weightRange: { start: 1, end: 8 } }
+    - { value: 2,  weightRange: { start: 4, end: 4 } }
+    - { value: 3,  weightRange: { start: 8, end: 2 } }
+    - { value: 4,  weightRange: { start: 1, end: 1 } }

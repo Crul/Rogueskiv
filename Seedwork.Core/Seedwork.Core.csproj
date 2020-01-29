@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Version>0.0.1</Version>
+    <Authors>Crul</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Seedwork.Engine\Seedwork.Engine.csproj" />
+  </ItemGroup>
+
+</Project>

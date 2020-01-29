@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Version>0.0.1</Version>
+    <Authors>Crul</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- https://stackoverflow.com/a/56989245 -->
+    <ContentWithTargetPath Include="dlls\SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2_image.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2_image.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2_mixer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2_mixer.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\SDL2_ttf.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SDL2_ttf.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libFLAC-8.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libFLAC-8.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libfreetype-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libfreetype-6.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libjpeg-9.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libjpeg-9.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libmodplug-1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libmodplug-1.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libmpg123-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libmpg123-0.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libogg-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libogg-0.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libopus-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libopus-0.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libopusfile-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libopusfile-0.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libpng16-16.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libpng16-16.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libtiff-5.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libtiff-5.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libvorbis-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libvorbis-0.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libvorbisfile-3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libvorbisfile-3.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libwebp-7.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libwebp-7.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\libfreetype-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libfreetype-6.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="dlls\zlib1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>zlib1.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Seedwork.Core\Seedwork.Core.csproj" />
+    <ProjectReference Include="..\Seedwork.Crosscutting\Seedwork.Crosscutting.csproj" />
+  </ItemGroup>
+
+</Project>
