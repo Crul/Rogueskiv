@@ -16,6 +16,33 @@ namespace Rogueskiv.Run
 
         static void Main()
         {
+            while (true)
+            {
+                var map = MapGeneration.MapGenerator.GenerateMap(new MapGeneration.MapGenerationParams(
+                    width: 48,
+                    height: 48,
+                    roomExpandProbability: 0.0f,
+                    corridorTurnProbability: 0.1f,
+                    minDensity: 0f,
+                    initialRooms: 150,
+                    minRoomSize: 0,
+                    minRoomSeparation: 2,
+                    corridorWidthProbWeights: new List<(int width, float weight)>()
+                    {
+                        (1, 1)
+                    })
+                );
+                if (string.IsNullOrEmpty(map))
+                    Console.Write(".");
+                else
+                {
+                    Console.WriteLine("\nMAP");
+                    Console.WriteLine(map.ToUpper().Replace("T", " ").Replace(".", "#"));
+                    Console.ReadLine();
+                }
+
+            }
+
             var rogueskivConfig = GetRogueskivAppConfig();
             using var rogueskivApp = new RogueskivApp(rogueskivConfig);
             rogueskivApp.Run();

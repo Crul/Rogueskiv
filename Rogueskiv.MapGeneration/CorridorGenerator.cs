@@ -8,7 +8,7 @@ namespace Rogueskiv.MapGeneration
 {
     static class CorridorGenerator
     {
-        private const int CONNECT_ROOMS_MAX_LOOPS = 250;
+        private const int CONNECT_ROOMS_MAX_LOOPS = 5000;
 
         private readonly static IDictionary<Direction, Func<Point, Point>> NextTileFn =
             new Dictionary<Direction, Func<Point, Point>>
@@ -128,7 +128,7 @@ namespace Rogueskiv.MapGeneration
             var deltaY = upOrDown ? -1 : 1;
             var initialStartTile = upOrDown ? room.TilePos : room.TilePos.Add(y: room.Size.Height - 1);
             var startTilesList = new List<List<Point>>();
-            for (var x = 0; x < room.Size.Width - corridorWidth; x++)
+            for (var x = 0; x <= room.Size.Width - corridorWidth; x++)
             {
                 var currentInitialTile = initialStartTile.Add(x: x, y: deltaY);
                 var candidateStartTiles = indexList.Select(idx => currentInitialTile.Add(x: idx)).ToList();
@@ -153,7 +153,7 @@ namespace Rogueskiv.MapGeneration
             var deltaX = leftOrRight ? -1 : 1;
             var initialStartTile = leftOrRight ? room.TilePos : room.TilePos.Add(x: room.Size.Width - 1);
             var startTilesList = new List<List<Point>>();
-            for (var y = 0; y < room.Size.Height - corridorWidth; y++)
+            for (var y = 0; y <= room.Size.Height - corridorWidth; y++)
             {
                 var currentInitialTile = initialStartTile.Add(x: deltaX, y: y);
                 var candidateStartTiles = indexList.Select(idx => currentInitialTile.Add(y: idx)).ToList();

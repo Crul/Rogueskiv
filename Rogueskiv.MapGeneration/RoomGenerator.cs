@@ -27,17 +27,14 @@ namespace Rogueskiv.MapGeneration
                 foreach (var room in rooms)
                 {
                     var expanded = TryToExpand(mapParams, rooms, room);
-                    if (expanded)
-                    {
-                        var roomsWithMinSize = rooms
-                            .Where(room => room.HasMinSize(mapParams.MinRoomSize))
-                            .ToList();
+                    var roomsWithMinSize = rooms
+                        .Where(room => room.HasMinSize(mapParams.MinRoomSize))
+                        .ToList();
 
-                        var roomArea = (float)roomsWithMinSize.Sum(room => room.Area);
-                        var density = roomArea / area;
-                        if (density >= mapParams.MinDensity)
-                            return roomsWithMinSize;
-                    }
+                    var roomArea = (float)roomsWithMinSize.Sum(room => room.Area);
+                    var density = roomArea / area;
+                    if (density >= mapParams.MinDensity)
+                        return roomsWithMinSize;
                 }
             }
         }
